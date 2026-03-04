@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { buildLongitudeArchive } from "../pipeline/builder.js";
-import { validateLongitudeArchive } from "../pipeline/validate.js";
-import { createAstronomyEngineProvider } from "../providers.astronomy-engine.js";
+import { buildLongitudeArchive } from "../../pipeline/builder.js";
+import { validateLongitudeArchive } from "../../pipeline/validate.js";
+import { createAstronomyEngineProvider } from "../../providers.astronomy-engine.js";
 import { getNumberArg, getStringArg, parseArgs } from "./args.js";
 
 function usage() {
   // eslint-disable-next-line no-console
   console.log(
     [
-      "Usage: node src/cli/build-archive.js [options]",
+      "Usage: node src/legacy/cli/build-archive.js [options]",
       "",
       "Options:",
       "  --start YYYY-MM-DD         Start date (UTC), default 1900-01-01",

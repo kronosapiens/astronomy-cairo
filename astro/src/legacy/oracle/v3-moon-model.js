@@ -10,7 +10,7 @@ const MOON_LON_PARITY_OFFSET_A_DEG_1E9 = ENV_BIAS_A ? BigInt(ENV_BIAS_A) : 0n;
 const MOON_LON_PARITY_OFFSET_B_DEG_1E9_PER_CENTURY = ENV_BIAS_B ? BigInt(ENV_BIAS_B) : 0n;
 const MOON_LON_PARITY_OFFSET_C_DEG_1E9_PER_CENTURY2 = ENV_BIAS_C ? BigInt(ENV_BIAS_C) : 0n;
 
-const MOON_TERMS_PATH = new URL("../../../cairo/crates/astronomy_engine_v4/src/moon_terms.cairo", import.meta.url);
+const MOON_TERMS_PATH = new URL("../../../../cairo/crates/astronomy_engine_v4/src/moon_terms.cairo", import.meta.url);
 
 function parseConstArrayRows(source, constName) {
   const start = source.indexOf(`pub const ${constName}`);

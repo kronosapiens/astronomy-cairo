@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { createAstronomyEngineProvider } from "../providers.astronomy-engine.js";
-import { validateLongitudeArchive } from "../pipeline/validate.js";
+import { createAstronomyEngineProvider } from "../../providers.astronomy-engine.js";
+import { validateLongitudeArchive } from "../../pipeline/validate.js";
 import { getNumberArg, getStringArg, parseArgs, requireStringArg } from "./args.js";
 
 function usage() {
   // eslint-disable-next-line no-console
   console.log(
     [
-      "Usage: node src/cli/validate-archive.js --archive path [options]",
+      "Usage: node src/legacy/cli/validate-archive.js --archive path [options]",
       "",
       "Options:",
       "  --archive path             Required archive JSON path",

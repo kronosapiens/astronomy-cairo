@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import * as Astronomy from "astronomy-engine";
 import { getNumberArg, parseArgs, requireStringArg } from "./args.js";
-import { EPOCH_1900_UNIX_MS } from "../oracle/corpus.js";
+import { EPOCH_1900_UNIX_MS } from "../../oracle/corpus.js";
 import { moonParityRow, moonParityRowDetailed } from "../oracle/v3-moon-model.js";
 
 function parseDate(value, key) {

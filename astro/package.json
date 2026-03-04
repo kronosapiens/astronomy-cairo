@@ -7,16 +7,19 @@
   "scripts": {
     "test": "node --test",
     "check": "node --test",
-    "build:archive": "node src/cli/build-archive.js",
-    "build:cheby-v2-cairo": "node src/cli/generate-cheby-v2-cairo.js",
-    "validate:archive": "node src/cli/validate-archive.js",
     "build:sign-corpus": "node src/cli/generate-corpus.js",
-    "compare:cairo-model": "node src/cli/compare-cairo-model.js",
-    "compare:cairo-runtime": "node src/cli/compare-cairo-runtime.js",
-    "compare:cheby-v2": "node src/cli/compare-cheby-v2-cairo-data.js",
-    "compare:v3-moon": "node src/cli/compare-v3-moon-parity.js",
-    "eval:light": "node src/cli/eval-light.js",
-    "eval:heavy": "node src/cli/eval-heavy.js"
+    "compare:v5-chart-parity": "node src/cli/compare-v5-chart-parity.js",
+    "eval:light": "node src/cli/eval-cairo-engine.js --profile light",
+    "eval:heavy": "node src/cli/eval-cairo-engine.js --profile heavy",
+    "legacy:build:archive": "node src/legacy/cli/build-archive.js",
+    "legacy:validate:archive": "node src/legacy/cli/validate-archive.js",
+    "legacy:build:cheby-v2-cairo": "node src/legacy/cli/generate-cheby-v2-cairo.js",
+    "legacy:compare:cairo-chart": "node src/legacy/cli/compare-cairo-chart.js",
+    "legacy:compare:cairo-model": "node src/legacy/cli/compare-cairo-model.js",
+    "legacy:compare:cairo-runtime": "node src/legacy/cli/compare-cairo-runtime.js",
+    "legacy:compare:cheby-v2": "node src/legacy/cli/compare-cheby-v2-cairo-data.js",
+    "legacy:compare:v3-moon": "node src/legacy/cli/compare-v3-moon-parity.js",
+    "legacy:export:ingress-cairo": "node src/legacy/cli/export-ingress-cairo.js"
   },
   "engines": {
     "node": ">=20"

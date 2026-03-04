@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import { createAstronomyEngineProvider } from "../providers.astronomy-engine.js";
-import { fitChebyshev } from "../math/fit.js";
-import { angularDifferenceDegrees } from "../math/angles.js";
+import { createAstronomyEngineProvider } from "../../providers.astronomy-engine.js";
+import { fitChebyshev } from "../../math/fit.js";
+import { angularDifferenceDegrees } from "../../math/angles.js";
 import { getNumberArg, parseArgs } from "./args.js";
 
 const EPOCH_1900_UNIX_MS = Date.UTC(1900, 0, 1, 0, 0, 0);

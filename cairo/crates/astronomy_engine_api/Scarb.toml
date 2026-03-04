@@ -1,0 +1,7 @@
+[package]
+name = "astronomy_engine_api"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+astronomy_engine_v5 = { path = "../astronomy_engine_v5" }

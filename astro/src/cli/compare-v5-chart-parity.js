@@ -4,7 +4,7 @@ import path from "node:path";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { getNumberArg, getStringArg, parseArgs, requireStringArg } from "./args.js";
-import { oracleAscSign, oraclePlanetSign } from "../oracle/cairo-model.js";
+import { oracleAscSign, oraclePlanetSign } from "../core/astronomy-engine.js";
 
 const PLANETS = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"];
 const EPOCH_PG_MS = Date.parse("0001-01-01T00:00:00Z");

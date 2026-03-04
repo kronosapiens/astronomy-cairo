@@ -1,27 +1,8 @@
-import * as Astronomy from "astronomy-engine";
+import { longitudeToSign, oracleAscSign, oraclePlanetSign } from "../core/astronomy-engine.js";
 
 const PLANETS = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"];
-const PLANET_BODY = {
-  Sun: Astronomy.Body.Sun,
-  Moon: Astronomy.Body.Moon,
-  Mercury: Astronomy.Body.Mercury,
-  Venus: Astronomy.Body.Venus,
-  Mars: Astronomy.Body.Mars,
-  Jupiter: Astronomy.Body.Jupiter,
-  Saturn: Astronomy.Body.Saturn,
-};
 
 export const EPOCH_1900_UNIX_MS = Date.UTC(1900, 0, 1, 0, 0, 0);
-
-export function normalizeDegrees(lon) {
-  let out = lon % 360;
-  if (out < 0) out += 360;
-  return out;
-}
-
-export function longitudeToSign(lon) {
-  return Math.floor(normalizeDegrees(lon) / 30);
-}
 
 export function minuteSince1900(unixMs) {
   return Math.floor((unixMs - EPOCH_1900_UNIX_MS) / 60_000);
@@ -33,51 +14,6 @@ export function quantizeMinute(minute, bucketMinutes = 15) {
 
 export function minuteToUnixMs(minute) {
   return EPOCH_1900_UNIX_MS + minute * 60_000;
-}
-
-function planetLongitude(planet, unixMs, aberration) {
-  const date = new Date(unixMs);
-  if (planet === "Moon") {
-    return Astronomy.EclipticGeoMoon(date).lon;
-  }
-  const body = PLANET_BODY[planet];
-  if (!body) {
-    throw new Error(`Unsupported planet: ${planet}`);
-  }
-  const vector = Astronomy.GeoVector(body, date, aberration);
-  return Astronomy.Ecliptic(vector).elon;
-}
-
-function ascendantLongitude(unixMs, latBin, lonBin) {
-  const date = new Date(unixMs);
-  const observer = new Astronomy.Observer(latBin / 10, lonBin / 10, 0);
-  const time = Astronomy.MakeTime(date);
-
-  // Ascendant is the eastern intersection of local horizon and ecliptic.
-  const ectToEqd = Astronomy.Rotation_ECT_EQD(date);
-  const eqdToHor = Astronomy.Rotation_EQD_HOR(date, observer);
-
-  const exEqd = Astronomy.RotateVector(ectToEqd, new Astronomy.Vector(1, 0, 0, time));
-  const eyEqd = Astronomy.RotateVector(ectToEqd, new Astronomy.Vector(0, 1, 0, time));
-  const exHor = Astronomy.RotateVector(eqdToHor, exEqd);
-  const eyHor = Astronomy.RotateVector(eqdToHor, eyEqd);
-
-  let lon1 = normalizeDegrees((Math.atan2(-exHor.z, eyHor.z) * 180) / Math.PI);
-  let lon2 = normalizeDegrees(lon1 + 180);
-
-  function horizonYForEclipticLon(lonDeg) {
-    const r = (lonDeg * Math.PI) / 180;
-    const vecEct = new Astronomy.Vector(Math.cos(r), Math.sin(r), 0, time);
-    const vecEqd = Astronomy.RotateVector(ectToEqd, vecEct);
-    const vecHor = Astronomy.RotateVector(eqdToHor, vecEqd);
-    return vecHor.y; // HOR y-axis points west, east is negative y.
-  }
-
-  const y1 = horizonYForEclipticLon(lon1);
-  const y2 = horizonYForEclipticLon(lon2);
-  if (y2 < y1) lon1 = lon2;
-
-  return lon1;
 }
 
 export function generateSignCorpus({
@@ -113,9 +49,9 @@ export function generateSignCorpus({
     for (const latBin of latBins) {
       for (const lonBin of lonBins) {
         const planet_sign = PLANETS.map((planet) =>
-          longitudeToSign(planetLongitude(planet, qUnixMs, aberration)),
+          oraclePlanetSign(planet, qUnixMs, { aberration }),
         );
-        const asc_sign = longitudeToSign(ascendantLongitude(qUnixMs, latBin, lonBin));
+        const asc_sign = oracleAscSign(qUnixMs, latBin, lonBin);
 
         entries.push({
           time_minute: qMinute,

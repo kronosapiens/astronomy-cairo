@@ -2,35 +2,19 @@
 version = 1
 
 [[package]]
-name = "astronomy_engine_v1"
+name = "astronomy_engine_api"
 version = "0.1.0"
+dependencies = [
+ "astronomy_engine_v5",
+]
 
 [[package]]
-name = "astronomy_engine_v2"
+name = "astronomy_engine_eval_runner"
 version = "0.1.0"
-
-[[package]]
-name = "astronomy_engine_v3"
-version = "0.1.0"
-
-[[package]]
-name = "astronomy_engine_v4"
-version = "0.1.0"
+dependencies = [
+ "astronomy_engine_api",
+]
 
 [[package]]
 name = "astronomy_engine_v5"
 version = "0.1.0"
-
-[[package]]
-name = "star_chart"
-version = "0.1.0"
-dependencies = [
- "astronomy_engine_v1",
-]
-
-[[package]]
-name = "star_chart_v2"
-version = "0.1.0"
-dependencies = [
- "astronomy_engine_v2",
-]
