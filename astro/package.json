@@ -5,10 +5,10 @@
   "type": "module",
   "description": "Scientific chart-compute package for Space Prince",
   "scripts": {
-    "test": "node --test",
-    "check": "node --test",
+    "test": "node --test test/*.test.js",
+    "test:legacy": "node --test test/legacy/*.test.js",
+    "test:all": "node --test",
     "build:sign-corpus": "node src/cli/generate-corpus.js",
-    "compare:v5-chart-parity": "node src/cli/compare-v5-chart-parity.js",
     "eval:light": "node src/cli/eval-cairo-engine.js --profile light",
     "eval:heavy": "node src/cli/eval-cairo-engine.js --profile heavy",
     "legacy:build:archive": "node src/legacy/cli/build-archive.js",

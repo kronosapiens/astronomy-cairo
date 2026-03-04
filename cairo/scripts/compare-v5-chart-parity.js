@@ -3,8 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { getNumberArg, getStringArg, parseArgs, requireStringArg } from "./args.js";
-import { oracleAscSign, oraclePlanetSign } from "../core/astronomy-engine.js";
+import { getNumberArg, getStringArg, parseArgs, requireStringArg } from "../../astro/src/cli/args.js";
+import { oracleAscSign, oraclePlanetSign } from "../../astro/src/engine.js";
 
 const PLANETS = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"];
 const EPOCH_PG_MS = Date.parse("0001-01-01T00:00:00Z");
@@ -81,13 +81,12 @@ function main() {
   if (start > end) throw new Error("--start must be <= --end");
 
   const stepMinutes = getNumberArg(args, "step-minutes", 60);
-  const quantizeMinutes = getNumberArg(args, "quantize-minutes", 15);
   const maxCases = getNumberArg(args, "max-cases", 128);
   const locations = parseLocations(getStringArg(args, "locations", "377,-1224"));
   const keepGenerated = Boolean(args["keep-generated"]);
 
   const here = path.dirname(fileURLToPath(import.meta.url));
-  const repoRoot = path.resolve(here, "../../..");
+  const repoRoot = path.resolve(here, "../..");
   const cairoDir = path.join(repoRoot, "cairo");
   const testsDir = path.join(cairoDir, "crates", "astronomy_engine_v5", "tests");
   const runTag = `generated_chart_parity_${Date.now()}_${Math.floor(Math.random() * 1_000_000)}`;
@@ -98,16 +97,15 @@ function main() {
   const cases = [];
   let idx = 0;
   for (let t = start; t <= end; t += stepMinutes * 60_000) {
-    const mPg = minuteSincePg(t);
-    const qMin = Math.floor(mPg / quantizeMinutes) * quantizeMinutes;
-    const qMs = EPOCH_PG_MS + qMin * 60_000;
+    const minutePg = minuteSincePg(t);
+    const sampleMs = EPOCH_PG_MS + minutePg * 60_000;
 
     for (const { latBin, lonBin } of locations) {
-      const planetSigns = PLANETS.map((p) => oraclePlanetSign(p, qMs));
-      const ascSign = oracleAscSign(qMs, latBin, lonBin);
+      const planetSigns = PLANETS.map((p) => oraclePlanetSign(p, sampleMs));
+      const ascSign = oracleAscSign(sampleMs, latBin, lonBin);
       cases.push({
-        id: sanitizeName(`${idx}_${qMin}_${latBin}_${lonBin}`),
-        minutePg: qMin,
+        id: sanitizeName(`${idx}_${minutePg}_${latBin}_${lonBin}`),
+        minutePg,
         latBin,
         lonBin,
         planetSigns,
@@ -151,7 +149,6 @@ function main() {
       start: new Date(start).toISOString(),
       end: new Date(end).toISOString(),
       stepMinutes,
-      quantizeMinutes,
       maxCases,
       generatedCases: cases.length,
       locations,

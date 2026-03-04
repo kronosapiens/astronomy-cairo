@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { getNumberArg, getStringArg, parseArgs, requireStringArg } from "./args.js";
+import { getNumberArg, getStringArg, parseArgs, requireStringArg } from "../../cli/args.js";
 import {
   approximateAscendantLongitude1e9,
   approximatePlanetLongitude1e9,

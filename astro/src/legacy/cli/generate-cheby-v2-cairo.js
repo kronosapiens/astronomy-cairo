@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import { createAstronomyEngineProvider } from "../../providers.astronomy-engine.js";
-import { fitChebyshev } from "../../math/fit.js";
-import { angularDifferenceDegrees } from "../../math/angles.js";
-import { getNumberArg, parseArgs } from "./args.js";
+import { oraclePlanetLongitude } from "../../engine.js";
+import { fitChebyshev } from "../math/fit.js";
+import { angularDifferenceDegrees } from "../math/angles.js";
+import { getNumberArg, parseArgs } from "../../cli/args.js";
 
 const EPOCH_1900_UNIX_MS = Date.UTC(1900, 0, 1, 0, 0, 0);
 const DEFAULT_START_UNIX_MS = Date.UTC(1900, 0, 1, 0, 0, 0);
@@ -39,7 +39,7 @@ function orderArg(args, key, fallback) {
 }
 
 function generatePlanetCoeffs(
-  provider,
+  getLongitude,
   planetName,
   rangeStartMs,
   rangeEndMs,
@@ -59,11 +59,11 @@ function generatePlanetCoeffs(
     const blockStartMs = rangeStartMs + blockStartMinute * 60000;
     const blockEndMs = rangeStartMs + blockEndMinute * 60000;
     const midMs = blockStartMs + (blockEndMs - blockStartMs) / 2;
-    const midLon = provider.getLongitude(planetName, midMs);
+    const midLon = getLongitude(planetName, midMs);
 
     const fitted = fitChebyshev(order, (u) => {
       const unixMs = blockStartMs + ((u + 1) / 2) * (blockEndMs - blockStartMs);
-      const lon = provider.getLongitude(planetName, unixMs);
+      const lon = getLongitude(planetName, unixMs);
       const delta = angularDifferenceDegrees(midLon, lon);
       return midLon + delta;
     });
@@ -135,13 +135,12 @@ function main() {
   if (endMs <= startMs) throw new Error("end must be greater than start");
   if (coeffQuantum <= 0) throw new Error("coeff-quantum must be > 0");
 
-  const provider = createAstronomyEngineProvider();
   const planetSpecs = {};
   for (const p of PLANETS) {
     const blockDays = blockArg(args, p.key, p.defaultBlockDays);
     const order = orderArg(args, p.key, p.defaultOrder);
     planetSpecs[p.key] = generatePlanetCoeffs(
-      provider,
+      oraclePlanetLongitude,
       p.name,
       startMs,
       endMs,

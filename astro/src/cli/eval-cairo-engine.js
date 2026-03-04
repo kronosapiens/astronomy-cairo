@@ -2,10 +2,10 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseArgs, getNumberArg, getStringArg } from "./args.js";
-import { oracleAscSign, oraclePlanetSign } from "../core/astronomy-engine.js";
+import { oracleAscSign, oraclePlanetSign } from "../engine.js";
 
 const ENGINE_CONFIG = {
   v5: { id: 5, startYear: 1, endYear: 4000 },
@@ -16,13 +16,9 @@ const ALEXANDRIA = { name: "Alexandria", latBin: 312, lonBin: 299 };
 const CLI_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ASTRO_ROOT = path.resolve(CLI_DIR, "..", "..");
 
-function shellQuote(value) {
-  return `'${String(value).replace(/'/g, `'\"'\"'`)}'`;
-}
-
 function runScarb(args, cwd) {
-  const cmd = `scarb ${args.map(shellQuote).join(" ")}`;
-  return execSync(cmd, {
+  const scarbBin = process.env.SCARB_BIN || "scarb";
+  return execFileSync(scarbBin, args.map(String), {
     cwd,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
@@ -150,7 +146,6 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const engine = getStringArg(args, "engine", "v5").toLowerCase();
   const profile = getStringArg(args, "profile", "light").toLowerCase();
-  const quantizeMinutes = getNumberArg(args, "quantize-minutes", 15);
   const batchSize = getNumberArg(args, "batch-size", 512);
   const logEveryChunks = getNumberArg(args, "log-every-chunks", 5);
   const quiet = Boolean(args.quiet);
@@ -260,13 +255,12 @@ function main() {
       for (let month = 1; month <= months; month += 1) {
         const dt = makeUtcDate(year, month, 1);
         const unixMs = dt.getTime();
-        const rawMinutePg = minuteSincePg(unixMs);
-        const minutePg = Math.floor(rawMinutePg / quantizeMinutes) * quantizeMinutes;
-        const qUnixMs = EPOCH_PG_MS + minutePg * 60_000;
+        const minutePg = minuteSincePg(unixMs);
+        const sampleUnixMs = EPOCH_PG_MS + minutePg * 60_000;
 
         for (const loc of locations) {
           chunkPointData.push(minutePg, loc.latBin, loc.lonBin);
-          const signs = computeExpectedSignsForPoint(qUnixMs, loc.latBin, loc.lonBin);
+          const signs = computeExpectedSignsForPoint(sampleUnixMs, loc.latBin, loc.lonBin);
           chunkExpected.push(
             signs[0],
             signs[1],
@@ -297,7 +291,6 @@ function main() {
     engine,
     engineId: capability.id,
     profile,
-    quantizeMinutes,
     batchSize,
     startYear,
     endYear,

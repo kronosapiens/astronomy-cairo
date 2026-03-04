@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { evaluatePlanetLongitude, signFromLongitude } from "../src/archive.js";
+import { evaluatePlanetLongitude, signFromLongitude } from "../../src/legacy/archive.js";
 
 const start = Date.UTC(2000, 0, 1);
 const end = Date.UTC(2000, 0, 2);

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { buildLongitudeArchive } from "../../pipeline/builder.js";
-import { validateLongitudeArchive } from "../../pipeline/validate.js";
-import { createAstronomyEngineProvider } from "../../providers.astronomy-engine.js";
-import { getNumberArg, getStringArg, parseArgs } from "./args.js";
+import { buildLongitudeArchive } from "../pipeline/builder.js";
+import { validateLongitudeArchive } from "../pipeline/validate.js";
+import { oraclePlanetLongitude } from "../../engine.js";
+import { getNumberArg, getStringArg, parseArgs } from "../../cli/args.js";
 
 function usage() {
   // eslint-disable-next-line no-console
@@ -15,13 +15,13 @@ function usage() {
       "Options:",
       "  --start YYYY-MM-DD         Start date (UTC), default 1900-01-01",
       "  --end YYYY-MM-DD           End date (UTC), default 2100-12-31",
-      "  --out path                 Output archive JSON, default out/archive.json",
+      "  --out path                 Output archive JSON, default results/legacy/archive.json",
       "  --report path              Optional validation report JSON path",
       "  --step-minutes N           Validation cadence if --report is set, default 15",
       "  --version string           Archive version, default chart-ephem-v0",
       "",
       "Example:",
-      "  npm run build:archive -- --start 2026-01-01 --end 2026-12-31 --out out/2026.json --report out/2026.report.json",
+      "  npm run build:archive -- --start 2026-01-01 --end 2026-12-31 --out results/legacy/2026.json --report results/legacy/2026.report.json",
     ].join("\n")
   );
 }
@@ -49,7 +49,7 @@ async function main() {
 
   const startText = getStringArg(args, "start", "1900-01-01");
   const endText = getStringArg(args, "end", "2100-12-31");
-  const outPath = getStringArg(args, "out", "out/archive.json");
+  const outPath = getStringArg(args, "out", "results/legacy/archive.json");
   const reportPath = typeof args.report === "string" ? args.report : null;
   const version = getStringArg(args, "version", "chart-ephem-v0");
   const stepMinutes = getNumberArg(args, "step-minutes", 15);
@@ -60,11 +60,10 @@ async function main() {
     throw new Error(`End date must be after start date: ${startText}..${endText}`);
   }
 
-  const provider = createAstronomyEngineProvider();
   const archive = buildLongitudeArchive({
     rangeStartUnixMs,
     rangeEndUnixMs,
-    referenceProvider: provider,
+    referenceLongitude: oraclePlanetLongitude,
     version,
   });
 
@@ -78,7 +77,7 @@ async function main() {
   console.log(`Range: ${startText} -> ${endText}`);
 
   if (reportPath) {
-    const report = validateLongitudeArchive(archive, provider, { stepMinutes });
+    const report = validateLongitudeArchive(archive, oraclePlanetLongitude, { stepMinutes });
     const reportDir = path.dirname(reportPath);
     await mkdir(reportDir, { recursive: true });
     await writeFile(reportPath, JSON.stringify(report, null, 2));

@@ -6,10 +6,10 @@ const DEFAULT_STEP_MINUTES = 15;
 
 /**
  * @param {import('../types.js').LongitudeArchive} archive
- * @param {{ getLongitude: (planet: import('../types.js').PlanetId, unixMs: number) => number }} referenceProvider
+ * @param {(planet: import('../types.js').PlanetId, unixMs: number) => number} referenceLongitude
  * @param {{ stepMinutes?: number }} [opts]
  */
-export function validateLongitudeArchive(archive, referenceProvider, opts = {}) {
+export function validateLongitudeArchive(archive, referenceLongitude, opts = {}) {
   const stepMinutes = opts.stepMinutes ?? DEFAULT_STEP_MINUTES;
   const stepMs = stepMinutes * 60 * 1000;
   const results = {};
@@ -21,7 +21,7 @@ export function validateLongitudeArchive(archive, referenceProvider, opts = {}) 
     let signMismatches = 0;
 
     for (let t = archive.rangeStartUnixMs; t <= archive.rangeEndUnixMs; t += stepMs) {
-      const reference = referenceProvider.getLongitude(planet, t);
+      const reference = referenceLongitude(planet, t);
       const estimated = evaluatePlanetLongitude(archive, planet, t);
       const absErr = Math.abs(angularDifferenceDegrees(reference, estimated));
       sqSum += absErr * absErr;

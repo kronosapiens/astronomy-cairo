@@ -187,7 +187,7 @@ scarb build -p astronomy_engine_v5
 From repo root (real Cairo runtime parity harness):
 
 ```bash
-node astro/src/cli/compare-v5-chart-parity.js \
+node cairo/scripts/compare-v5-chart-parity.js \
   --start 1900-01-01T00:00:00Z \
   --end 1900-01-01T12:00:00Z \
   --step-minutes 180 \

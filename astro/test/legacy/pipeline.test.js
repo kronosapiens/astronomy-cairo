@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildLongitudeArchive, createMockReferenceProvider } from "../src/pipeline/builder.js";
-import { validateLongitudeArchive } from "../src/pipeline/validate.js";
+import { buildLongitudeArchive, createMockLongitude } from "../../src/legacy/pipeline/builder.js";
+import { validateLongitudeArchive } from "../../src/legacy/pipeline/validate.js";
 
 const start = Date.UTC(2025, 0, 1, 0, 0, 0);
 const end = Date.UTC(2025, 0, 15, 0, 0, 0);
@@ -10,7 +10,7 @@ test("buildLongitudeArchive creates per-planet block series", () => {
   const archive = buildLongitudeArchive({
     rangeStartUnixMs: start,
     rangeEndUnixMs: end,
-    referenceProvider: createMockReferenceProvider(),
+    referenceLongitude: createMockLongitude,
     version: "test-v0",
   });
 
@@ -24,13 +24,13 @@ test("buildLongitudeArchive creates per-planet block series", () => {
 });
 
 test("validateLongitudeArchive reports low error for archive built from same provider", () => {
-  const provider = createMockReferenceProvider();
+  const getLongitude = createMockLongitude;
   const archive = buildLongitudeArchive({
     rangeStartUnixMs: start,
     rangeEndUnixMs: end,
-    referenceProvider: provider,
+    referenceLongitude: getLongitude,
   });
-  const report = validateLongitudeArchive(archive, provider, { stepMinutes: 30 });
+  const report = validateLongitudeArchive(archive, getLongitude, { stepMinutes: 30 });
 
   for (const planet of Object.keys(report.results)) {
     const r = report.results[planet];

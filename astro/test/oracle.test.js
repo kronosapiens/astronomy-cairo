@@ -4,20 +4,12 @@ import assert from "node:assert/strict";
 import {
   EPOCH_1900_UNIX_MS,
   minuteSince1900,
-  quantizeMinute,
   generateSignCorpus,
 } from "../src/oracle/corpus.js";
 
 test("minuteSince1900 maps epoch start to zero", () => {
   assert.equal(minuteSince1900(EPOCH_1900_UNIX_MS), 0);
   assert.equal(minuteSince1900(EPOCH_1900_UNIX_MS + 60_000), 1);
-});
-
-test("quantizeMinute floors to 15-minute slots", () => {
-  assert.equal(quantizeMinute(0, 15), 0);
-  assert.equal(quantizeMinute(14, 15), 0);
-  assert.equal(quantizeMinute(15, 15), 15);
-  assert.equal(quantizeMinute(29, 15), 15);
 });
 
 test("generateSignCorpus emits deterministic sign payloads", () => {
@@ -27,7 +19,6 @@ test("generateSignCorpus emits deterministic sign payloads", () => {
     stepMinutes: 30,
     latBins: [377],
     lonBins: [-1224],
-    quantizeMinutes: 15,
   };
 
   const a = generateSignCorpus(input);

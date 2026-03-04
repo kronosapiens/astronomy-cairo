@@ -1,4 +1,4 @@
-import { longitudeToSign, oracleAscSign, oraclePlanetSign } from "../core/astronomy-engine.js";
+import { oracleAscSign, oraclePlanetSign } from "../engine.js";
 
 const PLANETS = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"];
 
@@ -6,10 +6,6 @@ export const EPOCH_1900_UNIX_MS = Date.UTC(1900, 0, 1, 0, 0, 0);
 
 export function minuteSince1900(unixMs) {
   return Math.floor((unixMs - EPOCH_1900_UNIX_MS) / 60_000);
-}
-
-export function quantizeMinute(minute, bucketMinutes = 15) {
-  return Math.floor(minute / bucketMinutes) * bucketMinutes;
 }
 
 export function minuteToUnixMs(minute) {
@@ -22,8 +18,6 @@ export function generateSignCorpus({
   stepMinutes,
   latBins,
   lonBins,
-  quantizeMinutes = 15,
-  aberration = true,
 }) {
   if (!Number.isFinite(startUnixMs) || !Number.isFinite(endUnixMs) || startUnixMs > endUnixMs) {
     throw new Error("Invalid [startUnixMs, endUnixMs] range");
@@ -43,18 +37,17 @@ export function generateSignCorpus({
 
   for (let t = startUnixMs; t <= endUnixMs; t += stepMs) {
     const minute = minuteSince1900(t);
-    const qMinute = quantizeMinute(minute, quantizeMinutes);
-    const qUnixMs = minuteToUnixMs(qMinute);
+    const sampleUnixMs = minuteToUnixMs(minute);
 
     for (const latBin of latBins) {
       for (const lonBin of lonBins) {
         const planet_sign = PLANETS.map((planet) =>
-          oraclePlanetSign(planet, qUnixMs, { aberration }),
+          oraclePlanetSign(planet, sampleUnixMs),
         );
-        const asc_sign = oracleAscSign(qUnixMs, latBin, lonBin);
+        const asc_sign = oracleAscSign(sampleUnixMs, latBin, lonBin);
 
         entries.push({
-          time_minute: qMinute,
+          time_minute: minute,
           lat_bin: latBin,
           lon_bin: lonBin,
           planet_sign,
@@ -68,12 +61,12 @@ export function generateSignCorpus({
     meta: {
       epoch: "1900-01-01T00:00:00Z",
       time_unit: "minute_since_1900",
-      quantize_minutes: quantizeMinutes,
+      minute_resolution: 1,
       range: { startUnixMs, endUnixMs, stepMinutes },
       lat_bin_unit: "0.1_degree",
       lon_bin_unit: "0.1_degree",
       planets: PLANETS,
-      aberration,
+      apparent_positions: true,
     },
     entries,
   };

@@ -6,7 +6,7 @@ import {
   oracleAscSign,
   oraclePlanetSign,
 } from '../oracle/cairo-model.js';
-import { parseArgs, getNumberArg, requireStringArg } from './args.js';
+import { parseArgs, getNumberArg, requireStringArg } from '../../cli/args.js';
 
 const PLANETS = [
   ['SUN', 'Sun'],

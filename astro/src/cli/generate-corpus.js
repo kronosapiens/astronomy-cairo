@@ -36,7 +36,6 @@ function main() {
   const end = parseDateArg(requireStringArg(args, "end"), "end");
 
   const stepMinutes = getNumberArg(args, "step-minutes", 60);
-  const quantizeMinutes = getNumberArg(args, "quantize-minutes", 15);
   const latBins = parseIntegerList(getStringArg(args, "lat-bins", ""), "lat-bins");
   const lonBins = parseIntegerList(getStringArg(args, "lon-bins", ""), "lon-bins");
 
@@ -46,7 +45,6 @@ function main() {
     stepMinutes,
     latBins,
     lonBins,
-    quantizeMinutes,
   });
 
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -58,7 +56,6 @@ function main() {
         out: outPath,
         rows: corpus.entries.length,
         stepMinutes,
-        quantizeMinutes,
         latCount: latBins.length,
         lonCount: lonBins.length,
       },

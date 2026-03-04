@@ -1,7 +1,7 @@
 export {
-  createAstronomyEngineProvider,
+  oraclePlanetLongitude,
   oracleAscSign,
   oraclePlanetSign,
   longitudeToSign,
-} from "./core/astronomy-engine.js";
+} from "./engine.js";
 export { generateSignCorpus } from "./oracle/corpus.js";

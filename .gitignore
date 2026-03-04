@@ -30,5 +30,4 @@ cairo/**/tests/generated_*.cairo
 cairo/**/tests/tmp_*.cairo
 
 # Generated astro artifacts
-astro/out/
 astro/results/

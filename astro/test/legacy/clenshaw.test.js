@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { evalChebyshev, normalizeTimeToChebyshevDomain } from "../src/math/clenshaw.js";
+import { evalChebyshev, normalizeTimeToChebyshevDomain } from "../../src/legacy/math/clenshaw.js";
 
 // f(u) = 5 + 2u  => c0=5, c1=2
 test("evalChebyshev evaluates linear series", () => {
