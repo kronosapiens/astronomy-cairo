@@ -1,0 +1,1310 @@
+{
+  "tsUtc": "2026-03-07T01:25:36.368Z",
+  "corpus": "/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-planet-regression-corpus.ndjson",
+  "pointCount": 68,
+  "passCount": 0,
+  "failCount": 68,
+  "planetFailCount": 68,
+  "ascFailCount": 0,
+  "sunFailCount": 0,
+  "moonFailCount": 0,
+  "mercuryFailCount": 10,
+  "venusFailCount": 10,
+  "marsFailCount": 12,
+  "jupiterFailCount": 10,
+  "saturnFailCount": 26,
+  "failedPoints": [
+    {
+      "minutePg": 527876640,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1004,
+      "month": 9,
+      "location": "Alexandria",
+      "expectedSigns": [
+        5,
+        8,
+        4,
+        6,
+        7,
+        2,
+        4,
+        3
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 527876640,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1004,
+      "month": 9,
+      "location": "NYC",
+      "expectedSigns": [
+        5,
+        8,
+        4,
+        6,
+        7,
+        2,
+        4,
+        11
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 534536640,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1017,
+      "month": 5,
+      "location": "Alexandria",
+      "expectedSigns": [
+        1,
+        11,
+        0,
+        1,
+        4,
+        2,
+        9,
+        10
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 534536640,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1017,
+      "month": 5,
+      "location": "NYC",
+      "expectedSigns": [
+        1,
+        11,
+        0,
+        1,
+        4,
+        2,
+        9,
+        7
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 549745920,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1046,
+      "month": 4,
+      "location": "Alexandria",
+      "expectedSigns": [
+        0,
+        6,
+        11,
+        1,
+        11,
+        8,
+        8,
+        9
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 549745920,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1046,
+      "month": 4,
+      "location": "NYC",
+      "expectedSigns": [
+        0,
+        6,
+        11,
+        1,
+        11,
+        8,
+        8,
+        6
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 553253760,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1052,
+      "month": 12,
+      "location": "Alexandria",
+      "expectedSigns": [
+        8,
+        8,
+        7,
+        9,
+        6,
+        2,
+        11,
+        6
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 553253760,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1052,
+      "month": 12,
+      "location": "NYC",
+      "expectedSigns": [
+        8,
+        8,
+        7,
+        9,
+        6,
+        2,
+        11,
+        3
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 555619680,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1057,
+      "month": 6,
+      "location": "Alexandria",
+      "expectedSigns": [
+        2,
+        10,
+        2,
+        3,
+        11,
+        6,
+        1,
+        0
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 555619680,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1057,
+      "month": 6,
+      "location": "NYC",
+      "expectedSigns": [
+        2,
+        10,
+        2,
+        3,
+        11,
+        6,
+        1,
+        8
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 557766720,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1061,
+      "month": 7,
+      "location": "Alexandria",
+      "expectedSigns": [
+        3,
+        5,
+        2,
+        1,
+        1,
+        11,
+        3,
+        1
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 557766720,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1061,
+      "month": 7,
+      "location": "NYC",
+      "expectedSigns": [
+        3,
+        5,
+        2,
+        1,
+        1,
+        11,
+        3,
+        9
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 560878560,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1067,
+      "month": 6,
+      "location": "Alexandria",
+      "expectedSigns": [
+        2,
+        6,
+        2,
+        3,
+        2,
+        5,
+        5,
+        0
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 560878560,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1067,
+      "month": 6,
+      "location": "NYC",
+      "expectedSigns": [
+        2,
+        6,
+        2,
+        3,
+        2,
+        5,
+        5,
+        8
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 563552640,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1072,
+      "month": 7,
+      "location": "Alexandria",
+      "expectedSigns": [
+        3,
+        6,
+        3,
+        1,
+        11,
+        10,
+        7,
+        1
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 563552640,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1072,
+      "month": 7,
+      "location": "NYC",
+      "expectedSigns": [
+        3,
+        6,
+        3,
+        1,
+        11,
+        10,
+        7,
+        9
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 574204320,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1092,
+      "month": 10,
+      "location": "Alexandria",
+      "expectedSigns": [
+        6,
+        2,
+        7,
+        7,
+        6,
+        6,
+        4,
+        4
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 574204320,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1092,
+      "month": 10,
+      "location": "NYC",
+      "expectedSigns": [
+        6,
+        2,
+        7,
+        7,
+        6,
+        6,
+        4,
+        1
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 578367360,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1100,
+      "month": 9,
+      "location": "Alexandria",
+      "expectedSigns": [
+        5,
+        0,
+        6,
+        6,
+        8,
+        3,
+        6,
+        3
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 578367360,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1100,
+      "month": 9,
+      "location": "NYC",
+      "expectedSigns": [
+        5,
+        0,
+        6,
+        6,
+        8,
+        3,
+        6,
+        11
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 581040000,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1105,
+      "month": 10,
+      "location": "Alexandria",
+      "expectedSigns": [
+        6,
+        11,
+        7,
+        7,
+        6,
+        7,
+        8,
+        4
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 581040000,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1105,
+      "month": 10,
+      "location": "NYC",
+      "expectedSigns": [
+        6,
+        11,
+        7,
+        7,
+        6,
+        7,
+        8,
+        1
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 585247680,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1113,
+      "month": 10,
+      "location": "Alexandria",
+      "expectedSigns": [
+        6,
+        10,
+        6,
+        7,
+        7,
+        4,
+        0,
+        4
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 585247680,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1113,
+      "month": 10,
+      "location": "NYC",
+      "expectedSigns": [
+        6,
+        10,
+        6,
+        7,
+        7,
+        4,
+        0,
+        1
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 585730080,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1114,
+      "month": 9,
+      "location": "Alexandria",
+      "expectedSigns": [
+        5,
+        2,
+        6,
+        5,
+        4,
+        5,
+        0,
+        3
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 585730080,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1114,
+      "month": 9,
+      "location": "NYC",
+      "expectedSigns": [
+        5,
+        2,
+        6,
+        5,
+        4,
+        5,
+        0,
+        11
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 598003200,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 1138,
+      "month": 1,
+      "location": "Alexandria",
+      "expectedSigns": [
+        9,
+        1,
+        9,
+        8,
+        8,
+        5,
+        9,
+        7
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 598003200,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 1138,
+      "month": 1,
+      "location": "NYC",
+      "expectedSigns": [
+        9,
+        1,
+        9,
+        8,
+        8,
+        5,
+        9,
+        4
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 1819828800,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3461,
+      "month": 2,
+      "location": "Alexandria",
+      "expectedSigns": [
+        10,
+        9,
+        10,
+        8,
+        10,
+        4,
+        9,
+        8
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 1819828800,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3461,
+      "month": 2,
+      "location": "NYC",
+      "expectedSigns": [
+        10,
+        9,
+        10,
+        8,
+        10,
+        4,
+        9,
+        5
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 1820354400,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3462,
+      "month": 2,
+      "location": "Alexandria",
+      "expectedSigns": [
+        10,
+        1,
+        10,
+        11,
+        5,
+        5,
+        10,
+        8
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1820354400,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3462,
+      "month": 2,
+      "location": "NYC",
+      "expectedSigns": [
+        10,
+        1,
+        10,
+        11,
+        5,
+        5,
+        10,
+        5
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1821008160,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3463,
+      "month": 5,
+      "location": "Alexandria",
+      "expectedSigns": [
+        1,
+        9,
+        2,
+        1,
+        0,
+        6,
+        10,
+        10
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 1821008160,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3463,
+      "month": 5,
+      "location": "NYC",
+      "expectedSigns": [
+        1,
+        9,
+        2,
+        1,
+        0,
+        6,
+        10,
+        7
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 1821623040,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3464,
+      "month": 7,
+      "location": "Alexandria",
+      "expectedSigns": [
+        3,
+        4,
+        3,
+        2,
+        6,
+        6,
+        11,
+        1
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1821623040,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3464,
+      "month": 7,
+      "location": "NYC",
+      "expectedSigns": [
+        3,
+        4,
+        3,
+        2,
+        6,
+        6,
+        11,
+        9
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1824341760,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3469,
+      "month": 9,
+      "location": "Alexandria",
+      "expectedSigns": [
+        5,
+        6,
+        6,
+        5,
+        5,
+        0,
+        1,
+        3
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1824341760,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3469,
+      "month": 9,
+      "location": "NYC",
+      "expectedSigns": [
+        5,
+        6,
+        6,
+        5,
+        5,
+        0,
+        1,
+        11
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1824602400,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3470,
+      "month": 3,
+      "location": "Alexandria",
+      "expectedSigns": [
+        11,
+        1,
+        10,
+        0,
+        9,
+        0,
+        0,
+        8
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 1824602400,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3470,
+      "month": 3,
+      "location": "NYC",
+      "expectedSigns": [
+        11,
+        1,
+        10,
+        0,
+        9,
+        0,
+        0,
+        5
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 1825128000,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3471,
+      "month": 3,
+      "location": "Alexandria",
+      "expectedSigns": [
+        11,
+        5,
+        11,
+        11,
+        1,
+        1,
+        1,
+        8
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 1825128000,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3471,
+      "month": 3,
+      "location": "NYC",
+      "expectedSigns": [
+        11,
+        5,
+        11,
+        11,
+        1,
+        1,
+        1,
+        5
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 1828023840,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3476,
+      "month": 9,
+      "location": "Alexandria",
+      "expectedSigns": [
+        5,
+        1,
+        6,
+        6,
+        3,
+        7,
+        4,
+        3
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1828023840,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3476,
+      "month": 9,
+      "location": "NYC",
+      "expectedSigns": [
+        5,
+        1,
+        6,
+        6,
+        3,
+        7,
+        4,
+        11
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1830170880,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3480,
+      "month": 10,
+      "location": "Alexandria",
+      "expectedSigns": [
+        6,
+        8,
+        7,
+        6,
+        4,
+        11,
+        5,
+        4
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 1830170880,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3480,
+      "month": 10,
+      "location": "NYC",
+      "expectedSigns": [
+        6,
+        8,
+        7,
+        6,
+        4,
+        11,
+        5,
+        1
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 1830303360,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3481,
+      "month": 1,
+      "location": "Alexandria",
+      "expectedSigns": [
+        9,
+        0,
+        9,
+        9,
+        6,
+        11,
+        6,
+        7
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1830303360,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3481,
+      "month": 1,
+      "location": "NYC",
+      "expectedSigns": [
+        9,
+        0,
+        9,
+        9,
+        6,
+        11,
+        6,
+        4
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1831178880,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3482,
+      "month": 9,
+      "location": "Alexandria",
+      "expectedSigns": [
+        5,
+        3,
+        6,
+        6,
+        4,
+        2,
+        6,
+        3
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 1831178880,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3482,
+      "month": 9,
+      "location": "NYC",
+      "expectedSigns": [
+        5,
+        3,
+        6,
+        6,
+        4,
+        2,
+        6,
+        11
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 1832932800,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3486,
+      "month": 1,
+      "location": "Alexandria",
+      "expectedSigns": [
+        9,
+        10,
+        8,
+        10,
+        11,
+        5,
+        8,
+        7
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1832932800,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3486,
+      "month": 1,
+      "location": "NYC",
+      "expectedSigns": [
+        9,
+        10,
+        8,
+        10,
+        11,
+        5,
+        8,
+        4
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1833675840,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3487,
+      "month": 6,
+      "location": "Alexandria",
+      "expectedSigns": [
+        2,
+        9,
+        3,
+        2,
+        11,
+        6,
+        8,
+        0
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 1833675840,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3487,
+      "month": 6,
+      "location": "NYC",
+      "expectedSigns": [
+        2,
+        9,
+        3,
+        2,
+        11,
+        6,
+        8,
+        8
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 1834683840,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3489,
+      "month": 5,
+      "location": "Alexandria",
+      "expectedSigns": [
+        1,
+        4,
+        2,
+        2,
+        11,
+        8,
+        9,
+        11
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 1834683840,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3489,
+      "month": 5,
+      "location": "NYC",
+      "expectedSigns": [
+        1,
+        4,
+        2,
+        2,
+        11,
+        8,
+        9,
+        7
+      ],
+      "mismatchMask": 4
+    },
+    {
+      "minutePg": 1836527040,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3492,
+      "month": 11,
+      "location": "Alexandria",
+      "expectedSigns": [
+        7,
+        2,
+        8,
+        7,
+        8,
+        11,
+        10,
+        5
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 1836527040,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3492,
+      "month": 11,
+      "location": "NYC",
+      "expectedSigns": [
+        7,
+        2,
+        8,
+        7,
+        8,
+        11,
+        10,
+        2
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 1836875520,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3493,
+      "month": 7,
+      "location": "Alexandria",
+      "expectedSigns": [
+        3,
+        1,
+        4,
+        2,
+        2,
+        1,
+        10,
+        1
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 1836875520,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3493,
+      "month": 7,
+      "location": "NYC",
+      "expectedSigns": [
+        3,
+        1,
+        4,
+        2,
+        2,
+        1,
+        10,
+        9
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 1837401120,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3494,
+      "month": 7,
+      "location": "Alexandria",
+      "expectedSigns": [
+        3,
+        5,
+        3,
+        2,
+        5,
+        2,
+        11,
+        1
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 1837401120,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3494,
+      "month": 7,
+      "location": "NYC",
+      "expectedSigns": [
+        3,
+        5,
+        3,
+        2,
+        5,
+        2,
+        11,
+        9
+      ],
+      "mismatchMask": 32
+    },
+    {
+      "minutePg": 1838498400,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3496,
+      "month": 8,
+      "location": "Alexandria",
+      "expectedSigns": [
+        4,
+        4,
+        4,
+        3,
+        7,
+        4,
+        0,
+        2
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1838498400,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3496,
+      "month": 8,
+      "location": "NYC",
+      "expectedSigns": [
+        4,
+        4,
+        4,
+        3,
+        7,
+        4,
+        0,
+        10
+      ],
+      "mismatchMask": 64
+    },
+    {
+      "minutePg": 1838803680,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3497,
+      "month": 3,
+      "location": "Alexandria",
+      "expectedSigns": [
+        11,
+        0,
+        10,
+        0,
+        0,
+        4,
+        0,
+        8
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 1838803680,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3497,
+      "month": 3,
+      "location": "NYC",
+      "expectedSigns": [
+        11,
+        0,
+        10,
+        0,
+        0,
+        4,
+        0,
+        5
+      ],
+      "mismatchMask": 16
+    },
+    {
+      "minutePg": 1839417120,
+      "latBin": 312,
+      "lonBin": 299,
+      "year": 3498,
+      "month": 5,
+      "location": "Alexandria",
+      "expectedSigns": [
+        1,
+        8,
+        0,
+        1,
+        7,
+        5,
+        0,
+        11
+      ],
+      "mismatchMask": 8
+    },
+    {
+      "minutePg": 1839417120,
+      "latBin": 407,
+      "lonBin": -740,
+      "year": 3498,
+      "month": 5,
+      "location": "NYC",
+      "expectedSigns": [
+        1,
+        8,
+        0,
+        1,
+        7,
+        5,
+        0,
+        7
+      ],
+      "mismatchMask": 8
+    }
+  ]
+}

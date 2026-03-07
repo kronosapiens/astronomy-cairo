@@ -1,0 +1,98 @@
+{
+  "source": "/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-planet-regression-corpus.ndjson",
+  "rowCount": 68,
+  "minYear": null,
+  "maxYear": null,
+  "yearBucketSize": 100,
+  "byPlanet": {
+    "sun": 0,
+    "moon": 0,
+    "mercury": 0,
+    "venus": 0,
+    "mars": 0,
+    "jupiter": 0,
+    "saturn": 0,
+    "asc": 0
+  },
+  "byMask": [],
+  "byLocation": [],
+  "byMonth": [],
+  "byYearBucket": [],
+  "cuspDistance": {
+    "note": "Distance to nearest 30-degree sign boundary, oracle longitude.",
+    "overall": {
+      "n": 0,
+      "lt001": 0,
+      "lt01": 0,
+      "lt05": 0,
+      "lt1": 0,
+      "ge1": 0
+    },
+    "byPlanet": {
+      "sun": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "moon": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "mercury": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "venus": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "mars": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "jupiter": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "saturn": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "asc": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      }
+    }
+  }
+}

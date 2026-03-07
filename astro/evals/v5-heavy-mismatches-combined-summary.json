@@ -1,0 +1,194 @@
+{
+  "source": "/tmp/v5-mismatch-combined.ndjson",
+  "rowCount": 84,
+  "minYear": 1004,
+  "maxYear": 3498,
+  "yearBucketSize": 100,
+  "byPlanet": {
+    "sun": 0,
+    "moon": 0,
+    "mercury": 14,
+    "venus": 12,
+    "mars": 12,
+    "jupiter": 14,
+    "saturn": 32,
+    "asc": 0
+  },
+  "byMask": [
+    {
+      "mask": 64,
+      "count": 32
+    },
+    {
+      "mask": 32,
+      "count": 14
+    },
+    {
+      "mask": 4,
+      "count": 14
+    },
+    {
+      "mask": 16,
+      "count": 12
+    },
+    {
+      "mask": 8,
+      "count": 12
+    }
+  ],
+  "byLocation": [
+    {
+      "location": "Alexandria",
+      "count": 42
+    },
+    {
+      "location": "NYC",
+      "count": 42
+    }
+  ],
+  "byMonth": [
+    {
+      "month": 7,
+      "count": 12
+    },
+    {
+      "month": 9,
+      "count": 12
+    },
+    {
+      "month": 10,
+      "count": 10
+    },
+    {
+      "month": 5,
+      "count": 10
+    },
+    {
+      "month": 3,
+      "count": 8
+    },
+    {
+      "month": 1,
+      "count": 6
+    },
+    {
+      "month": 12,
+      "count": 6
+    },
+    {
+      "month": 2,
+      "count": 6
+    },
+    {
+      "month": 6,
+      "count": 6
+    },
+    {
+      "month": 11,
+      "count": 4
+    },
+    {
+      "month": 4,
+      "count": 2
+    },
+    {
+      "month": 8,
+      "count": 2
+    }
+  ],
+  "byYearBucket": [
+    {
+      "bucket": "3401-3500",
+      "count": 40
+    },
+    {
+      "bucket": "1001-1100",
+      "count": 20
+    },
+    {
+      "bucket": "3001-3100",
+      "count": 16
+    },
+    {
+      "bucket": "1101-1200",
+      "count": 8
+    }
+  ],
+  "cuspDistance": {
+    "note": "Distance to nearest 30-degree sign boundary, oracle longitude.",
+    "overall": {
+      "n": 84,
+      "lt001": 10,
+      "lt01": 76,
+      "lt05": 84,
+      "lt1": 84,
+      "ge1": 0
+    },
+    "byPlanet": {
+      "sun": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "moon": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      },
+      "mercury": {
+        "n": 14,
+        "lt001": 6,
+        "lt01": 14,
+        "lt05": 14,
+        "lt1": 14,
+        "ge1": 0
+      },
+      "venus": {
+        "n": 12,
+        "lt001": 0,
+        "lt01": 12,
+        "lt05": 12,
+        "lt1": 12,
+        "ge1": 0
+      },
+      "mars": {
+        "n": 12,
+        "lt001": 4,
+        "lt01": 10,
+        "lt05": 12,
+        "lt1": 12,
+        "ge1": 0
+      },
+      "jupiter": {
+        "n": 14,
+        "lt001": 0,
+        "lt01": 12,
+        "lt05": 14,
+        "lt1": 14,
+        "ge1": 0
+      },
+      "saturn": {
+        "n": 32,
+        "lt001": 0,
+        "lt01": 28,
+        "lt05": 32,
+        "lt1": 32,
+        "ge1": 0
+      },
+      "asc": {
+        "n": 0,
+        "lt001": 0,
+        "lt01": 0,
+        "lt05": 0,
+        "lt1": 0,
+        "ge1": 0
+      }
+    }
+  }
+}

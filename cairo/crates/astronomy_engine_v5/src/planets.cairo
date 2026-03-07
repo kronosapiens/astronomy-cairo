@@ -1,6 +1,7 @@
 use crate::fixed::{div_round_half_away_from_zero, norm360_i64_1e9, SCALE_1E9};
 use crate::frames::{
-    eqj_to_ecliptic_of_date_longitude_1e9, nutation_longitude_deg_1e9, vsop_ecliptic_to_eqj_1e9,
+    eqj_to_ecliptic_of_date_lon_lat_1e9, eqj_to_ecliptic_of_date_longitude_1e9,
+    nutation_longitude_deg_1e9, vsop_ecliptic_to_eqj_1e9,
 };
 use crate::moon_terms::MOON_SOLAR_TERMS;
 use crate::time::{days_since_j2000_1e9_from_pg, minute_since_1900_to_pg, J2000_MINUTE_SINCE_PG};
@@ -15,6 +16,7 @@ use crate::vsop_gen::{
 const MOON_LON_PARITY_OFFSET_A_DEG_1E9: i64 = 0;
 const MOON_LON_PARITY_OFFSET_B_DEG_1E9_PER_CENTURY: i64 = 0;
 const MOON_LON_PARITY_OFFSET_C_DEG_1E9_PER_CENTURY2: i64 = 0;
+const ABERRATION_KAPPA_DEG_1E9: i64 = 5_693_200; // 20.49552 arcsec
 
 fn div_round_i64(num: i128, den: i64) -> i64 {
     div_round_half_away_from_zero(num, den.into()).try_into().unwrap()
@@ -423,8 +425,7 @@ fn isqrt_i128(n: i128) -> i128 {
 #[inline(never)]
 fn t_millennia_1e9_from_pg_minute(minute_since_pg: i64) -> i64 {
     let d_tt_1e9 = tt_days_since_j2000_1e9_from_pg_minute(minute_since_pg);
-    let t: i128 = d_tt_1e9.into() / 365250_i64.into();
-    t.try_into().unwrap()
+    div_round_i64(d_tt_1e9.into(), 365250)
 }
 
 #[inline(never)]
@@ -451,14 +452,12 @@ fn tt_days_since_j2000_1e9_from_pg_minute_1e9(minute_since_pg_1e9: i64) -> i64 {
 #[inline(never)]
 fn t_millennia_1e9_from_pg_minute_1e9(minute_since_pg_1e9: i64) -> i64 {
     let d_tt_1e9 = tt_days_since_j2000_1e9_from_pg_minute_1e9(minute_since_pg_1e9);
-    let t: i128 = d_tt_1e9.into() / 365250_i64.into();
-    t.try_into().unwrap()
+    div_round_i64(d_tt_1e9.into(), 365250)
 }
 
 #[inline(never)]
 fn t_millennia_1e9_from_tt_days_1e9(d_tt_1e9: i64) -> i64 {
-    let t: i128 = d_tt_1e9.into() / 365250_i64.into();
-    t.try_into().unwrap()
+    div_round_i64(d_tt_1e9.into(), 365250)
 }
 
 #[inline(never)]
@@ -539,7 +538,17 @@ fn geocentric_longitude_vsop_pg_1e9(planet_idx: usize, minute_since_pg: i64) -> 
         tt_shift_1e9 = tt_shift_next_1e9;
         iter += 1;
     };
-    eqj_to_ecliptic_of_date_longitude_1e9(xp - xe, yp - ye, zp - ze, -obs_tt_1e9)
+    let (lon, lat) = eqj_to_ecliptic_of_date_lon_lat_1e9(xp - xe, yp - ye, zp - ze, -obs_tt_1e9);
+    let sun_lon = geocentric_sun_longitude_vsop_pg_1e9(minute_since_pg);
+    // First-order annual aberration in ecliptic longitude (Meeus-style):
+    // Δλ ≈ -κ cos(λ - λ☉) / cos(β), κ≈20.49552"
+    let cos_beta = cos_deg_1e9(lat);
+    if cos_beta == 0 {
+        return lon;
+    }
+    let dlam_num: i128 = -ABERRATION_KAPPA_DEG_1E9.into() * cos_deg_1e9(lon - sun_lon).into();
+    let dlam: i64 = div_round_i64(dlam_num, cos_beta);
+    norm360_i64_1e9(lon + dlam)
 }
 
 #[inline(never)]

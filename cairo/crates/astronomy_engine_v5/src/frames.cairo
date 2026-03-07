@@ -400,6 +400,14 @@ pub fn vsop_ecliptic_to_eqj_1e9(x: i64, y: i64, z: i64) -> (i64, i64, i64) {
 
 #[inline(never)]
 pub fn eqj_to_ecliptic_of_date_longitude_1e9(x: i64, y: i64, z: i64, days_since_j2000_1e9: i64) -> i64 {
+    let (lon, _) = eqj_to_ecliptic_of_date_lon_lat_1e9(x, y, z, days_since_j2000_1e9);
+    lon
+}
+
+#[inline(never)]
+pub fn eqj_to_ecliptic_of_date_lon_lat_1e9(
+    x: i64, y: i64, z: i64, days_since_j2000_1e9: i64,
+) -> (i64, i64) {
     let (mx, my, mz) = precession_from2000_1e9(x, y, z, days_since_j2000_1e9);
     let tilt = iau2000b_e_tilt(days_since_j2000_1e9);
     let (eqdx, eqdy, eqdz) = nutation_from2000_1e9(mx, my, mz, tilt);
@@ -407,7 +415,14 @@ pub fn eqj_to_ecliptic_of_date_longitude_1e9(x: i64, y: i64, z: i64, days_since_
     // EQD -> ecliptic of date rotation.
     let ey: i128 = (eqdy.into() * cos_deg_1e9(tilt.tobl_deg_1e9).into()) / SCALE_1E9.into()
         + (eqdz.into() * sin_deg_1e9(tilt.tobl_deg_1e9).into()) / SCALE_1E9.into();
-    norm360_i64_1e9(atan2_deg_1e9(ey.try_into().unwrap(), eqdx))
+    let ez: i128 = -(eqdy.into() * sin_deg_1e9(tilt.tobl_deg_1e9).into()) / SCALE_1E9.into()
+        + (eqdz.into() * cos_deg_1e9(tilt.tobl_deg_1e9).into()) / SCALE_1E9.into();
+    let ex_i128: i128 = eqdx.into();
+    let ey_i128: i128 = ey;
+    let rho: i128 = isqrt_i128(ex_i128 * ex_i128 + ey_i128 * ey_i128);
+    let lon = norm360_i64_1e9(atan2_deg_1e9(ey.try_into().unwrap(), eqdx));
+    let lat = atan2_deg_1e9(ez.try_into().unwrap(), rho.try_into().unwrap());
+    (lon, lat)
 }
 
 #[inline(never)]
@@ -421,6 +436,23 @@ pub fn eqj_to_ecliptic_of_date_longitude_1e9_round(
     let ey = mul_1e9_round(eqdy.into(), cos_deg_1e9(tilt.tobl_deg_1e9).into())
         + mul_1e9_round(eqdz.into(), sin_deg_1e9(tilt.tobl_deg_1e9).into());
     norm360_i64_1e9(atan2_deg_1e9(ey.try_into().unwrap(), eqdx))
+}
+
+#[inline(never)]
+fn isqrt_i128(n: i128) -> i128 {
+    if n <= 0 {
+        return 0;
+    }
+    let mut x = n;
+    let mut y = (x + 1) / 2;
+    loop {
+        if y >= x {
+            break;
+        }
+        x = y;
+        y = (x + n / x) / 2;
+    };
+    x
 }
 
 #[cfg(test)]

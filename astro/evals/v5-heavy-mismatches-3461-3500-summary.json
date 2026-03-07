@@ -1,0 +1,101 @@
+{
+  "source": "/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-mismatches-3461-3500.ndjson",
+  "rowCount": 40,
+  "minYear": 3461,
+  "maxYear": 3498,
+  "yearBucketSize": 20,
+  "byPlanet": {
+    "sun": 0,
+    "moon": 0,
+    "mercury": 6,
+    "venus": 8,
+    "mars": 6,
+    "jupiter": 6,
+    "saturn": 14,
+    "asc": 0
+  },
+  "byMask": [
+    {
+      "mask": 64,
+      "count": 14
+    },
+    {
+      "mask": 8,
+      "count": 8
+    },
+    {
+      "mask": 16,
+      "count": 6
+    },
+    {
+      "mask": 32,
+      "count": 6
+    },
+    {
+      "mask": 4,
+      "count": 6
+    }
+  ],
+  "byLocation": [
+    {
+      "location": "Alexandria",
+      "count": 20
+    },
+    {
+      "location": "NYC",
+      "count": 20
+    }
+  ],
+  "byMonth": [
+    {
+      "month": 3,
+      "count": 6
+    },
+    {
+      "month": 5,
+      "count": 6
+    },
+    {
+      "month": 7,
+      "count": 6
+    },
+    {
+      "month": 9,
+      "count": 6
+    },
+    {
+      "month": 1,
+      "count": 4
+    },
+    {
+      "month": 2,
+      "count": 4
+    },
+    {
+      "month": 10,
+      "count": 2
+    },
+    {
+      "month": 11,
+      "count": 2
+    },
+    {
+      "month": 6,
+      "count": 2
+    },
+    {
+      "month": 8,
+      "count": 2
+    }
+  ],
+  "byYearBucket": [
+    {
+      "bucket": "3481-3500",
+      "count": 22
+    },
+    {
+      "bucket": "3461-3480",
+      "count": 18
+    }
+  ]
+}
