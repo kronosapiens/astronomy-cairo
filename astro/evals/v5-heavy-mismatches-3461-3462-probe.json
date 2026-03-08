@@ -1,0 +1,112 @@
+{
+  "tsUtc": "2026-03-07T05:21:26.899Z",
+  "source": "/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-mismatches-3461-3462.ndjson",
+  "rowCount": 4,
+  "probeCount": 4,
+  "probes": [
+    {
+      "year": 3461,
+      "month": 2,
+      "location": "NYC",
+      "minutePg": 1819828800,
+      "planet": "jupiter",
+      "mismatchMask": 32,
+      "eqjDeltaAu": {
+        "x": 0.000001492157508886649,
+        "y": -3.99900601522063e-8,
+        "z": 3.5975475931593337e-9
+      },
+      "ttDeltaDays": -2.3283064365386963e-10,
+      "frameLonDeltaDeg": -0.13851694739855702,
+      "frameLatDeltaDeg": -0.3662185835583197,
+      "eqjOnlyLonDeltaDeg": -0.0000200126557956537,
+      "eqjOnlyLatDeltaDeg": 2.837055251836418e-7,
+      "frameProjectionLonDeltaDeg": -0.13849693474276137,
+      "frameProjectionLatDeltaDeg": -0.3662188672638449,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonDeltaDeg": -40.95789189839854,
+        "posTimeLatDeltaDeg": 0.00020093844168031505,
+        "negTimeLonDeltaDeg": -0.13849695339854406,
+        "negTimeLatDeltaDeg": -0.3662188125583197
+      }
+    },
+    {
+      "year": 3461,
+      "month": 2,
+      "location": "Alexandria",
+      "minutePg": 1819828800,
+      "planet": "jupiter",
+      "mismatchMask": 32,
+      "eqjDeltaAu": {
+        "x": 0.000001492157508886649,
+        "y": -3.99900601522063e-8,
+        "z": 3.5975475931593337e-9
+      },
+      "ttDeltaDays": -2.3283064365386963e-10,
+      "frameLonDeltaDeg": -0.13851694739855702,
+      "frameLatDeltaDeg": -0.3662185835583197,
+      "eqjOnlyLonDeltaDeg": -0.0000200126557956537,
+      "eqjOnlyLatDeltaDeg": 2.837055251836418e-7,
+      "frameProjectionLonDeltaDeg": -0.13849693474276137,
+      "frameProjectionLatDeltaDeg": -0.3662188672638449,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonDeltaDeg": -40.95789189839854,
+        "posTimeLatDeltaDeg": 0.00020093844168031505,
+        "negTimeLonDeltaDeg": -0.13849695339854406,
+        "negTimeLatDeltaDeg": -0.3662188125583197
+      }
+    },
+    {
+      "year": 3462,
+      "month": 2,
+      "location": "NYC",
+      "minutePg": 1820354400,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -2.977201791765083e-7,
+        "y": 0.0000012146092949194554,
+        "z": 5.013870305603518e-7
+      },
+      "ttDeltaDays": 3.4924596548080444e-10,
+      "frameLonDeltaDeg": -0.13739158389057593,
+      "frameLatDeltaDeg": 0.36753836987044197,
+      "eqjOnlyLonDeltaDeg": -3.8555037917831214e-7,
+      "eqjOnlyLatDeltaDeg": -6.083976894499799e-8,
+      "frameProjectionLonDeltaDeg": -0.13739119834031044,
+      "frameProjectionLatDeltaDeg": 0.3675384307102109,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonDeltaDeg": -40.98680885289065,
+        "posTimeLatDeltaDeg": -0.001659628129558055,
+        "negTimeLonDeltaDeg": -0.13739119689057588,
+        "negTimeLatDeltaDeg": 0.3675384268704419
+      }
+    },
+    {
+      "year": 3462,
+      "month": 2,
+      "location": "Alexandria",
+      "minutePg": 1820354400,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -2.977201791765083e-7,
+        "y": 0.0000012146092949194554,
+        "z": 5.013870305603518e-7
+      },
+      "ttDeltaDays": 3.4924596548080444e-10,
+      "frameLonDeltaDeg": -0.13739158389057593,
+      "frameLatDeltaDeg": 0.36753836987044197,
+      "eqjOnlyLonDeltaDeg": -3.8555037917831214e-7,
+      "eqjOnlyLatDeltaDeg": -6.083976894499799e-8,
+      "frameProjectionLonDeltaDeg": -0.13739119834031044,
+      "frameProjectionLatDeltaDeg": 0.3675384307102109,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonDeltaDeg": -40.98680885289065,
+        "posTimeLatDeltaDeg": -0.001659628129558055,
+        "negTimeLonDeltaDeg": -0.13739119689057588,
+        "negTimeLatDeltaDeg": 0.3675384268704419
+      }
+    }
+  ]
+}

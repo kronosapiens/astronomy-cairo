@@ -258,14 +258,15 @@ fn precession_from2000_1e9(x: i64, y: i64, z: i64, days_since_j2000_1e9: i64) ->
     let zz: i128 = -((((sc.into() * cb.into()) / SCALE_1E9.into()) * sa.into()) / SCALE_1E9.into())
         + (cc.into() * ca.into()) / SCALE_1E9.into();
 
+    // Match upstream rotate() layout semantics.
     let rx: i128 =
-        (xx * x.into()) / SCALE_1E9.into() + (xy * y.into()) / SCALE_1E9.into()
-            + (xz * z.into()) / SCALE_1E9.into();
+        (xx * x.into()) / SCALE_1E9.into() + (yx * y.into()) / SCALE_1E9.into()
+            + (zx * z.into()) / SCALE_1E9.into();
     let ry: i128 =
-        (yx * x.into()) / SCALE_1E9.into() + (yy * y.into()) / SCALE_1E9.into()
-            + (yz * z.into()) / SCALE_1E9.into();
+        (xy * x.into()) / SCALE_1E9.into() + (yy * y.into()) / SCALE_1E9.into()
+            + (zy * z.into()) / SCALE_1E9.into();
     let rz: i128 =
-        (zx * x.into()) / SCALE_1E9.into() + (zy * y.into()) / SCALE_1E9.into()
+        (xz * x.into()) / SCALE_1E9.into() + (yz * y.into()) / SCALE_1E9.into()
             + (zz * z.into()) / SCALE_1E9.into();
     (rx.try_into().unwrap(), ry.try_into().unwrap(), rz.try_into().unwrap())
 }
@@ -299,14 +300,15 @@ fn nutation_from2000_1e9(
         / SCALE_1E9.into()
         + (cobm.into() * cobt.into()) / SCALE_1E9.into();
 
+    // Match upstream rotate() layout semantics.
     let rx: i128 =
-        (xx * x.into()) / SCALE_1E9.into() + (xy * y.into()) / SCALE_1E9.into()
-            + (xz * z.into()) / SCALE_1E9.into();
+        (xx * x.into()) / SCALE_1E9.into() + (yx * y.into()) / SCALE_1E9.into()
+            + (zx * z.into()) / SCALE_1E9.into();
     let ry: i128 =
-        (yx * x.into()) / SCALE_1E9.into() + (yy * y.into()) / SCALE_1E9.into()
-            + (yz * z.into()) / SCALE_1E9.into();
+        (xy * x.into()) / SCALE_1E9.into() + (yy * y.into()) / SCALE_1E9.into()
+            + (zy * z.into()) / SCALE_1E9.into();
     let rz: i128 =
-        (zx * x.into()) / SCALE_1E9.into() + (zy * y.into()) / SCALE_1E9.into()
+        (xz * x.into()) / SCALE_1E9.into() + (yz * y.into()) / SCALE_1E9.into()
             + (zz * z.into()) / SCALE_1E9.into();
     (rx.try_into().unwrap(), ry.try_into().unwrap(), rz.try_into().unwrap())
 }
@@ -353,9 +355,10 @@ fn precession_from2000_1e9_round(
     let yz = -mul_1e9_round(mul_1e9_round(sc, cb), ca) - mul_1e9_round(sa, cc);
     let zz = -mul_1e9_round(mul_1e9_round(sc, cb), sa) + mul_1e9_round(cc, ca);
 
-    let rx = mul_1e9_round(xx, x.into()) + mul_1e9_round(xy, y.into()) + mul_1e9_round(xz, z.into());
-    let ry = mul_1e9_round(yx, x.into()) + mul_1e9_round(yy, y.into()) + mul_1e9_round(yz, z.into());
-    let rz = mul_1e9_round(zx, x.into()) + mul_1e9_round(zy, y.into()) + mul_1e9_round(zz, z.into());
+    // Match upstream rotate() layout semantics.
+    let rx = mul_1e9_round(xx, x.into()) + mul_1e9_round(yx, y.into()) + mul_1e9_round(zx, z.into());
+    let ry = mul_1e9_round(xy, x.into()) + mul_1e9_round(yy, y.into()) + mul_1e9_round(zy, z.into());
+    let rz = mul_1e9_round(xz, x.into()) + mul_1e9_round(yz, y.into()) + mul_1e9_round(zz, z.into());
     (rx.try_into().unwrap(), ry.try_into().unwrap(), rz.try_into().unwrap())
 }
 
@@ -378,9 +381,10 @@ fn nutation_from2000_1e9_round(x: i64, y: i64, z: i64, tilt: ETilt) -> (i64, i64
     let yz = mul_1e9_round(mul_1e9_round(cpsi, cobm), sobt) - mul_1e9_round(sobm, cobt);
     let zz = mul_1e9_round(mul_1e9_round(cpsi, sobm), sobt) + mul_1e9_round(cobm, cobt);
 
-    let rx = mul_1e9_round(xx, x.into()) + mul_1e9_round(xy, y.into()) + mul_1e9_round(xz, z.into());
-    let ry = mul_1e9_round(yx, x.into()) + mul_1e9_round(yy, y.into()) + mul_1e9_round(yz, z.into());
-    let rz = mul_1e9_round(zx, x.into()) + mul_1e9_round(zy, y.into()) + mul_1e9_round(zz, z.into());
+    // Match upstream rotate() layout semantics.
+    let rx = mul_1e9_round(xx, x.into()) + mul_1e9_round(yx, y.into()) + mul_1e9_round(zx, z.into());
+    let ry = mul_1e9_round(xy, x.into()) + mul_1e9_round(yy, y.into()) + mul_1e9_round(zy, z.into());
+    let rz = mul_1e9_round(xz, x.into()) + mul_1e9_round(yz, y.into()) + mul_1e9_round(zz, z.into());
     (rx.try_into().unwrap(), ry.try_into().unwrap(), rz.try_into().unwrap())
 }
 

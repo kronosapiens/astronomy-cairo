@@ -1,0 +1,1128 @@
+{
+  "tsUtc": "2026-03-07T05:46:53.019Z",
+  "source": "/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-mismatches-3461-3500.ndjson",
+  "rowCount": 40,
+  "probeCount": 40,
+  "probes": [
+    {
+      "year": 3461,
+      "month": 2,
+      "location": "NYC",
+      "minutePg": 1819828800,
+      "planet": "jupiter",
+      "mismatchMask": 32,
+      "eqjDeltaAu": {
+        "x": 0.000001492157508886649,
+        "y": -3.99900601522063e-8,
+        "z": 3.5975475931593337e-9
+      },
+      "ttDeltaDays": -2.3283064365386963e-10,
+      "frameLonDeltaDeg": -40.81939833139853,
+      "frameLatDeltaDeg": -0.36801106455831967,
+      "eqjOnlyLonDeltaDeg": -0.0000200126557956537,
+      "eqjOnlyLatDeltaDeg": 2.837055251836418e-7,
+      "frameProjectionLonDeltaDeg": -40.81937831874279,
+      "frameProjectionLatDeltaDeg": -0.36801134826384485,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003323460146020807,
+        "posTimeLonRoundDeltaDeg": 0.000033363601460223435,
+        "posTimeLatStdDeltaDeg": -0.00006055655831968543,
+        "negTimeLonStdDeltaDeg": -40.81937830639856,
+        "negTimeLonRoundDeltaDeg": -40.81937830639856,
+        "negTimeLatStdDeltaDeg": -0.3680112935583197
+      }
+    },
+    {
+      "year": 3461,
+      "month": 2,
+      "location": "Alexandria",
+      "minutePg": 1819828800,
+      "planet": "jupiter",
+      "mismatchMask": 32,
+      "eqjDeltaAu": {
+        "x": 0.000001492157508886649,
+        "y": -3.99900601522063e-8,
+        "z": 3.5975475931593337e-9
+      },
+      "ttDeltaDays": -2.3283064365386963e-10,
+      "frameLonDeltaDeg": -40.81939833139853,
+      "frameLatDeltaDeg": -0.36801106455831967,
+      "eqjOnlyLonDeltaDeg": -0.0000200126557956537,
+      "eqjOnlyLatDeltaDeg": 2.837055251836418e-7,
+      "frameProjectionLonDeltaDeg": -40.81937831874279,
+      "frameProjectionLatDeltaDeg": -0.36801134826384485,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003323460146020807,
+        "posTimeLonRoundDeltaDeg": 0.000033363601460223435,
+        "posTimeLatStdDeltaDeg": -0.00006055655831968543,
+        "negTimeLonStdDeltaDeg": -40.81937830639856,
+        "negTimeLonRoundDeltaDeg": -40.81937830639856,
+        "negTimeLatStdDeltaDeg": -0.3680112935583197
+      }
+    },
+    {
+      "year": 3462,
+      "month": 2,
+      "location": "NYC",
+      "minutePg": 1820354400,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -2.977201791765083e-7,
+        "y": 0.0000012146092949194554,
+        "z": 5.013870305603518e-7
+      },
+      "ttDeltaDays": 3.4924596548080444e-10,
+      "frameLonDeltaDeg": -40.848290041890664,
+      "frameLatDeltaDeg": 0.3682787558704419,
+      "eqjOnlyLonDeltaDeg": -3.8555037917831214e-7,
+      "eqjOnlyLatDeltaDeg": -6.083976894499799e-8,
+      "frameProjectionLonDeltaDeg": -40.848289656340285,
+      "frameProjectionLatDeltaDeg": 0.36827881671021084,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000030665109306937666,
+        "posTimeLonRoundDeltaDeg": 0.00003079410930695303,
+        "posTimeLatStdDeltaDeg": 0.00006085587044196705,
+        "negTimeLonStdDeltaDeg": -40.848289654890664,
+        "negTimeLonRoundDeltaDeg": -40.84828943389061,
+        "negTimeLatStdDeltaDeg": 0.3682788138704419
+      }
+    },
+    {
+      "year": 3462,
+      "month": 2,
+      "location": "Alexandria",
+      "minutePg": 1820354400,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -2.977201791765083e-7,
+        "y": 0.0000012146092949194554,
+        "z": 5.013870305603518e-7
+      },
+      "ttDeltaDays": 3.4924596548080444e-10,
+      "frameLonDeltaDeg": -40.848290041890664,
+      "frameLatDeltaDeg": 0.3682787558704419,
+      "eqjOnlyLonDeltaDeg": -3.8555037917831214e-7,
+      "eqjOnlyLatDeltaDeg": -6.083976894499799e-8,
+      "frameProjectionLonDeltaDeg": -40.848289656340285,
+      "frameProjectionLatDeltaDeg": 0.36827881671021084,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000030665109306937666,
+        "posTimeLonRoundDeltaDeg": 0.00003079410930695303,
+        "posTimeLatStdDeltaDeg": 0.00006085587044196705,
+        "negTimeLonStdDeltaDeg": -40.848289654890664,
+        "negTimeLonRoundDeltaDeg": -40.84828943389061,
+        "negTimeLatStdDeltaDeg": 0.3682788138704419
+      }
+    },
+    {
+      "year": 3463,
+      "month": 5,
+      "location": "NYC",
+      "minutePg": 1821008160,
+      "planet": "mercury",
+      "mismatchMask": 4,
+      "eqjDeltaAu": {
+        "x": -0.0000033298675469195516,
+        "y": -6.10850550253339e-7,
+        "z": -2.517169663263097e-7
+      },
+      "ttDeltaDays": -3.4924596548080444e-10,
+      "frameLonDeltaDeg": -40.87238194605442,
+      "frameLatDeltaDeg": -0.267611579288646,
+      "eqjOnlyLonDeltaDeg": 0.00010594754053272482,
+      "eqjOnlyLatDeltaDeg": 0.000009849306404241531,
+      "frameProjectionLonDeltaDeg": -40.87248789359501,
+      "frameProjectionLatDeltaDeg": -0.2676214285950502,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002808294561873481,
+        "posTimeLonRoundDeltaDeg": 0.0000286419456188014,
+        "posTimeLatStdDeltaDeg": -0.00006526328864620012,
+        "negTimeLonStdDeltaDeg": -40.87248798405443,
+        "negTimeLonRoundDeltaDeg": -40.8724878310544,
+        "negTimeLatStdDeltaDeg": -0.2676209582886462
+      }
+    },
+    {
+      "year": 3463,
+      "month": 5,
+      "location": "Alexandria",
+      "minutePg": 1821008160,
+      "planet": "mercury",
+      "mismatchMask": 4,
+      "eqjDeltaAu": {
+        "x": -0.0000033298675469195516,
+        "y": -6.10850550253339e-7,
+        "z": -2.517169663263097e-7
+      },
+      "ttDeltaDays": -3.4924596548080444e-10,
+      "frameLonDeltaDeg": -40.87238194605442,
+      "frameLatDeltaDeg": -0.267611579288646,
+      "eqjOnlyLonDeltaDeg": 0.00010594754053272482,
+      "eqjOnlyLatDeltaDeg": 0.000009849306404241531,
+      "frameProjectionLonDeltaDeg": -40.87248789359501,
+      "frameProjectionLatDeltaDeg": -0.2676214285950502,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002808294561873481,
+        "posTimeLonRoundDeltaDeg": 0.0000286419456188014,
+        "posTimeLatStdDeltaDeg": -0.00006526328864620012,
+        "negTimeLonStdDeltaDeg": -40.87248798405443,
+        "negTimeLonRoundDeltaDeg": -40.8724878310544,
+        "negTimeLatStdDeltaDeg": -0.2676209582886462
+      }
+    },
+    {
+      "year": 3464,
+      "month": 7,
+      "location": "NYC",
+      "minutePg": 1821623040,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -4.770391504038685e-7,
+        "y": 6.259557370213997e-7,
+        "z": 2.906045462047757e-7
+      },
+      "ttDeltaDays": -3.4924596548080444e-10,
+      "frameLonDeltaDeg": -40.92244884660539,
+      "frameLatDeltaDeg": 0.2712457476000608,
+      "eqjOnlyLonDeltaDeg": 4.4264356802159455e-7,
+      "eqjOnlyLatDeltaDeg": 4.5600204279239165e-8,
+      "frameProjectionLonDeltaDeg": -40.92244928924896,
+      "frameProjectionLatDeltaDeg": 0.27124570199985654,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003156239461077348,
+        "posTimeLonRoundDeltaDeg": 0.00003147539462133864,
+        "posTimeLatStdDeltaDeg": 0.00003308360006082367,
+        "negTimeLonStdDeltaDeg": -40.922449306605415,
+        "negTimeLonRoundDeltaDeg": -40.922449255605386,
+        "negTimeLatStdDeltaDeg": 0.2712457476000608
+      }
+    },
+    {
+      "year": 3464,
+      "month": 7,
+      "location": "Alexandria",
+      "minutePg": 1821623040,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -4.770391504038685e-7,
+        "y": 6.259557370213997e-7,
+        "z": 2.906045462047757e-7
+      },
+      "ttDeltaDays": -3.4924596548080444e-10,
+      "frameLonDeltaDeg": -40.92244884660539,
+      "frameLatDeltaDeg": 0.2712457476000608,
+      "eqjOnlyLonDeltaDeg": 4.4264356802159455e-7,
+      "eqjOnlyLatDeltaDeg": 4.5600204279239165e-8,
+      "frameProjectionLonDeltaDeg": -40.92244928924896,
+      "frameProjectionLatDeltaDeg": 0.27124570199985654,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003156239461077348,
+        "posTimeLonRoundDeltaDeg": 0.00003147539462133864,
+        "posTimeLatStdDeltaDeg": 0.00003308360006082367,
+        "negTimeLonStdDeltaDeg": -40.922449306605415,
+        "negTimeLonRoundDeltaDeg": -40.922449255605386,
+        "negTimeLatStdDeltaDeg": 0.2712457476000608
+      }
+    },
+    {
+      "year": 3469,
+      "month": 9,
+      "location": "NYC",
+      "minutePg": 1824341760,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -0.0000011202906051721584,
+        "y": -9.353001795275873e-8,
+        "z": 1.7590597312100442e-9
+      },
+      "ttDeltaDays": 4.656612873077393e-10,
+      "frameLonDeltaDeg": -41.0773290178314,
+      "frameLatDeltaDeg": -0.09579763457627344,
+      "eqjOnlyLonDeltaDeg": 6.37620587440324e-7,
+      "eqjOnlyLatDeltaDeg": -7.904296994709625e-8,
+      "frameProjectionLonDeltaDeg": -41.07732965545193,
+      "frameProjectionLatDeltaDeg": -0.09579755553330349,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000024217168629547814,
+        "posTimeLonRoundDeltaDeg": 0.000024260168629552936,
+        "posTimeLatStdDeltaDeg": -0.000040938576273408245,
+        "negTimeLonStdDeltaDeg": -41.07732968083144,
+        "negTimeLonRoundDeltaDeg": -41.07732973583143,
+        "negTimeLatStdDeltaDeg": -0.09579752057627333
+      }
+    },
+    {
+      "year": 3469,
+      "month": 9,
+      "location": "Alexandria",
+      "minutePg": 1824341760,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -0.0000011202906051721584,
+        "y": -9.353001795275873e-8,
+        "z": 1.7590597312100442e-9
+      },
+      "ttDeltaDays": 4.656612873077393e-10,
+      "frameLonDeltaDeg": -41.0773290178314,
+      "frameLatDeltaDeg": -0.09579763457627344,
+      "eqjOnlyLonDeltaDeg": 6.37620587440324e-7,
+      "eqjOnlyLatDeltaDeg": -7.904296994709625e-8,
+      "frameProjectionLonDeltaDeg": -41.07732965545193,
+      "frameProjectionLatDeltaDeg": -0.09579755553330349,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000024217168629547814,
+        "posTimeLonRoundDeltaDeg": 0.000024260168629552936,
+        "posTimeLatStdDeltaDeg": -0.000040938576273408245,
+        "negTimeLonStdDeltaDeg": -41.07732968083144,
+        "negTimeLonRoundDeltaDeg": -41.07732973583143,
+        "negTimeLatStdDeltaDeg": -0.09579752057627333
+      }
+    },
+    {
+      "year": 3470,
+      "month": 3,
+      "location": "NYC",
+      "minutePg": 1824602400,
+      "planet": "mars",
+      "mismatchMask": 16,
+      "eqjDeltaAu": {
+        "x": -0.0000021041938621513268,
+        "y": -1.346045535033369e-7,
+        "z": -8.541235496650756e-9
+      },
+      "ttDeltaDays": 3.4924596548080444e-10,
+      "frameLonDeltaDeg": -41.07415033832365,
+      "frameLatDeltaDeg": 0.3690421780406284,
+      "eqjOnlyLonDeltaDeg": -0.00006711760465805128,
+      "eqjOnlyLatDeltaDeg": 0.0000014370350683856614,
+      "frameProjectionLonDeltaDeg": -41.07408322071893,
+      "frameProjectionLatDeltaDeg": 0.36904074100556,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000029102676307957154,
+        "posTimeLonRoundDeltaDeg": 0.000029159676387280342,
+        "posTimeLatStdDeltaDeg": 0.0000747920406284075,
+        "negTimeLonStdDeltaDeg": -41.07408323132364,
+        "negTimeLonRoundDeltaDeg": -41.07408310132365,
+        "negTimeLatStdDeltaDeg": 0.36904086104062844
+      }
+    },
+    {
+      "year": 3470,
+      "month": 3,
+      "location": "Alexandria",
+      "minutePg": 1824602400,
+      "planet": "mars",
+      "mismatchMask": 16,
+      "eqjDeltaAu": {
+        "x": -0.0000021041938621513268,
+        "y": -1.346045535033369e-7,
+        "z": -8.541235496650756e-9
+      },
+      "ttDeltaDays": 3.4924596548080444e-10,
+      "frameLonDeltaDeg": -41.07415033832365,
+      "frameLatDeltaDeg": 0.3690421780406284,
+      "eqjOnlyLonDeltaDeg": -0.00006711760465805128,
+      "eqjOnlyLatDeltaDeg": 0.0000014370350683856614,
+      "frameProjectionLonDeltaDeg": -41.07408322071893,
+      "frameProjectionLatDeltaDeg": 0.36904074100556,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000029102676307957154,
+        "posTimeLonRoundDeltaDeg": 0.000029159676387280342,
+        "posTimeLatStdDeltaDeg": 0.0000747920406284075,
+        "negTimeLonStdDeltaDeg": -41.07408323132364,
+        "negTimeLonRoundDeltaDeg": -41.07408310132365,
+        "negTimeLatStdDeltaDeg": 0.36904086104062844
+      }
+    },
+    {
+      "year": 3471,
+      "month": 3,
+      "location": "NYC",
+      "minutePg": 1825128000,
+      "planet": "venus",
+      "mismatchMask": 8,
+      "eqjDeltaAu": {
+        "x": 0.0000037081761523616308,
+        "y": 0.0000027973859992869166,
+        "z": 0.000001088706866103628
+      },
+      "ttDeltaDays": 0,
+      "frameLonDeltaDeg": -41.1037369554179,
+      "frameLatDeltaDeg": 0.27332295423962527,
+      "eqjOnlyLonDeltaDeg": 0.00016285389961012697,
+      "eqjOnlyLatDeltaDeg": -0.000003465116857448436,
+      "frameProjectionLonDeltaDeg": -41.10389980931757,
+      "frameProjectionLatDeltaDeg": 0.2733264193564827,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000034226582101837266,
+        "posTimeLonRoundDeltaDeg": 0.000034011582101811655,
+        "posTimeLatStdDeltaDeg": 0.000034011239625320044,
+        "negTimeLonStdDeltaDeg": -41.10389971441788,
+        "negTimeLonRoundDeltaDeg": -41.10389971441788,
+        "negTimeLatStdDeltaDeg": 0.2733271932396253
+      }
+    },
+    {
+      "year": 3471,
+      "month": 3,
+      "location": "Alexandria",
+      "minutePg": 1825128000,
+      "planet": "venus",
+      "mismatchMask": 8,
+      "eqjDeltaAu": {
+        "x": 0.0000037081761523616308,
+        "y": 0.0000027973859992869166,
+        "z": 0.000001088706866103628
+      },
+      "ttDeltaDays": 0,
+      "frameLonDeltaDeg": -41.1037369554179,
+      "frameLatDeltaDeg": 0.27332295423962527,
+      "eqjOnlyLonDeltaDeg": 0.00016285389961012697,
+      "eqjOnlyLatDeltaDeg": -0.000003465116857448436,
+      "frameProjectionLonDeltaDeg": -41.10389980931757,
+      "frameProjectionLatDeltaDeg": 0.2733264193564827,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000034226582101837266,
+        "posTimeLonRoundDeltaDeg": 0.000034011582101811655,
+        "posTimeLatStdDeltaDeg": 0.000034011239625320044,
+        "negTimeLonStdDeltaDeg": -41.10389971441788,
+        "negTimeLonRoundDeltaDeg": -41.10389971441788,
+        "negTimeLatStdDeltaDeg": 0.2733271932396253
+      }
+    },
+    {
+      "year": 3476,
+      "month": 9,
+      "location": "NYC",
+      "minutePg": 1828023840,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -0.0000012040606287566646,
+        "y": -0.0000025047339260453327,
+        "z": -0.0000010487150809979084
+      },
+      "ttDeltaDays": 1.1641532182693481e-10,
+      "frameLonDeltaDeg": -41.2488338923709,
+      "frameLatDeltaDeg": -0.37230102421884265,
+      "eqjOnlyLonDeltaDeg": 0.000009524193956167437,
+      "eqjOnlyLatDeltaDeg": 3.220081984389722e-8,
+      "frameProjectionLonDeltaDeg": -41.24884341656485,
+      "frameProjectionLatDeltaDeg": -0.3723010564196625,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000033735629131115275,
+        "posTimeLonRoundDeltaDeg": 0.0000337786291311204,
+        "posTimeLatStdDeltaDeg": -0.00006431721884264663,
+        "negTimeLonStdDeltaDeg": -41.248843433370894,
+        "negTimeLonRoundDeltaDeg": -41.24884321337089,
+        "negTimeLatStdDeltaDeg": -0.37230102421884265
+      }
+    },
+    {
+      "year": 3476,
+      "month": 9,
+      "location": "Alexandria",
+      "minutePg": 1828023840,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -0.0000012040606287566646,
+        "y": -0.0000025047339260453327,
+        "z": -0.0000010487150809979084
+      },
+      "ttDeltaDays": 1.1641532182693481e-10,
+      "frameLonDeltaDeg": -41.2488338923709,
+      "frameLatDeltaDeg": -0.37230102421884265,
+      "eqjOnlyLonDeltaDeg": 0.000009524193956167437,
+      "eqjOnlyLatDeltaDeg": 3.220081984389722e-8,
+      "frameProjectionLonDeltaDeg": -41.24884341656485,
+      "frameProjectionLatDeltaDeg": -0.3723010564196625,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000033735629131115275,
+        "posTimeLonRoundDeltaDeg": 0.0000337786291311204,
+        "posTimeLatStdDeltaDeg": -0.00006431721884264663,
+        "negTimeLonStdDeltaDeg": -41.248843433370894,
+        "negTimeLonRoundDeltaDeg": -41.24884321337089,
+        "negTimeLatStdDeltaDeg": -0.37230102421884265
+      }
+    },
+    {
+      "year": 3480,
+      "month": 10,
+      "location": "NYC",
+      "minutePg": 1830170880,
+      "planet": "venus",
+      "mismatchMask": 8,
+      "eqjDeltaAu": {
+        "x": 4.884521818127041e-7,
+        "y": 4.599263753179983e-7,
+        "z": 1.8526145573183328e-7
+      },
+      "ttDeltaDays": -3.4924596548080444e-10,
+      "frameLonDeltaDeg": -41.378769549196306,
+      "frameLatDeltaDeg": -0.10372610536242921,
+      "eqjOnlyLonDeltaDeg": -0.00002150634236386395,
+      "eqjOnlyLatDeltaDeg": -1.4036473672263128e-7,
+      "frameProjectionLonDeltaDeg": -41.378748042853886,
+      "frameProjectionLatDeltaDeg": -0.10372596499769249,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000030798803663856233,
+        "posTimeLonRoundDeltaDeg": 0.00003096980367445212,
+        "posTimeLatStdDeltaDeg": 0.000004916637570628879,
+        "negTimeLonStdDeltaDeg": -41.37874801919634,
+        "negTimeLonRoundDeltaDeg": -41.37874808419633,
+        "negTimeLatStdDeltaDeg": -0.10372576136242917
+      }
+    },
+    {
+      "year": 3480,
+      "month": 10,
+      "location": "Alexandria",
+      "minutePg": 1830170880,
+      "planet": "venus",
+      "mismatchMask": 8,
+      "eqjDeltaAu": {
+        "x": 4.884521818127041e-7,
+        "y": 4.599263753179983e-7,
+        "z": 1.8526145573183328e-7
+      },
+      "ttDeltaDays": -3.4924596548080444e-10,
+      "frameLonDeltaDeg": -41.378769549196306,
+      "frameLatDeltaDeg": -0.10372610536242921,
+      "eqjOnlyLonDeltaDeg": -0.00002150634236386395,
+      "eqjOnlyLatDeltaDeg": -1.4036473672263128e-7,
+      "frameProjectionLonDeltaDeg": -41.378748042853886,
+      "frameProjectionLatDeltaDeg": -0.10372596499769249,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000030798803663856233,
+        "posTimeLonRoundDeltaDeg": 0.00003096980367445212,
+        "posTimeLatStdDeltaDeg": 0.000004916637570628879,
+        "negTimeLonStdDeltaDeg": -41.37874801919634,
+        "negTimeLonRoundDeltaDeg": -41.37874808419633,
+        "negTimeLatStdDeltaDeg": -0.10372576136242917
+      }
+    },
+    {
+      "year": 3481,
+      "month": 1,
+      "location": "NYC",
+      "minutePg": 1830303360,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": 6.157133167761231e-7,
+        "y": -5.9599049695435724e-8,
+        "z": -9.644898257832324e-8
+      },
+      "ttDeltaDays": 2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.38902830956749,
+      "frameLatDeltaDeg": -0.10359793522444094,
+      "eqjOnlyLonDeltaDeg": -8.319161679537501e-7,
+      "eqjOnlyLatDeltaDeg": -2.89205095871381e-7,
+      "frameProjectionLonDeltaDeg": -41.389027477651325,
+      "frameProjectionLatDeltaDeg": -0.10359764601934507,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000027293432594888145,
+        "posTimeLonRoundDeltaDeg": 0.000027522432560544985,
+        "posTimeLatStdDeltaDeg": 0.000003683775559037983,
+        "negTimeLonStdDeltaDeg": -41.38902746856746,
+        "negTimeLonRoundDeltaDeg": -41.38902743556747,
+        "negTimeLatStdDeltaDeg": -0.10359764922444081
+      }
+    },
+    {
+      "year": 3481,
+      "month": 1,
+      "location": "Alexandria",
+      "minutePg": 1830303360,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": 6.157133167761231e-7,
+        "y": -5.9599049695435724e-8,
+        "z": -9.644898257832324e-8
+      },
+      "ttDeltaDays": 2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.38902830956749,
+      "frameLatDeltaDeg": -0.10359793522444094,
+      "eqjOnlyLonDeltaDeg": -8.319161679537501e-7,
+      "eqjOnlyLatDeltaDeg": -2.89205095871381e-7,
+      "frameProjectionLonDeltaDeg": -41.389027477651325,
+      "frameProjectionLatDeltaDeg": -0.10359764601934507,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000027293432594888145,
+        "posTimeLonRoundDeltaDeg": 0.000027522432560544985,
+        "posTimeLatStdDeltaDeg": 0.000003683775559037983,
+        "negTimeLonStdDeltaDeg": -41.38902746856746,
+        "negTimeLonRoundDeltaDeg": -41.38902743556747,
+        "negTimeLatStdDeltaDeg": -0.10359764922444081
+      }
+    },
+    {
+      "year": 3482,
+      "month": 9,
+      "location": "NYC",
+      "minutePg": 1831178880,
+      "planet": "venus",
+      "mismatchMask": 8,
+      "eqjDeltaAu": {
+        "x": 4.014180268185896e-7,
+        "y": 8.366475572341159e-7,
+        "z": 3.7566529281773953e-7
+      },
+      "ttDeltaDays": -4.656612873077393e-10,
+      "frameLonDeltaDeg": -41.435367375070086,
+      "frameLatDeltaDeg": -0.10427992092390226,
+      "eqjOnlyLonDeltaDeg": -0.00003627536807471188,
+      "eqjOnlyLatDeltaDeg": 5.909976719120635e-7,
+      "frameProjectionLonDeltaDeg": -41.43533109970201,
+      "frameProjectionLatDeltaDeg": -0.10428051192157417,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003156592993036611,
+        "posTimeLonRoundDeltaDeg": 0.00003167992986163881,
+        "posTimeLatStdDeltaDeg": 0.000004622076097859917,
+        "negTimeLonStdDeltaDeg": -41.435331079070124,
+        "negTimeLonRoundDeltaDeg": -41.43533130507012,
+        "negTimeLatStdDeltaDeg": -0.10428020792390225
+      }
+    },
+    {
+      "year": 3482,
+      "month": 9,
+      "location": "Alexandria",
+      "minutePg": 1831178880,
+      "planet": "venus",
+      "mismatchMask": 8,
+      "eqjDeltaAu": {
+        "x": 4.014180268185896e-7,
+        "y": 8.366475572341159e-7,
+        "z": 3.7566529281773953e-7
+      },
+      "ttDeltaDays": -4.656612873077393e-10,
+      "frameLonDeltaDeg": -41.435367375070086,
+      "frameLatDeltaDeg": -0.10427992092390226,
+      "eqjOnlyLonDeltaDeg": -0.00003627536807471188,
+      "eqjOnlyLatDeltaDeg": 5.909976719120635e-7,
+      "frameProjectionLonDeltaDeg": -41.43533109970201,
+      "frameProjectionLatDeltaDeg": -0.10428051192157417,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003156592993036611,
+        "posTimeLonRoundDeltaDeg": 0.00003167992986163881,
+        "posTimeLatStdDeltaDeg": 0.000004622076097859917,
+        "negTimeLonStdDeltaDeg": -41.435331079070124,
+        "negTimeLonRoundDeltaDeg": -41.43533130507012,
+        "negTimeLatStdDeltaDeg": -0.10428020792390225
+      }
+    },
+    {
+      "year": 3486,
+      "month": 1,
+      "location": "NYC",
+      "minutePg": 1832932800,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -0.000001894146762992932,
+        "y": 0.0000013573641171049644,
+        "z": 5.161145892884633e-7
+      },
+      "ttDeltaDays": -2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.53049082886912,
+      "frameLatDeltaDeg": 0.27025300574349664,
+      "eqjOnlyLonDeltaDeg": -0.0000127485106986569,
+      "eqjOnlyLatDeltaDeg": -4.5599608711199835e-7,
+      "frameProjectionLonDeltaDeg": -41.53047808035842,
+      "frameProjectionLatDeltaDeg": 0.27025346173958376,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002332813096472819,
+        "posTimeLonRoundDeltaDeg": 0.000023586130964758922,
+        "posTimeLatStdDeltaDeg": 0.00007031574349669611,
+        "negTimeLonStdDeltaDeg": -41.530478104869076,
+        "negTimeLonRoundDeltaDeg": -41.530478001869085,
+        "negTimeLatStdDeltaDeg": 0.2702535207434966
+      }
+    },
+    {
+      "year": 3486,
+      "month": 1,
+      "location": "Alexandria",
+      "minutePg": 1832932800,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -0.000001894146762992932,
+        "y": 0.0000013573641171049644,
+        "z": 5.161145892884633e-7
+      },
+      "ttDeltaDays": -2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.53049082886912,
+      "frameLatDeltaDeg": 0.27025300574349664,
+      "eqjOnlyLonDeltaDeg": -0.0000127485106986569,
+      "eqjOnlyLatDeltaDeg": -4.5599608711199835e-7,
+      "frameProjectionLonDeltaDeg": -41.53047808035842,
+      "frameProjectionLatDeltaDeg": 0.27025346173958376,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002332813096472819,
+        "posTimeLonRoundDeltaDeg": 0.000023586130964758922,
+        "posTimeLatStdDeltaDeg": 0.00007031574349669611,
+        "negTimeLonStdDeltaDeg": -41.530478104869076,
+        "negTimeLonRoundDeltaDeg": -41.530478001869085,
+        "negTimeLatStdDeltaDeg": 0.2702535207434966
+      }
+    },
+    {
+      "year": 3487,
+      "month": 6,
+      "location": "NYC",
+      "minutePg": 1833675840,
+      "planet": "mercury",
+      "mismatchMask": 4,
+      "eqjDeltaAu": {
+        "x": 0.000003928941499142802,
+        "y": 9.640132138111213e-7,
+        "z": 3.924857295278805e-7
+      },
+      "ttDeltaDays": 4.656612873077393e-10,
+      "frameLonDeltaDeg": -41.552928954561764,
+      "frameLatDeltaDeg": -0.3728363076169372,
+      "eqjOnlyLonDeltaDeg": -0.00018019782964984188,
+      "eqjOnlyLatDeltaDeg": -0.000006034146246225447,
+      "frameProjectionLonDeltaDeg": -41.55274875673206,
+      "frameProjectionLatDeltaDeg": -0.372830273470691,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002972443826365634,
+        "posTimeLonRoundDeltaDeg": 0.00002983843819492904,
+        "posTimeLatStdDeltaDeg": -0.00007912861693704087,
+        "negTimeLonStdDeltaDeg": -41.55274882656175,
+        "negTimeLonRoundDeltaDeg": -41.55274882656175,
+        "negTimeLatStdDeltaDeg": -0.37283052661693716
+      }
+    },
+    {
+      "year": 3487,
+      "month": 6,
+      "location": "Alexandria",
+      "minutePg": 1833675840,
+      "planet": "mercury",
+      "mismatchMask": 4,
+      "eqjDeltaAu": {
+        "x": 0.000003928941499142802,
+        "y": 9.640132138111213e-7,
+        "z": 3.924857295278805e-7
+      },
+      "ttDeltaDays": 4.656612873077393e-10,
+      "frameLonDeltaDeg": -41.552928954561764,
+      "frameLatDeltaDeg": -0.3728363076169372,
+      "eqjOnlyLonDeltaDeg": -0.00018019782964984188,
+      "eqjOnlyLatDeltaDeg": -0.000006034146246225447,
+      "frameProjectionLonDeltaDeg": -41.55274875673206,
+      "frameProjectionLatDeltaDeg": -0.372830273470691,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002972443826365634,
+        "posTimeLonRoundDeltaDeg": 0.00002983843819492904,
+        "posTimeLatStdDeltaDeg": -0.00007912861693704087,
+        "negTimeLonStdDeltaDeg": -41.55274882656175,
+        "negTimeLonRoundDeltaDeg": -41.55274882656175,
+        "negTimeLatStdDeltaDeg": -0.37283052661693716
+      }
+    },
+    {
+      "year": 3489,
+      "month": 5,
+      "location": "NYC",
+      "minutePg": 1834683840,
+      "planet": "mercury",
+      "mismatchMask": 4,
+      "eqjDeltaAu": {
+        "x": 0.000005957850933269171,
+        "y": -3.058939568312269e-7,
+        "z": -3.8590345124989156e-7
+      },
+      "ttDeltaDays": 1.1641532182693481e-10,
+      "frameLonDeltaDeg": -41.596828774725225,
+      "frameLatDeltaDeg": -0.2708484169672427,
+      "eqjOnlyLonDeltaDeg": -0.0002375326948822476,
+      "eqjOnlyLatDeltaDeg": -0.000023136160692160956,
+      "frameProjectionLonDeltaDeg": -41.596591242030286,
+      "frameProjectionLatDeltaDeg": -0.27082528080655055,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003081027477946918,
+        "posTimeLonRoundDeltaDeg": 0.000031025274779494794,
+        "posTimeLatStdDeltaDeg": -0.00007123696724287143,
+        "negTimeLonStdDeltaDeg": -41.59659106672524,
+        "negTimeLonRoundDeltaDeg": -41.59659106672524,
+        "negTimeLatStdDeltaDeg": -0.2708265549672426
+      }
+    },
+    {
+      "year": 3489,
+      "month": 5,
+      "location": "Alexandria",
+      "minutePg": 1834683840,
+      "planet": "mercury",
+      "mismatchMask": 4,
+      "eqjDeltaAu": {
+        "x": 0.000005957850933269171,
+        "y": -3.058939568312269e-7,
+        "z": -3.8590345124989156e-7
+      },
+      "ttDeltaDays": 1.1641532182693481e-10,
+      "frameLonDeltaDeg": -41.596828774725225,
+      "frameLatDeltaDeg": -0.2708484169672427,
+      "eqjOnlyLonDeltaDeg": -0.0002375326948822476,
+      "eqjOnlyLatDeltaDeg": -0.000023136160692160956,
+      "frameProjectionLonDeltaDeg": -41.596591242030286,
+      "frameProjectionLatDeltaDeg": -0.27082528080655055,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003081027477946918,
+        "posTimeLonRoundDeltaDeg": 0.000031025274779494794,
+        "posTimeLatStdDeltaDeg": -0.00007123696724287143,
+        "negTimeLonStdDeltaDeg": -41.59659106672524,
+        "negTimeLonRoundDeltaDeg": -41.59659106672524,
+        "negTimeLatStdDeltaDeg": -0.2708265549672426
+      }
+    },
+    {
+      "year": 3492,
+      "month": 11,
+      "location": "NYC",
+      "minutePg": 1836527040,
+      "planet": "mars",
+      "mismatchMask": 16,
+      "eqjDeltaAu": {
+        "x": -0.000002507113823879692,
+        "y": 0.000003739162402816021,
+        "z": 0.0000016849900755788738
+      },
+      "ttDeltaDays": 2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.69935786622216,
+      "frameLatDeltaDeg": 0.2712579799585883,
+      "eqjOnlyLonDeltaDeg": -0.00011101548466285749,
+      "eqjOnlyLatDeltaDeg": 0.0000015889757818687844,
+      "frameProjectionLonDeltaDeg": -41.699246850737495,
+      "frameProjectionLatDeltaDeg": 0.27125639098280646,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002888377787257923,
+        "posTimeLonRoundDeltaDeg": 0.000029012777872594597,
+        "posTimeLatStdDeltaDeg": 0.0000720459585883404,
+        "negTimeLonStdDeltaDeg": -41.69924683022214,
+        "negTimeLonRoundDeltaDeg": -41.699246727222146,
+        "negTimeLatStdDeltaDeg": 0.27125689095858835
+      }
+    },
+    {
+      "year": 3492,
+      "month": 11,
+      "location": "Alexandria",
+      "minutePg": 1836527040,
+      "planet": "mars",
+      "mismatchMask": 16,
+      "eqjDeltaAu": {
+        "x": -0.000002507113823879692,
+        "y": 0.000003739162402816021,
+        "z": 0.0000016849900755788738
+      },
+      "ttDeltaDays": 2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.69935786622216,
+      "frameLatDeltaDeg": 0.2712579799585883,
+      "eqjOnlyLonDeltaDeg": -0.00011101548466285749,
+      "eqjOnlyLatDeltaDeg": 0.0000015889757818687844,
+      "frameProjectionLonDeltaDeg": -41.699246850737495,
+      "frameProjectionLatDeltaDeg": 0.27125639098280646,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002888377787257923,
+        "posTimeLonRoundDeltaDeg": 0.000029012777872594597,
+        "posTimeLatStdDeltaDeg": 0.0000720459585883404,
+        "negTimeLonStdDeltaDeg": -41.69924683022214,
+        "negTimeLonRoundDeltaDeg": -41.699246727222146,
+        "negTimeLatStdDeltaDeg": 0.27125689095858835
+      }
+    },
+    {
+      "year": 3493,
+      "month": 7,
+      "location": "NYC",
+      "minutePg": 1836875520,
+      "planet": "jupiter",
+      "mismatchMask": 32,
+      "eqjDeltaAu": {
+        "x": 0.000001432217498376076,
+        "y": -0.0000012943093512518544,
+        "z": -5.360345435023728e-7
+      },
+      "ttDeltaDays": -1.1641532182693481e-10,
+      "frameLonDeltaDeg": -41.72674191229305,
+      "frameLatDeltaDeg": -0.0952780602373684,
+      "eqjOnlyLonDeltaDeg": -0.00001776779254214489,
+      "eqjOnlyLatDeltaDeg": 4.7617675424938e-7,
+      "frameProjectionLonDeltaDeg": -41.726724144500565,
+      "frameProjectionLatDeltaDeg": -0.09527853641412265,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002847570692665613,
+        "posTimeLonRoundDeltaDeg": 0.00002864770692667662,
+        "posTimeLatStdDeltaDeg": -0.00004449423736851976,
+        "negTimeLonStdDeltaDeg": -41.72672416629308,
+        "negTimeLonRoundDeltaDeg": -41.72672411129304,
+        "negTimeLatStdDeltaDeg": -0.09527863323736852
+      }
+    },
+    {
+      "year": 3493,
+      "month": 7,
+      "location": "Alexandria",
+      "minutePg": 1836875520,
+      "planet": "jupiter",
+      "mismatchMask": 32,
+      "eqjDeltaAu": {
+        "x": 0.000001432217498376076,
+        "y": -0.0000012943093512518544,
+        "z": -5.360345435023728e-7
+      },
+      "ttDeltaDays": -1.1641532182693481e-10,
+      "frameLonDeltaDeg": -41.72674191229305,
+      "frameLatDeltaDeg": -0.0952780602373684,
+      "eqjOnlyLonDeltaDeg": -0.00001776779254214489,
+      "eqjOnlyLatDeltaDeg": 4.7617675424938e-7,
+      "frameProjectionLonDeltaDeg": -41.726724144500565,
+      "frameProjectionLatDeltaDeg": -0.09527853641412265,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002847570692665613,
+        "posTimeLonRoundDeltaDeg": 0.00002864770692667662,
+        "posTimeLatStdDeltaDeg": -0.00004449423736851976,
+        "negTimeLonStdDeltaDeg": -41.72672416629308,
+        "negTimeLonRoundDeltaDeg": -41.72672411129304,
+        "negTimeLatStdDeltaDeg": -0.09527863323736852
+      }
+    },
+    {
+      "year": 3494,
+      "month": 7,
+      "location": "NYC",
+      "minutePg": 1837401120,
+      "planet": "jupiter",
+      "mismatchMask": 32,
+      "eqjDeltaAu": {
+        "x": -0.0000034197685749859374,
+        "y": 0.000001160987356918497,
+        "z": 5.19384026009817e-7
+      },
+      "ttDeltaDays": 0,
+      "frameLonDeltaDeg": -41.75215297984141,
+      "frameLatDeltaDeg": -0.27147027643089683,
+      "eqjOnlyLonDeltaDeg": 0.00003176472864652169,
+      "eqjOnlyLatDeltaDeg": -1.3311778790381368e-7,
+      "frameProjectionLonDeltaDeg": -41.752184744570116,
+      "frameProjectionLatDeltaDeg": -0.2714701433131089,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002553615854594682,
+        "posTimeLonRoundDeltaDeg": 0.000025709158535391907,
+        "posTimeLatStdDeltaDeg": -0.0000722894308968769,
+        "negTimeLonStdDeltaDeg": -41.75218472684139,
+        "negTimeLonRoundDeltaDeg": -41.75218457184144,
+        "negTimeLatStdDeltaDeg": -0.27146998943089684
+      }
+    },
+    {
+      "year": 3494,
+      "month": 7,
+      "location": "Alexandria",
+      "minutePg": 1837401120,
+      "planet": "jupiter",
+      "mismatchMask": 32,
+      "eqjDeltaAu": {
+        "x": -0.0000034197685749859374,
+        "y": 0.000001160987356918497,
+        "z": 5.19384026009817e-7
+      },
+      "ttDeltaDays": 0,
+      "frameLonDeltaDeg": -41.75215297984141,
+      "frameLatDeltaDeg": -0.27147027643089683,
+      "eqjOnlyLonDeltaDeg": 0.00003176472864652169,
+      "eqjOnlyLatDeltaDeg": -1.3311778790381368e-7,
+      "frameProjectionLonDeltaDeg": -41.752184744570116,
+      "frameProjectionLatDeltaDeg": -0.2714701433131089,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002553615854594682,
+        "posTimeLonRoundDeltaDeg": 0.000025709158535391907,
+        "posTimeLatStdDeltaDeg": -0.0000722894308968769,
+        "negTimeLonStdDeltaDeg": -41.75218472684139,
+        "negTimeLonRoundDeltaDeg": -41.75218457184144,
+        "negTimeLatStdDeltaDeg": -0.27146998943089684
+      }
+    },
+    {
+      "year": 3496,
+      "month": 8,
+      "location": "NYC",
+      "minutePg": 1838498400,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -0.000001959328375988889,
+        "y": 4.1066184186533405e-7,
+        "z": 2.1370719305302543e-7
+      },
+      "ttDeltaDays": 2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.8204759534629,
+      "frameLatDeltaDeg": 0.10621886205316367,
+      "eqjOnlyLonDeltaDeg": -0.0000016787641925475327,
+      "eqjOnlyLatDeltaDeg": -2.198431396926992e-7,
+      "frameProjectionLonDeltaDeg": -41.82047427469871,
+      "frameProjectionLatDeltaDeg": 0.10621908189630336,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002994053704696853,
+        "posTimeLonRoundDeltaDeg": 0.00003005453709192807,
+        "posTimeLatStdDeltaDeg": -0.000004234946836323417,
+        "negTimeLonStdDeltaDeg": -41.82047429446288,
+        "negTimeLonRoundDeltaDeg": -41.820474326462886,
+        "negTimeLatStdDeltaDeg": 0.10621909105316374
+      }
+    },
+    {
+      "year": 3496,
+      "month": 8,
+      "location": "Alexandria",
+      "minutePg": 1838498400,
+      "planet": "saturn",
+      "mismatchMask": 64,
+      "eqjDeltaAu": {
+        "x": -0.000001959328375988889,
+        "y": 4.1066184186533405e-7,
+        "z": 2.1370719305302543e-7
+      },
+      "ttDeltaDays": 2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.8204759534629,
+      "frameLatDeltaDeg": 0.10621886205316367,
+      "eqjOnlyLonDeltaDeg": -0.0000016787641925475327,
+      "eqjOnlyLatDeltaDeg": -2.198431396926992e-7,
+      "frameProjectionLonDeltaDeg": -41.82047427469871,
+      "frameProjectionLatDeltaDeg": 0.10621908189630336,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00002994053704696853,
+        "posTimeLonRoundDeltaDeg": 0.00003005453709192807,
+        "posTimeLatStdDeltaDeg": -0.000004234946836323417,
+        "negTimeLonStdDeltaDeg": -41.82047429446288,
+        "negTimeLonRoundDeltaDeg": -41.820474326462886,
+        "negTimeLatStdDeltaDeg": 0.10621909105316374
+      }
+    },
+    {
+      "year": 3497,
+      "month": 3,
+      "location": "NYC",
+      "minutePg": 1838803680,
+      "planet": "mars",
+      "mismatchMask": 16,
+      "eqjDeltaAu": {
+        "x": -1.6343819275732585e-7,
+        "y": 4.411170038132184e-7,
+        "z": 1.9828819874945225e-7
+      },
+      "ttDeltaDays": 2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.83022396652973,
+      "frameLatDeltaDeg": 0.10611983089669097,
+      "eqjOnlyLonDeltaDeg": 0.000009927928772412997,
+      "eqjOnlyLatDeltaDeg": 8.432378528766549e-8,
+      "frameProjectionLonDeltaDeg": -41.8302338944585,
+      "frameProjectionLatDeltaDeg": 0.10611974657290568,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003197147020728153,
+        "posTimeLonRoundDeltaDeg": 0.000032028470286604716,
+        "posTimeLatStdDeltaDeg": -0.0000047721033089587195,
+        "negTimeLonStdDeltaDeg": -41.83023392452975,
+        "negTimeLonRoundDeltaDeg": -41.83023382852974,
+        "negTimeLatStdDeltaDeg": 0.10611983089669097
+      }
+    },
+    {
+      "year": 3497,
+      "month": 3,
+      "location": "Alexandria",
+      "minutePg": 1838803680,
+      "planet": "mars",
+      "mismatchMask": 16,
+      "eqjDeltaAu": {
+        "x": -1.6343819275732585e-7,
+        "y": 4.411170038132184e-7,
+        "z": 1.9828819874945225e-7
+      },
+      "ttDeltaDays": 2.3283064365386963e-10,
+      "frameLonDeltaDeg": -41.83022396652973,
+      "frameLatDeltaDeg": 0.10611983089669097,
+      "eqjOnlyLonDeltaDeg": 0.000009927928772412997,
+      "eqjOnlyLatDeltaDeg": 8.432378528766549e-8,
+      "frameProjectionLonDeltaDeg": -41.8302338944585,
+      "frameProjectionLatDeltaDeg": 0.10611974657290568,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.00003197147020728153,
+        "posTimeLonRoundDeltaDeg": 0.000032028470286604716,
+        "posTimeLatStdDeltaDeg": -0.0000047721033089587195,
+        "negTimeLonStdDeltaDeg": -41.83023392452975,
+        "negTimeLonRoundDeltaDeg": -41.83023382852974,
+        "negTimeLatStdDeltaDeg": 0.10611983089669097
+      }
+    },
+    {
+      "year": 3498,
+      "month": 5,
+      "location": "NYC",
+      "minutePg": 1839417120,
+      "planet": "venus",
+      "mismatchMask": 8,
+      "eqjDeltaAu": {
+        "x": -3.890409594475841e-8,
+        "y": -0.0000020464911074657977,
+        "z": -8.877798548245774e-7
+      },
+      "ttDeltaDays": 4.656612873077393e-10,
+      "frameLonDeltaDeg": -41.86860806071968,
+      "frameLatDeltaDeg": -0.09513275789206554,
+      "eqjOnlyLonDeltaDeg": -0.00007498594072785636,
+      "eqjOnlyLatDeltaDeg": -6.016936724417832e-7,
+      "frameProjectionLonDeltaDeg": -41.868533074778895,
+      "frameProjectionLatDeltaDeg": -0.0951321561983931,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000026499280352254573,
+        "posTimeLonRoundDeltaDeg": 0.000026714280352280184,
+        "posTimeLatStdDeltaDeg": -0.00004436389206574631,
+        "negTimeLonStdDeltaDeg": -41.868533031719664,
+        "negTimeLonRoundDeltaDeg": -41.868533031719664,
+        "negTimeLatStdDeltaDeg": -0.09513270089206571
+      }
+    },
+    {
+      "year": 3498,
+      "month": 5,
+      "location": "Alexandria",
+      "minutePg": 1839417120,
+      "planet": "venus",
+      "mismatchMask": 8,
+      "eqjDeltaAu": {
+        "x": -3.890409594475841e-8,
+        "y": -0.0000020464911074657977,
+        "z": -8.877798548245774e-7
+      },
+      "ttDeltaDays": 4.656612873077393e-10,
+      "frameLonDeltaDeg": -41.86860806071968,
+      "frameLatDeltaDeg": -0.09513275789206554,
+      "eqjOnlyLonDeltaDeg": -0.00007498594072785636,
+      "eqjOnlyLatDeltaDeg": -6.016936724417832e-7,
+      "frameProjectionLonDeltaDeg": -41.868533074778895,
+      "frameProjectionLatDeltaDeg": -0.0951321561983931,
+      "oracleEqjProjectedByCairo": {
+        "posTimeLonStdDeltaDeg": 0.000026499280352254573,
+        "posTimeLonRoundDeltaDeg": 0.000026714280352280184,
+        "posTimeLatStdDeltaDeg": -0.00004436389206574631,
+        "negTimeLonStdDeltaDeg": -41.868533031719664,
+        "negTimeLonRoundDeltaDeg": -41.868533031719664,
+        "negTimeLatStdDeltaDeg": -0.09513270089206571
+      }
+    }
+  ]
+}

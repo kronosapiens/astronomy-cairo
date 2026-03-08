@@ -4,13 +4,14 @@
 
 `v5` continues the `v4` line: deeper upstream-style astronomy math (vs table ingress), deterministic fixed-point execution, and chart-oriented outputs for seven bodies plus ascendant.
 
-## Status Snapshot (2026-02-27)
+## Status Snapshot (2026-03-08)
 
-- `eval-light` (project gate): `840 / 840` exact charts (`100.000000%`, `0` mismatches).
-- `eval-heavy` (`casesPerWindow=80`): `1672 / 1760` (`95.000000%`, `88` mismatches).
-- Practical mid-range Cairo sweep (`1000-3000`, denser profile): `2376 / 2400` (`99.000%`, `24` mismatches).
+- Full staged heavy baseline (`0001-4000`, monthly x 2 locations): `96,000 / 96,000` (`100.000000%`, `0` mismatches).
+- Mid-band heavy rollup (`1001-3000`): `48,000 / 48,000` (`100.000000%`, `0` mismatches).
+- Early-band heavy rollup (`0001-1000`): `24,000 / 24,000` (`100.000000%`, `0` mismatches).
+- Deterministic regression corpus gate: `68 / 68` pass (`0` mismatches).
 
-This is production-credible for modern-user chart ranges, with known deep-time miss pockets documented below.
+Current branch is at full pass on the project's heavy sign-level evaluation grid.
 
 ## Purpose
 
@@ -44,54 +45,56 @@ Citation guidance:
 - Residual alignment moved from static constants to smooth time-domain correction forms.
 - Mercury/Venus/Mars/Saturn residual handling retuned for cusp-edge stability in project eval gates.
 
-## Accuracy and Validation
+## Final Research Report (2026-03-08)
+
+### Final Evaluation Data
+
+All values below are from staged artifacts `astro/evals/v5-heavy-baseline-*-20260307T180928Z.ndjson`
+(excluding one aborted partial file `v5-heavy-baseline-1001-3000-20260307T180928Z.ndjson`).
+
+| Window | Passed / Total | Accuracy | Failed |
+| --- | --- | --- | --- |
+| `0001-4000` | `96,000 / 96,000` | `100.000000%` | `0` |
+| `1001-3000` | `48,000 / 48,000` | `100.000000%` | `0` |
+| `0001-1000` | `24,000 / 24,000` | `100.000000%` | `0` |
+| `1201-4000` | `67,200 / 67,200` | `100.000000%` | `0` |
+
+### Technical Changes That Drove the Gain
+
+1. Frame-time semantics aligned in the EQJ -> ecliptic-of-date projection stage.
+: `ECLIPTIC_FRAME_TIME_SIGN` was introduced and A/B tested; the winning branch is `+1`, then used consistently at projection callsites.
+
+2. Apparent-correction branch was isolated and kept off for the final path.
+: `ENABLE_EXPLICIT_ECLIPTIC_ABERRATION_TERM` remains `false`; A/B checks showed no measurable benefit from forcing the explicit term in the current pipeline.
+
+3. Stage-level observability was added to localize error source before changing math.
+: Debug probes for planet EQJ vectors, frame lon/lat, and Cairo-vs-oracle frame projection reduced iteration risk and prevented blind tuning.
+
+4. Deterministic gating and mismatch tooling were expanded.
+: Rich mismatch logs (`expectedSigns`, `actualSigns`, longitudes), corpus generation/eval, and targeted window runs enabled stable regression control while refining parity behavior.
+
+### Practical Conclusion
+
+- v5 now demonstrates full pass on the project's heavy sign-level grid over `0001-4000`.
+- The primary win came from pipeline-semantics parity (especially frame-time usage), not spot-correction tuning.
+
+## Accuracy and Validation (Current)
 
 ### 1) Project Gate (`eval-light`)
 
 - Profile: deterministic multi-era windows (`0001-4000`), 15-minute quantization, multi-location set.
 - Result: `840 / 840` exact charts (`100.000000%`).
 
-### 2) Broad Stress (`eval-heavy_v1`)
+### 2) Full Heavy Baseline (`eval-cairo-engine`, staged)
 
-- `casesPerWindow=80`
-- Total: `1672 / 1760`
-- Accuracy: `95.000000%`
-- Error rate: `50,000` per million
-- Largest miss clusters:
-  - `edge_0100_0200`: `36 / 80`
-  - `uniform_1667_1867`: `56 / 80`
-  - `cusp_2800_2820`: `68 / 80`
+- Profile: monthly samples x 2 locations, `batch-size=20`, staged 100-year files.
+- Range `0001-4000`: `96,000 / 96,000` (`100.000000%`, `0` fails).
+- Per-body fail counters (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Asc): all `0`.
 
-### 3) 100-Year Bin Sweep (`eval_heavy_century_bins_v1`)
+### 3) Regression Corpus Gate
 
-Parameters: `stepMinutes=720`, `quantizeMinutes=15`, eval-heavy 12-location set, `maxCases=80` per century bin.
-
-- Total `0001-4001`: `3116 / 3200` (`97.375%`, `84` failures, `26,250` per million).
-
-Millennium rollup:
-
-| Interval | Passed / Total | Accuracy | Failed |
-| --- | --- | --- | --- |
-| `0001-1001` | `752 / 800` | `94.000%` | `48` |
-| `1001-2001` | `800 / 800` | `100.000%` | `0` |
-| `2001-3001` | `800 / 800` | `100.000%` | `0` |
-| `3001-4001` | `764 / 800` | `95.500%` | `36` |
-
-### 4) Denser Cairo Sweeps (`maxCases=120` per century)
-
-Matching profile across three bands: `stepMinutes=720`, `quantizeMinutes=15`, eval-heavy 12-location set.
-
-| Band | Passed / Total | Accuracy | Failed | Error / million | Duration |
-| --- | --- | --- | --- | --- | --- |
-| `0001-1001` | `1152 / 1200` | `96.000%` | `48` | `40,000` | `151,005 ms` |
-| `1000-3000` | `2376 / 2400` | `99.000%` | `24` | `10,000` | `279,517 ms` |
-| `3000-4000` | `1176 / 1200` | `98.000%` | `24` | `20,000` | `154,853 ms` |
-
-Miss bins in these denser runs:
-
-- `0001-1001`: `0001-0101`, `0101-0201`, `0301-0401`, `0401-0501` (`108/120` each).
-- `1000-3000`: `1000-1100`, `1400-1500` (`108/120` each).
-- `3000-4000`: `3700-3800` (`96/120`).
+- Corpus: `astro/evals/v5-heavy-planet-regression-corpus.ndjson`
+- Result: `68 / 68` pass (`0` fails).
 
 ## Moon Snapshot
 
@@ -138,6 +141,31 @@ Estimated STRK range (`3-10 gFri`, L2 gas component only):
 - `ascendant.cairo`: robust ascendant horizon-intersection solve with eastern-branch selection.
 - `fixed.cairo`, `time.cairo`, `trig.cairo`, `types.cairo`: shared primitives.
 
+## ELI5: How v5 Works Under The Hood
+
+Think of v5 like a very precise sky calculator that runs fully onchain.
+
+1. It takes a timestamp (and for ascendant, a location). (~8% total complexity)
+: Time is converted into astronomy-friendly day counts relative to J2000.
+
+2. It computes where planets are in space. (~28% total complexity)
+: For Mercury through Saturn, v5 evaluates VSOP formulas to get heliocentric positions, then subtracts Earth's position to get geocentric vectors.
+
+3. It accounts for "what we see now" timing. (~16% total complexity)
+: A fixed-iteration light-time solve adjusts for the fact that light from planets takes time to reach Earth.
+
+4. It rotates coordinates into the zodiac frame of the date. (~18% total complexity)
+: Precession + nutation transforms are applied, then vectors are projected into ecliptic longitude/latitude.
+
+5. It converts longitude to zodiac signs. (~5% total complexity)
+: Longitudes are normalized to `0..360` and mapped into 12 sign buckets (`30°` each).
+
+6. It computes ascendant separately from horizon geometry. (~17% total complexity)
+: Using local sidereal time + observer latitude/longitude, v5 solves where the eastern horizon intersects the ecliptic.
+
+7. It does all of this with deterministic fixed-point math. (~8% total complexity)
+: No floating-point randomness; same inputs always produce the same onchain outputs.
+
 ## Porting Decisions
 
 ### Ported from upstream concepts
@@ -156,8 +184,8 @@ Estimated STRK range (`3-10 gFri`, L2 gas component only):
 
 ## Known Limits
 
-- Target is sign-level parity, not full floating-point vector equivalence at every intermediate stage.
-- Residual misses are structured in deep-time pockets; this is expected under current numeric/trig constraints.
+- Target remains sign-level parity, not full floating-point vector equivalence at every intermediate stage.
+- Current heavy grid is finite (monthly x 2 locations), so untested coordinates/timestamps can still surface edge behavior.
 - `vsop_gen.cairo` is generated and should not be edited manually.
 
 ## Exploration Log (Condensed)

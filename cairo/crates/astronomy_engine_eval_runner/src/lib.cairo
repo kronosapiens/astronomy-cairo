@@ -1,4 +1,13 @@
-use astronomy_engine_api::compute_engine_signs_pg;
+use astronomy_engine_api::{
+    compute_engine_frame_from_eqj_1e9, compute_engine_frame_from_eqj_compare_1e9,
+    compute_engine_planet_debug_frame_pg_1e9,
+    compute_engine_planet_longitudes_pg_1e9,
+    compute_engine_signs_pg,
+};
+
+const DEBUG_EQJ_BIAS_1E9: i64 = 100_000_000_000;
+const DEBUG_TT_BIAS_1E9: i64 = 4_000_000_000_000_000;
+const DEBUG_FRAME_BIAS_1E9: i64 = 360_000_000_000;
 
 /// Compare a batch of Cairo-computed chart signs against expected signs.
 ///
@@ -168,4 +177,118 @@ pub fn eval_point_mismatch_mask(
         j += 1;
     };
     mask
+}
+
+/// Compare one point and return mismatch mask plus actual signs.
+///
+/// Returns:
+/// (mask, sun, moon, mercury, venus, mars, jupiter, saturn, asc)
+pub fn eval_point_mismatch_mask_and_actual(
+    engine_id: u8, minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
+) -> (i64, i64, i64, i64, i64, i64, i64, i64, i64) {
+    assert(expected_signs.len() == 8, 'expected len mismatch');
+    let expected_span = expected_signs.span();
+    let signs = compute_engine_signs_pg(engine_id, minute_pg, lat_bin, lon_bin);
+    let sign_span = signs.span();
+
+    let mut mask: i64 = 0;
+    let mut bit: i64 = 1;
+    let mut j: usize = 0;
+    while j < 8 {
+        if *sign_span.at(j) != *expected_span.at(j) {
+            mask += bit;
+        }
+        bit *= 2;
+        j += 1;
+    };
+
+    (
+        mask,
+        *sign_span.at(0),
+        *sign_span.at(1),
+        *sign_span.at(2),
+        *sign_span.at(3),
+        *sign_span.at(4),
+        *sign_span.at(5),
+        *sign_span.at(6),
+        *sign_span.at(7),
+    )
+}
+
+/// Compare one point and return mismatch mask, actual signs, and planet longitudes.
+///
+/// Returns:
+/// (mask, 8 signs..., 7 longitudes_1e9...)
+pub fn eval_point_mismatch_detail(
+    engine_id: u8, minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
+) -> (
+    i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64
+) {
+    let (mask, s0, s1, s2, s3, s4, s5, s6, s7) = eval_point_mismatch_mask_and_actual(
+        engine_id, minute_pg, lat_bin, lon_bin, expected_signs,
+    );
+    let lons = compute_engine_planet_longitudes_pg_1e9(engine_id, minute_pg);
+    let lon_span = lons.span();
+    (
+        mask,
+        s0,
+        s1,
+        s2,
+        s3,
+        s4,
+        s5,
+        s6,
+        s7,
+        *lon_span.at(0),
+        *lon_span.at(1),
+        *lon_span.at(2),
+        *lon_span.at(3),
+        *lon_span.at(4),
+        *lon_span.at(5),
+        *lon_span.at(6),
+    )
+}
+
+/// Returns debug internals for one non-luminary planet (Mercury..Saturn = 2..6).
+/// (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9, frame_lon_1e9, frame_lat_1e9)
+pub fn eval_point_planet_debug_frame(
+    engine_id: u8, planet: u8, minute_pg: i64
+) -> (i64, i64, i64, i64, i64, i64) {
+    let (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9, frame_lon_1e9, frame_lat_1e9) =
+        compute_engine_planet_debug_frame_pg_1e9(engine_id, planet, minute_pg);
+    (
+        dx_eqj + DEBUG_EQJ_BIAS_1E9,
+        dy_eqj + DEBUG_EQJ_BIAS_1E9,
+        dz_eqj + DEBUG_EQJ_BIAS_1E9,
+        obs_tt_1e9 + DEBUG_TT_BIAS_1E9,
+        frame_lon_1e9 + DEBUG_FRAME_BIAS_1E9,
+        frame_lat_1e9 + DEBUG_FRAME_BIAS_1E9,
+    )
+}
+
+/// Projects an arbitrary EQJ vector into Cairo ecliptic-of-date frame.
+/// Returns (lon_1e9, lat_1e9), bias-encoded to avoid felt negative wrap.
+pub fn eval_frame_from_eqj(
+    engine_id: u8, x_eqj_1e9: i64, y_eqj_1e9: i64, z_eqj_1e9: i64, days_since_j2000_1e9: i64
+) -> (i64, i64) {
+    let (lon_1e9, lat_1e9) = compute_engine_frame_from_eqj_1e9(
+        engine_id, x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
+    );
+    (lon_1e9 + DEBUG_FRAME_BIAS_1E9, lat_1e9 + DEBUG_FRAME_BIAS_1E9)
+}
+
+/// Projects an arbitrary EQJ vector into Cairo ecliptic-of-date frame,
+/// returning both standard and rounded longitudes.
+/// Returns (lon_std_1e9, lon_round_1e9, lat_std_1e9), bias-encoded.
+pub fn eval_frame_from_eqj_compare(
+    engine_id: u8, x_eqj_1e9: i64, y_eqj_1e9: i64, z_eqj_1e9: i64, days_since_j2000_1e9: i64
+) -> (i64, i64, i64) {
+    let (lon_std_1e9, lon_round_1e9, lat_std_1e9) = compute_engine_frame_from_eqj_compare_1e9(
+        engine_id, x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
+    );
+    (
+        lon_std_1e9 + DEBUG_FRAME_BIAS_1E9,
+        lon_round_1e9 + DEBUG_FRAME_BIAS_1E9,
+        lat_std_1e9 + DEBUG_FRAME_BIAS_1E9,
+    )
 }

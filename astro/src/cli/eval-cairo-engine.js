@@ -5,7 +5,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseArgs, getNumberArg, getStringArg } from "./args.js";
-import { oracleAscSign, oraclePlanetSign } from "../engine.js";
+import { oracleAscSign, oraclePlanetLongitude, oraclePlanetSign } from "../engine.js";
 
 const ENGINE_CONFIG = {
   v5: { id: 5, startYear: 1, endYear: 4000 },
@@ -105,9 +105,11 @@ function runCairoBatch({ engineId, packedPoints, expectedPacked, noBuild }) {
   }
 }
 
-function runCairoPointMismatchMask({ engineId, minutePg, latBin, lonBin, expectedSigns, noBuild }) {
+function runCairoPointMismatchDetail({
+  engineId, minutePg, latBin, lonBin, expectedSigns, noBuild,
+}) {
   const argsPayload = [engineId, minutePg, latBin, lonBin, expectedSigns];
-  const tmpPath = path.join(os.tmpdir(), `eval_point_${Date.now()}_${Math.floor(Math.random() * 1_000_000)}.json`);
+  const tmpPath = path.join(os.tmpdir(), `eval_point_detail_${Date.now()}_${Math.floor(Math.random() * 1_000_000)}.json`);
   fs.writeFileSync(tmpPath, `${JSON.stringify(argsPayload)}\n`, "utf8");
 
   try {
@@ -116,17 +118,21 @@ function runCairoPointMismatchMask({ engineId, minutePg, latBin, lonBin, expecte
       "-p",
       "astronomy_engine_eval_runner",
       "--function",
-      "eval_point_mismatch_mask",
+      "eval_point_mismatch_detail",
       "--arguments-file",
       tmpPath,
     ];
     if (noBuild) cmdArgs.push("--no-build");
     const out = runScarb(cmdArgs, CAIRO_DIR);
     const values = parseReturnArray(out).map((x) => Number(x));
-    if (values.length !== 1) {
-      throw new Error(`Unexpected point mismatch return shape: expected 1 value, got ${values.length}`);
+    if (values.length !== 16) {
+      throw new Error(`Unexpected point detail return shape: expected 16 values, got ${values.length}`);
     }
-    return values[0];
+    return {
+      mask: values[0],
+      actualSigns: values.slice(1, 9),
+      actualLongitudes1e9: values.slice(9, 16),
+    };
   } finally {
     fs.rmSync(tmpPath, { force: true });
   }
@@ -191,7 +197,7 @@ function collectMismatchRowsForBatch({
       const idx = startPointIdx;
       const meta = batchMeta[idx];
       const expectedSigns = batchExpected.slice(idx * 8, idx * 8 + 8);
-      const mask = runCairoPointMismatchMask({
+      const detail = runCairoPointMismatchDetail({
         engineId,
         minutePg: meta.minutePg,
         latBin: meta.latBin,
@@ -200,10 +206,30 @@ function collectMismatchRowsForBatch({
         noBuild,
       });
       pointMaskCalls += 1;
+      const mask = detail.mask;
       if (!Number.isInteger(mask) || mask < 0 || mask > 255) {
         throw new Error(`Unexpected point mismatch mask at index ${idx}: ${mask}`);
       }
+      if (detail.actualSigns.length !== 8 || !detail.actualSigns.every((x) => Number.isInteger(x))) {
+        throw new Error(`Unexpected point actual signs at index ${idx}: ${JSON.stringify(detail.actualSigns)}`);
+      }
+      if (
+        detail.actualLongitudes1e9.length !== 7
+        || !detail.actualLongitudes1e9.every((x) => Number.isInteger(x))
+      ) {
+        throw new Error(`Unexpected point actual longitudes at index ${idx}: ${JSON.stringify(detail.actualLongitudes1e9)}`);
+      }
       if (mask !== 0) {
+        const pointUnixMs = EPOCH_PG_MS + meta.minutePg * 60_000;
+        const oracleLongitudesDeg = [
+          oraclePlanetLongitude("Sun", pointUnixMs),
+          oraclePlanetLongitude("Moon", pointUnixMs),
+          oraclePlanetLongitude("Mercury", pointUnixMs),
+          oraclePlanetLongitude("Venus", pointUnixMs),
+          oraclePlanetLongitude("Mars", pointUnixMs),
+          oraclePlanetLongitude("Jupiter", pointUnixMs),
+          oraclePlanetLongitude("Saturn", pointUnixMs),
+        ];
         mismatchRows.push(JSON.stringify({
           tsUtc: new Date().toISOString(),
           engine,
@@ -214,6 +240,10 @@ function collectMismatchRowsForBatch({
           latBin: meta.latBin,
           lonBin: meta.lonBin,
           minutePg: meta.minutePg,
+          expectedSigns,
+          actualSigns: detail.actualSigns,
+          actualLongitudes1e9: detail.actualLongitudes1e9,
+          oracleLongitudesDeg,
           mismatchMask: mask,
           planetMismatch: (mask & 0x7f) !== 0,
           ascMismatch: (mask & 0x80) !== 0,

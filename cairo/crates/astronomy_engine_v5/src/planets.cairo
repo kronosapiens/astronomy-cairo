@@ -17,6 +17,8 @@ const MOON_LON_PARITY_OFFSET_A_DEG_1E9: i64 = 0;
 const MOON_LON_PARITY_OFFSET_B_DEG_1E9_PER_CENTURY: i64 = 0;
 const MOON_LON_PARITY_OFFSET_C_DEG_1E9_PER_CENTURY2: i64 = 0;
 const ABERRATION_KAPPA_DEG_1E9: i64 = 5_693_200; // 20.49552 arcsec
+const ENABLE_EXPLICIT_ECLIPTIC_ABERRATION_TERM: bool = false;
+const ECLIPTIC_FRAME_TIME_SIGN: i64 = 1;
 
 fn div_round_i64(num: i128, den: i64) -> i64 {
     div_round_half_away_from_zero(num, den.into()).try_into().unwrap()
@@ -489,7 +491,9 @@ fn helio_xyz_1e9(h: HelioState) -> (i64, i64, i64) {
 }
 
 #[inline(never)]
-fn geocentric_longitude_vsop_pg_1e9(planet_idx: usize, minute_since_pg: i64) -> i64 {
+fn geocentric_eqj_vector_obs_tt_vsop_pg_1e9(
+    planet_idx: usize, minute_since_pg: i64,
+) -> (i64, i64, i64, i64) {
     let minute_pg_1e9_i128: i128 = minute_since_pg.into() * SCALE_1E9.into();
     let minute_pg_1e9: i64 = minute_pg_1e9_i128.try_into().unwrap();
     let obs_tt_1e9 = tt_days_since_j2000_1e9_from_pg_minute_1e9(minute_pg_1e9);
@@ -538,10 +542,20 @@ fn geocentric_longitude_vsop_pg_1e9(planet_idx: usize, minute_since_pg: i64) -> 
         tt_shift_1e9 = tt_shift_next_1e9;
         iter += 1;
     };
-    let (lon, lat) = eqj_to_ecliptic_of_date_lon_lat_1e9(xp - xe, yp - ye, zp - ze, -obs_tt_1e9);
+    (xp - xe, yp - ye, zp - ze, obs_tt_1e9)
+}
+
+#[inline(never)]
+fn geocentric_longitude_vsop_pg_1e9(planet_idx: usize, minute_since_pg: i64) -> i64 {
+    let (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9) =
+        geocentric_eqj_vector_obs_tt_vsop_pg_1e9(planet_idx, minute_since_pg);
+    let frame_days_1e9 = ECLIPTIC_FRAME_TIME_SIGN * obs_tt_1e9;
+    let (lon, lat) = eqj_to_ecliptic_of_date_lon_lat_1e9(dx_eqj, dy_eqj, dz_eqj, frame_days_1e9);
+    if !ENABLE_EXPLICIT_ECLIPTIC_ABERRATION_TERM {
+        return lon;
+    }
     let sun_lon = geocentric_sun_longitude_vsop_pg_1e9(minute_since_pg);
-    // First-order annual aberration in ecliptic longitude (Meeus-style):
-    // Δλ ≈ -κ cos(λ - λ☉) / cos(β), κ≈20.49552"
+    // Optional ecliptic-space apparent correction (kept as an A/B parity toggle).
     let cos_beta = cos_deg_1e9(lat);
     if cos_beta == 0 {
         return lon;
@@ -549,6 +563,27 @@ fn geocentric_longitude_vsop_pg_1e9(planet_idx: usize, minute_since_pg: i64) -> 
     let dlam_num: i128 = -ABERRATION_KAPPA_DEG_1E9.into() * cos_deg_1e9(lon - sun_lon).into();
     let dlam: i64 = div_round_i64(dlam_num, cos_beta);
     norm360_i64_1e9(lon + dlam)
+}
+
+/// Debug probe for planetary geocentric EQJ vector and observation TT day count.
+/// Supported planets: Mercury..Saturn (2..6).
+#[inline(never)]
+pub fn debug_planet_geocentric_eqj_pg_1e9(
+    planet: u8, minute_since_pg: i64,
+) -> (i64, i64, i64, i64) {
+    assert(planet >= 2 && planet <= 6, 'debug planet must be 2..6');
+    geocentric_eqj_vector_obs_tt_vsop_pg_1e9(planet.into(), minute_since_pg)
+}
+
+/// Debug probe for ecliptic frame projection before optional explicit aberration term.
+/// Supported planets: Mercury..Saturn (2..6).
+#[inline(never)]
+pub fn debug_planet_frame_lon_lat_pg_1e9(planet: u8, minute_since_pg: i64) -> (i64, i64) {
+    assert(planet >= 2 && planet <= 6, 'debug planet must be 2..6');
+    let (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9) = debug_planet_geocentric_eqj_pg_1e9(
+        planet, minute_since_pg,
+    );
+    eqj_to_ecliptic_of_date_lon_lat_1e9(dx_eqj, dy_eqj, dz_eqj, ECLIPTIC_FRAME_TIME_SIGN * obs_tt_1e9)
 }
 
 #[inline(never)]
@@ -564,8 +599,8 @@ fn geocentric_sun_longitude_vsop_pg_1e9(minute_since_pg: i64) -> i64 {
     let (xe_raw, ye_raw, ze_raw) = helio_xyz_1e9(earth);
     let (xe, ye, ze) = vsop_ecliptic_to_eqj_1e9(xe_raw, ye_raw, ze_raw);
     // Sun geocentric vector is negative of Earth's heliocentric vector.
-    // Use observation-time frame rotation, as GeoVector sets vec.t = observation time.
-    eqj_to_ecliptic_of_date_longitude_1e9(-xe, -ye, -ze, -obs_tt_1e9)
+    // Keep frame-time sign configurable for parity A/B checks.
+    eqj_to_ecliptic_of_date_longitude_1e9(-xe, -ye, -ze, ECLIPTIC_FRAME_TIME_SIGN * obs_tt_1e9)
 }
 
 #[inline(never)]
