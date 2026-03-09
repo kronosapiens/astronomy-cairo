@@ -156,6 +156,18 @@ This document is the persistent working context for improving `astronomy_engine_
   - Aggregate across `40` staged files: `96,000/96,000` pass, `0` fail (`0001-4000` heavy grid).
   - `1001-3000` rollup from staged files: `48,000/48,000` pass, `0` fail.
   - Marked partial file `astro/evals/v5-heavy-baseline-1001-3000-20260307T180928Z.ndjson` as aborted/ignore.
+
+## Cleanup Update (2026-03-09)
+
+- Production cleanup pass removed stale R&D toggles and dead branches:
+  - Removed `ENABLE_EXPLICIT_ECLIPTIC_ABERRATION_TERM` toggle path from `v5` runtime.
+  - Removed `ECLIPTIC_FRAME_TIME_SIGN` toggle and kept the winning production semantics (`obs_tt_1e9` directly).
+  - Removed unused rounded frame-projection lane (`*_round`) and compare plumbing in API/eval-runner.
+- Regression verification after cleanup:
+  - `eval-mismatch-corpus`: `68/68` pass, `0` fail.
+  - heavy sentinel windows (`batch-size=20`): `0001-0020`, `1001-1020`, `3981-4000` all `480/480` pass.
+  - Cairo verification: `scarb build` for `astronomy_engine_v5`, `astronomy_engine_api`, `astronomy_engine_eval_runner` passed.
+  - `scarb test -p astronomy_engine_v5`: `25` passed, `0` failed.
 - Interpretation:
   - The earlier `~0.139°` lag narrative in this file is stale relative to the current live branch.
   - Current branch behavior indicates the `+tt` frame-time convention is the winning branch.

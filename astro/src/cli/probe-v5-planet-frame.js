@@ -104,7 +104,7 @@ function runCairoFrameFromEqj(engineId, xEqjAu, yEqjAu, zEqjAu, daysSinceJ2000) 
         "-p",
         "astronomy_engine_eval_runner",
         "--function",
-        "eval_frame_from_eqj_compare",
+        "eval_frame_from_eqj",
         "--arguments-file",
         tmpPath,
         "--no-build",
@@ -112,13 +112,12 @@ function runCairoFrameFromEqj(engineId, xEqjAu, yEqjAu, zEqjAu, daysSinceJ2000) 
       CAIRO_DIR,
     );
     const values = parseReturnArray(out).map((x) => Number(x));
-    if (values.length !== 3) {
-      throw new Error(`Unexpected frame projection shape: expected 3 values, got ${values.length}`);
+    if (values.length !== 2) {
+      throw new Error(`Unexpected frame projection shape: expected 2 values, got ${values.length}`);
     }
     return {
       lonStdDeg: (values[0] - DEBUG_FRAME_BIAS_1E9) / SCALE_1E9,
-      lonRoundDeg: (values[1] - DEBUG_FRAME_BIAS_1E9) / SCALE_1E9,
-      latStdDeg: (values[2] - DEBUG_FRAME_BIAS_1E9) / SCALE_1E9,
+      latStdDeg: (values[1] - DEBUG_FRAME_BIAS_1E9) / SCALE_1E9,
     };
   } finally {
     fs.rmSync(tmpPath, { force: true });
@@ -214,10 +213,8 @@ function main() {
         frameProjectionLatDeltaDeg: cairo.frameLatDeg - mixedEcl.elat,
         oracleEqjProjectedByCairo: {
           posTimeLonStdDeltaDeg: signedDegDelta(oracleEqjPos.lonStdDeg, oracle.frameLonDeg),
-          posTimeLonRoundDeltaDeg: signedDegDelta(oracleEqjPos.lonRoundDeg, oracle.frameLonDeg),
           posTimeLatStdDeltaDeg: oracleEqjPos.latStdDeg - oracle.frameLatDeg,
           negTimeLonStdDeltaDeg: signedDegDelta(oracleEqjNeg.lonStdDeg, oracle.frameLonDeg),
-          negTimeLonRoundDeltaDeg: signedDegDelta(oracleEqjNeg.lonRoundDeg, oracle.frameLonDeg),
           negTimeLatStdDeltaDeg: oracleEqjNeg.latStdDeg - oracle.frameLatDeg,
         },
       });

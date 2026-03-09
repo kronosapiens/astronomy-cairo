@@ -1,4 +1,4 @@
-use crate::fixed::{div_round_half_away_from_zero, norm360_i64_1e9, SCALE_1E9};
+use crate::fixed::{norm360_i64_1e9, SCALE_1E9};
 use crate::trig::{atan2_deg_1e9, cos_deg_1e9, sin_deg_1e9};
 
 const DAYS_PER_CENTURY_1E9: i64 = 36_525_000_000_000;
@@ -314,81 +314,6 @@ fn nutation_from2000_1e9(
 }
 
 #[inline(never)]
-fn mul_1e9_round(a: i128, b: i128) -> i128 {
-    div_round_half_away_from_zero(a * b, SCALE_1E9.into())
-}
-
-#[inline(never)]
-fn precession_from2000_1e9_round(
-    x: i64, y: i64, z: i64, days_since_j2000_1e9: i64,
-) -> (i64, i64, i64) {
-    let t = t_centuries_1e9(days_since_j2000_1e9);
-    let eps0_deg_1e9: i64 = 23_439_279_444;
-    let psia_deg_1e9 = eval_poly_t5_1e9(0, 37, -317, -299_724, 1_399_578_196, 0, t);
-    let omegaa_deg_1e9 = eval_poly_t5_1e9(0, 0, -2_146, 14_240, -7_154, eps0_deg_1e9, t);
-    let chia_deg_1e9 = eval_poly_t5_1e9(0, 47, -337, -661_508, 2_932_334, 0, t);
-
-    let sa: i128 = sin_deg_1e9(eps0_deg_1e9).into();
-    let ca: i128 = cos_deg_1e9(eps0_deg_1e9).into();
-    let sb: i128 = sin_deg_1e9(-psia_deg_1e9).into();
-    let cb: i128 = cos_deg_1e9(-psia_deg_1e9).into();
-    let sc: i128 = sin_deg_1e9(-omegaa_deg_1e9).into();
-    let cc: i128 = cos_deg_1e9(-omegaa_deg_1e9).into();
-    let sd: i128 = sin_deg_1e9(chia_deg_1e9).into();
-    let cd: i128 = cos_deg_1e9(chia_deg_1e9).into();
-
-    let xx = mul_1e9_round(cd, cb) - mul_1e9_round(mul_1e9_round(sb, sd), cc);
-    let yx = mul_1e9_round(mul_1e9_round(cd, sb), ca)
-        + mul_1e9_round(mul_1e9_round(mul_1e9_round(sd, cc), cb), ca)
-        - mul_1e9_round(mul_1e9_round(sa, sd), sc);
-    let zx = mul_1e9_round(mul_1e9_round(cd, sb), sa)
-        + mul_1e9_round(mul_1e9_round(mul_1e9_round(sd, cc), cb), sa)
-        + mul_1e9_round(mul_1e9_round(ca, sd), sc);
-    let xy = -mul_1e9_round(sd, cb) - mul_1e9_round(mul_1e9_round(sb, cd), cc);
-    let yy = -mul_1e9_round(mul_1e9_round(sd, sb), ca)
-        + mul_1e9_round(mul_1e9_round(mul_1e9_round(cd, cc), cb), ca)
-        - mul_1e9_round(mul_1e9_round(sa, cd), sc);
-    let zy = -mul_1e9_round(mul_1e9_round(sd, sb), sa)
-        + mul_1e9_round(mul_1e9_round(mul_1e9_round(cd, cc), cb), sa)
-        + mul_1e9_round(mul_1e9_round(ca, cd), sc);
-    let xz = mul_1e9_round(sb, sc);
-    let yz = -mul_1e9_round(mul_1e9_round(sc, cb), ca) - mul_1e9_round(sa, cc);
-    let zz = -mul_1e9_round(mul_1e9_round(sc, cb), sa) + mul_1e9_round(cc, ca);
-
-    // Match upstream rotate() layout semantics.
-    let rx = mul_1e9_round(xx, x.into()) + mul_1e9_round(yx, y.into()) + mul_1e9_round(zx, z.into());
-    let ry = mul_1e9_round(xy, x.into()) + mul_1e9_round(yy, y.into()) + mul_1e9_round(zy, z.into());
-    let rz = mul_1e9_round(xz, x.into()) + mul_1e9_round(yz, y.into()) + mul_1e9_round(zz, z.into());
-    (rx.try_into().unwrap(), ry.try_into().unwrap(), rz.try_into().unwrap())
-}
-
-#[inline(never)]
-fn nutation_from2000_1e9_round(x: i64, y: i64, z: i64, tilt: ETilt) -> (i64, i64, i64) {
-    let cobm: i128 = cos_deg_1e9(tilt.mobl_deg_1e9).into();
-    let sobm: i128 = sin_deg_1e9(tilt.mobl_deg_1e9).into();
-    let cobt: i128 = cos_deg_1e9(tilt.tobl_deg_1e9).into();
-    let sobt: i128 = sin_deg_1e9(tilt.tobl_deg_1e9).into();
-    let cpsi: i128 = cos_deg_1e9(tilt.dpsi_deg_1e9).into();
-    let spsi: i128 = sin_deg_1e9(tilt.dpsi_deg_1e9).into();
-
-    let xx = cpsi;
-    let yx = -mul_1e9_round(spsi, cobm);
-    let zx = -mul_1e9_round(spsi, sobm);
-    let xy = mul_1e9_round(spsi, cobt);
-    let yy = mul_1e9_round(mul_1e9_round(cpsi, cobm), cobt) + mul_1e9_round(sobm, sobt);
-    let zy = mul_1e9_round(mul_1e9_round(cpsi, sobm), cobt) - mul_1e9_round(cobm, sobt);
-    let xz = mul_1e9_round(spsi, sobt);
-    let yz = mul_1e9_round(mul_1e9_round(cpsi, cobm), sobt) - mul_1e9_round(sobm, cobt);
-    let zz = mul_1e9_round(mul_1e9_round(cpsi, sobm), sobt) + mul_1e9_round(cobm, cobt);
-
-    // Match upstream rotate() layout semantics.
-    let rx = mul_1e9_round(xx, x.into()) + mul_1e9_round(yx, y.into()) + mul_1e9_round(zx, z.into());
-    let ry = mul_1e9_round(xy, x.into()) + mul_1e9_round(yy, y.into()) + mul_1e9_round(zy, z.into());
-    let rz = mul_1e9_round(xz, x.into()) + mul_1e9_round(yz, y.into()) + mul_1e9_round(zz, z.into());
-    (rx.try_into().unwrap(), ry.try_into().unwrap(), rz.try_into().unwrap())
-}
-
-#[inline(never)]
 pub fn vsop_ecliptic_to_eqj_1e9(x: i64, y: i64, z: i64) -> (i64, i64, i64) {
     let rx: i128 = (VSOP_R11_1E9.into() * x.into()) / SCALE_1E9.into()
         + (VSOP_R12_1E9.into() * y.into()) / SCALE_1E9.into()
@@ -427,19 +352,6 @@ pub fn eqj_to_ecliptic_of_date_lon_lat_1e9(
     let lon = norm360_i64_1e9(atan2_deg_1e9(ey.try_into().unwrap(), eqdx));
     let lat = atan2_deg_1e9(ez.try_into().unwrap(), rho.try_into().unwrap());
     (lon, lat)
-}
-
-#[inline(never)]
-pub fn eqj_to_ecliptic_of_date_longitude_1e9_round(
-    x: i64, y: i64, z: i64, days_since_j2000_1e9: i64,
-) -> i64 {
-    let (mx, my, mz) = precession_from2000_1e9_round(x, y, z, days_since_j2000_1e9);
-    let tilt = iau2000b_e_tilt(days_since_j2000_1e9);
-    let (eqdx, eqdy, eqdz) = nutation_from2000_1e9_round(mx, my, mz, tilt);
-
-    let ey = mul_1e9_round(eqdy.into(), cos_deg_1e9(tilt.tobl_deg_1e9).into())
-        + mul_1e9_round(eqdz.into(), sin_deg_1e9(tilt.tobl_deg_1e9).into());
-    norm360_i64_1e9(atan2_deg_1e9(ey.try_into().unwrap(), eqdx))
 }
 
 #[inline(never)]

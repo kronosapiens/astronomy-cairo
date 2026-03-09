@@ -16,9 +16,6 @@ use crate::vsop_gen::{
 const MOON_LON_PARITY_OFFSET_A_DEG_1E9: i64 = 0;
 const MOON_LON_PARITY_OFFSET_B_DEG_1E9_PER_CENTURY: i64 = 0;
 const MOON_LON_PARITY_OFFSET_C_DEG_1E9_PER_CENTURY2: i64 = 0;
-const ABERRATION_KAPPA_DEG_1E9: i64 = 5_693_200; // 20.49552 arcsec
-const ENABLE_EXPLICIT_ECLIPTIC_ABERRATION_TERM: bool = false;
-const ECLIPTIC_FRAME_TIME_SIGN: i64 = 1;
 
 fn div_round_i64(num: i128, den: i64) -> i64 {
     div_round_half_away_from_zero(num, den.into()).try_into().unwrap()
@@ -549,20 +546,8 @@ fn geocentric_eqj_vector_obs_tt_vsop_pg_1e9(
 fn geocentric_longitude_vsop_pg_1e9(planet_idx: usize, minute_since_pg: i64) -> i64 {
     let (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9) =
         geocentric_eqj_vector_obs_tt_vsop_pg_1e9(planet_idx, minute_since_pg);
-    let frame_days_1e9 = ECLIPTIC_FRAME_TIME_SIGN * obs_tt_1e9;
-    let (lon, lat) = eqj_to_ecliptic_of_date_lon_lat_1e9(dx_eqj, dy_eqj, dz_eqj, frame_days_1e9);
-    if !ENABLE_EXPLICIT_ECLIPTIC_ABERRATION_TERM {
-        return lon;
-    }
-    let sun_lon = geocentric_sun_longitude_vsop_pg_1e9(minute_since_pg);
-    // Optional ecliptic-space apparent correction (kept as an A/B parity toggle).
-    let cos_beta = cos_deg_1e9(lat);
-    if cos_beta == 0 {
-        return lon;
-    }
-    let dlam_num: i128 = -ABERRATION_KAPPA_DEG_1E9.into() * cos_deg_1e9(lon - sun_lon).into();
-    let dlam: i64 = div_round_i64(dlam_num, cos_beta);
-    norm360_i64_1e9(lon + dlam)
+    let (lon, _) = eqj_to_ecliptic_of_date_lon_lat_1e9(dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9);
+    lon
 }
 
 /// Debug probe for planetary geocentric EQJ vector and observation TT day count.
@@ -575,7 +560,7 @@ pub fn debug_planet_geocentric_eqj_pg_1e9(
     geocentric_eqj_vector_obs_tt_vsop_pg_1e9(planet.into(), minute_since_pg)
 }
 
-/// Debug probe for ecliptic frame projection before optional explicit aberration term.
+/// Debug probe for ecliptic frame projection.
 /// Supported planets: Mercury..Saturn (2..6).
 #[inline(never)]
 pub fn debug_planet_frame_lon_lat_pg_1e9(planet: u8, minute_since_pg: i64) -> (i64, i64) {
@@ -583,7 +568,7 @@ pub fn debug_planet_frame_lon_lat_pg_1e9(planet: u8, minute_since_pg: i64) -> (i
     let (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9) = debug_planet_geocentric_eqj_pg_1e9(
         planet, minute_since_pg,
     );
-    eqj_to_ecliptic_of_date_lon_lat_1e9(dx_eqj, dy_eqj, dz_eqj, ECLIPTIC_FRAME_TIME_SIGN * obs_tt_1e9)
+    eqj_to_ecliptic_of_date_lon_lat_1e9(dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9)
 }
 
 #[inline(never)]
@@ -599,8 +584,7 @@ fn geocentric_sun_longitude_vsop_pg_1e9(minute_since_pg: i64) -> i64 {
     let (xe_raw, ye_raw, ze_raw) = helio_xyz_1e9(earth);
     let (xe, ye, ze) = vsop_ecliptic_to_eqj_1e9(xe_raw, ye_raw, ze_raw);
     // Sun geocentric vector is negative of Earth's heliocentric vector.
-    // Keep frame-time sign configurable for parity A/B checks.
-    eqj_to_ecliptic_of_date_longitude_1e9(-xe, -ye, -ze, ECLIPTIC_FRAME_TIME_SIGN * obs_tt_1e9)
+    eqj_to_ecliptic_of_date_longitude_1e9(-xe, -ye, -ze, obs_tt_1e9)
 }
 
 #[inline(never)]

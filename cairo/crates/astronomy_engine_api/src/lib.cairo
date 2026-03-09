@@ -82,16 +82,3 @@ pub fn compute_engine_frame_from_eqj_1e9(
         x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
     )
 }
-
-pub fn compute_engine_frame_from_eqj_compare_1e9(
-    engine_id: u8, x_eqj_1e9: i64, y_eqj_1e9: i64, z_eqj_1e9: i64, days_since_j2000_1e9: i64,
-) -> (i64, i64, i64) {
-    assert(engine_id == ENGINE_V5, 'invalid engine');
-    let (lon_std_1e9, lat_std_1e9) = v5_frames::eqj_to_ecliptic_of_date_lon_lat_1e9(
-        x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
-    );
-    let lon_round_1e9 = v5_frames::eqj_to_ecliptic_of_date_longitude_1e9_round(
-        x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
-    );
-    (lon_std_1e9, lon_round_1e9, lat_std_1e9)
-}

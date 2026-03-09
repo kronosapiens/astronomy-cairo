@@ -38,6 +38,54 @@ function minuteSincePg(unixMs) {
   return Math.floor((unixMs - EPOCH_PG_MS) / 60_000);
 }
 
+function buildBatchPayload({
+  batchStartYear,
+  batchEndYear,
+  months,
+  locations,
+  computeExpectedSignsForPointFn = computeExpectedSignsForPoint,
+}) {
+  const batchPointData = [];
+  const batchExpected = [];
+  const batchMeta = [];
+  let batchPointCount = 0;
+
+  for (let year = batchStartYear; year <= batchEndYear; year += 1) {
+    for (let month = 1; month <= months; month += 1) {
+      const dt = makeUtcDate(year, month, 1);
+      const unixMs = dt.getTime();
+      const minutePg = minuteSincePg(unixMs);
+      const sampleUnixMs = EPOCH_PG_MS + minutePg * 60_000;
+
+      for (const loc of locations) {
+        batchPointData.push(minutePg, loc.latBin, loc.lonBin);
+        const signs = computeExpectedSignsForPointFn(sampleUnixMs, loc.latBin, loc.lonBin);
+        batchExpected.push(
+          signs[0],
+          signs[1],
+          signs[2],
+          signs[3],
+          signs[4],
+          signs[5],
+          signs[6],
+          signs[7],
+        );
+        batchMeta.push({
+          year,
+          month,
+          location: loc.name,
+          latBin: loc.latBin,
+          lonBin: loc.lonBin,
+          minutePg,
+        });
+        batchPointCount += 1;
+      }
+    }
+  }
+
+  return { batchPointData, batchExpected, batchMeta, batchPointCount };
+}
+
 function computeExpectedSignsForPoint(unixMs, latBin, lonBin) {
   const planetSigns = [
     oraclePlanetSign("Sun", unixMs),
@@ -158,6 +206,9 @@ function collectMismatchRowsForBatch({
   batchExpected,
   rootBreakdown,
   noBuild,
+  runCairoBatchFn = runCairoBatch,
+  runCairoPointMismatchDetailFn = runCairoPointMismatchDetail,
+  oraclePlanetLongitudeFn = oraclePlanetLongitude,
 }) {
   const mismatchRows = [];
   const breakdownCache = new Map();
@@ -175,7 +226,7 @@ function collectMismatchRowsForBatch({
       startPointIdx,
       endPointIdxExclusive,
     );
-    const result = runCairoBatch({
+    const result = runCairoBatchFn({
       engineId,
       packedPoints: pointSlice,
       expectedPacked: expectedSlice,
@@ -197,7 +248,7 @@ function collectMismatchRowsForBatch({
       const idx = startPointIdx;
       const meta = batchMeta[idx];
       const expectedSigns = batchExpected.slice(idx * 8, idx * 8 + 8);
-      const detail = runCairoPointMismatchDetail({
+      const detail = runCairoPointMismatchDetailFn({
         engineId,
         minutePg: meta.minutePg,
         latBin: meta.latBin,
@@ -222,13 +273,13 @@ function collectMismatchRowsForBatch({
       if (mask !== 0) {
         const pointUnixMs = EPOCH_PG_MS + meta.minutePg * 60_000;
         const oracleLongitudesDeg = [
-          oraclePlanetLongitude("Sun", pointUnixMs),
-          oraclePlanetLongitude("Moon", pointUnixMs),
-          oraclePlanetLongitude("Mercury", pointUnixMs),
-          oraclePlanetLongitude("Venus", pointUnixMs),
-          oraclePlanetLongitude("Mars", pointUnixMs),
-          oraclePlanetLongitude("Jupiter", pointUnixMs),
-          oraclePlanetLongitude("Saturn", pointUnixMs),
+          oraclePlanetLongitudeFn("Sun", pointUnixMs),
+          oraclePlanetLongitudeFn("Moon", pointUnixMs),
+          oraclePlanetLongitudeFn("Mercury", pointUnixMs),
+          oraclePlanetLongitudeFn("Venus", pointUnixMs),
+          oraclePlanetLongitudeFn("Mars", pointUnixMs),
+          oraclePlanetLongitudeFn("Jupiter", pointUnixMs),
+          oraclePlanetLongitudeFn("Saturn", pointUnixMs),
         ];
         mismatchRows.push(JSON.stringify({
           tsUtc: new Date().toISOString(),
@@ -359,43 +410,12 @@ function main() {
   };
   for (let batchStartYear = startYear; batchStartYear <= endYear; batchStartYear += batchYears) {
     const batchEndYear = Math.min(batchStartYear + batchYears - 1, endYear);
-    let batchPointData = [];
-    let batchExpected = [];
-    let batchMeta = [];
-    let batchPointCount = 0;
-
-    for (let year = batchStartYear; year <= batchEndYear; year += 1) {
-      for (let month = 1; month <= months; month += 1) {
-        const dt = makeUtcDate(year, month, 1);
-        const unixMs = dt.getTime();
-        const minutePg = minuteSincePg(unixMs);
-        const sampleUnixMs = EPOCH_PG_MS + minutePg * 60_000;
-
-        for (const loc of locations) {
-          batchPointData.push(minutePg, loc.latBin, loc.lonBin);
-          const signs = computeExpectedSignsForPoint(sampleUnixMs, loc.latBin, loc.lonBin);
-          batchExpected.push(
-            signs[0],
-            signs[1],
-            signs[2],
-            signs[3],
-            signs[4],
-            signs[5],
-            signs[6],
-            signs[7],
-          );
-          batchMeta.push({
-            year,
-            month,
-            location: loc.name,
-            latBin: loc.latBin,
-            lonBin: loc.lonBin,
-            minutePg,
-          });
-          batchPointCount += 1;
-        }
-      }
-    }
+    const { batchPointData, batchExpected, batchMeta, batchPointCount } = buildBatchPayload({
+      batchStartYear,
+      batchEndYear,
+      months,
+      locations,
+    });
 
     const batchResult = runCairoBatch({
       engineId: capability.id,
@@ -521,4 +541,20 @@ function main() {
   }
 }
 
-main();
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  main();
+}
+
+export {
+  ALEXANDRIA,
+  EPOCH_PG_MS,
+  NYC,
+  buildBatchPayload,
+  collectMismatchRowsForBatch,
+  formatDuration,
+  makeUtcDate,
+  minuteSincePg,
+  parseReturnArray,
+  sliceBatchPayload,
+};

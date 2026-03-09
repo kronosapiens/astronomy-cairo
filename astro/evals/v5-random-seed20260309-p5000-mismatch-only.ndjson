@@ -1,0 +1,4 @@
+
+> space-prince-astro@0.1.0 eval:random
+> node src/cli/eval-random-cairo-engine.js --seed 20260309 --points 5000 --include-passes false
+

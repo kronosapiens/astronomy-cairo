@@ -1,6 +1,5 @@
 use astronomy_engine_api::{
-    compute_engine_frame_from_eqj_1e9, compute_engine_frame_from_eqj_compare_1e9,
-    compute_engine_planet_debug_frame_pg_1e9,
+    compute_engine_frame_from_eqj_1e9, compute_engine_planet_debug_frame_pg_1e9,
     compute_engine_planet_longitudes_pg_1e9,
     compute_engine_signs_pg,
 };
@@ -275,20 +274,4 @@ pub fn eval_frame_from_eqj(
         engine_id, x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
     );
     (lon_1e9 + DEBUG_FRAME_BIAS_1E9, lat_1e9 + DEBUG_FRAME_BIAS_1E9)
-}
-
-/// Projects an arbitrary EQJ vector into Cairo ecliptic-of-date frame,
-/// returning both standard and rounded longitudes.
-/// Returns (lon_std_1e9, lon_round_1e9, lat_std_1e9), bias-encoded.
-pub fn eval_frame_from_eqj_compare(
-    engine_id: u8, x_eqj_1e9: i64, y_eqj_1e9: i64, z_eqj_1e9: i64, days_since_j2000_1e9: i64
-) -> (i64, i64, i64) {
-    let (lon_std_1e9, lon_round_1e9, lat_std_1e9) = compute_engine_frame_from_eqj_compare_1e9(
-        engine_id, x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
-    );
-    (
-        lon_std_1e9 + DEBUG_FRAME_BIAS_1E9,
-        lon_round_1e9 + DEBUG_FRAME_BIAS_1E9,
-        lat_std_1e9 + DEBUG_FRAME_BIAS_1E9,
-    )
 }
