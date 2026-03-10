@@ -1,6 +1,6 @@
 # Mismatch Analysis
 
-- Source: `/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-planet-regression-corpus.ndjson`
+- Source: `/Users/kronosapiens/code/personal/astronomy-engine/astro/evals/v5-heavy-planet-regression-corpus.ndjson`
 - Rows: 68
 - Year range: Infinity..-Infinity
 - Year bucket size: 100
@@ -40,4 +40,3 @@ Distance to nearest sign boundary (degrees) for mismatched planet bits.
 
 | Years | Count |
 |---|---:|
-

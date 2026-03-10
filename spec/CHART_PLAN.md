@@ -1,4 +1,4 @@
-# Space Prince — Chart Port Plan (Cairo-Native)
+# Chart Port Plan (Cairo-Native)
 
 This document records the implementation decisions made during planning for the Cairo-native chart pipeline.
 

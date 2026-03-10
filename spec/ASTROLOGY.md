@@ -7,13 +7,13 @@ The goal is not to defend astrology as true or dismiss it as superstition, but t
 
 ### A note on perspective
 
-This document is written for the **SpacePrince** project, and its through-line reflects that purpose:
+This document is retained as domain background for the Cairo astronomy-engine project, and its through-line reflects that purpose:
 
-> **For this project, astrology is treated as a symbolic system for reasoning about agents, roles, and change within structured environments.**
+> **For this project, astrology is treated as a symbolic system for reasoning about celestial structure, chart semantics, and historical interpretive frameworks.**
 
 This is an *interpretive lens*, not a claim about what astrology essentially is.
 Other lenses — psychological, divinatory, spiritual — are legitimate and historically significant.
-But the structural/relational reading is the one most useful for designing game systems, and so it organizes this document.
+But the structural/relational reading is the one most useful for chart-computation and derivation work here, and so it organizes this document.
 Where the tradition is richer or more contested than this lens suggests, we try to say so.
 
 ---
@@ -382,7 +382,7 @@ Some of its structural tools (particularly the dasha systems) solve problems tha
 
 ### Synthesis — for this project
 
-For **SpacePrince**, astrology is most compelling when treated as:
+For this repository, astrology is most compelling when treated as:
 
 * A **symbolic grammar** for encoding roles, capacities, and relationships
 * A **model of authority and interaction** within constrained environments

@@ -1,4 +1,4 @@
-# Space Prince — Chart Construction Spec (Cairo-First)
+# Chart Construction Spec (Cairo-First)
 
 This document defines the current chart-construction direction.
 
@@ -14,7 +14,7 @@ This replaces earlier prototype assumptions (randomized or plausibility-clamped 
 
 - Deterministic, reproducible chart generation from quantized mint inputs.
 - Onchain-computable astronomy core with explicit versioning.
-- Sign-level outputs for gameplay and NFTs.
+- Sign-level outputs for deterministic chart state.
 
 ### In Scope (v1)
 
@@ -30,7 +30,7 @@ This replaces earlier prototype assumptions (randomized or plausibility-clamped 
 ### Explicitly Out of Scope (v1)
 
 - Degree-level orb logic for aspects.
-- Geometry beyond sign placement for game mechanics.
+- Higher-layer interaction semantics beyond chart construction.
 - Time-lords, lots, and medieval sub-systems.
 
 ---
@@ -47,7 +47,7 @@ For each minted chart, canonical state is:
 
 Notes:
 
-- We do not require persisting exact longitudes for gameplay.
+- We do not require persisting exact longitudes in canonical chart state.
 - Longitudes may be computed internally to derive sign placements.
 
 ---
@@ -76,7 +76,7 @@ Responsibilities:
 - dignity/sect derivation tables
 - sign-distance aspect class derivation
 
-Separation keeps astronomy stable while allowing gameplay derivation updates in higher layers.
+Separation keeps astronomy stable while allowing chart-derivation updates in higher layers.
 
 ---
 
@@ -94,7 +94,7 @@ Reference implementation for correctness is `astronomy-engine`.
 ### Drop
 
 - Eclipses, rise/set search, visual magnitude, constellations/stars.
-- Unused bodies/features for current game/NFT output.
+- Unused bodies/features outside the current chart-computation scope.
 
 ### Important Constraint
 

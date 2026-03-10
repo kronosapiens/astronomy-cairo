@@ -1,6 +1,6 @@
 # Mismatch Analysis
 
-- Source: `/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-mismatches-3461-3500.ndjson`
+- Source: `/Users/kronosapiens/code/personal/astronomy-engine/astro/evals/v5-heavy-mismatches-3461-3500.ndjson`
 - Rows: 40
 - Year range: 3461..3498
 - Year bucket size: 20
@@ -93,4 +93,3 @@ Distance to nearest sign boundary (degrees) for mismatched planet bits.
 |---|---:|
 | 3481-3500 | 22 |
 | 3461-3480 | 18 |
-

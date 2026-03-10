@@ -1,6 +1,6 @@
 # Mismatch Analysis
 
-- Source: `/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-mismatches-1001-3000.ndjson`
+- Source: `/Users/kronosapiens/code/personal/astronomy-engine/astro/evals/v5-heavy-mismatches-1001-3000.ndjson`
 - Rows: 26
 - Year range: 1004..1114
 - Year bucket size: 100
@@ -41,4 +41,3 @@
 |---|---:|
 | 1001-1100 | 20 |
 | 1101-1200 | 6 |
-

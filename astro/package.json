@@ -1,9 +1,9 @@
 {
-  "name": "space-prince-astro",
+  "name": "cairo-astronomy-engine-astro",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Scientific chart-compute package for Space Prince",
+  "description": "Oracle and parity tooling for the Cairo astronomy engine",
   "scripts": {
     "test": "node --test test/*.test.js",
     "test:legacy": "node --test test/legacy/*.test.js",

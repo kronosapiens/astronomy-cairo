@@ -2,10 +2,6 @@
 node_modules/
 .pnpm-store/
 
-# Vite
-client/dist/
-client/.vite/
-
 # Logs
 npm-debug.log*
 yarn-debug.log*

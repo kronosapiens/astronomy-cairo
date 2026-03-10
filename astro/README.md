@@ -1,8 +1,8 @@
 # `astro` package
 
-`astro` now has a small active surface and an explicit legacy area:
+Oracle and evaluation tooling for the Cairo astronomy-engine workspace.
 
-- Active: `astronomy-engine` wrappers and Cairo-v5 parity tooling.
+- Active: `astronomy-engine` wrappers, corpus generation, mismatch analysis, and Cairo parity tooling.
 - Legacy: older archive/Chebyshev/parity experiments under `src/legacy/`.
 
 ## CLI
@@ -34,4 +34,4 @@ node ../cairo/scripts/compare-v5-chart-parity.js \
   --end 2026-01-02T00:00:00Z
 ```
 
-Legacy scripts are still available via `npm run legacy:*`.
+Legacy scripts remain available via `npm run legacy:*`.

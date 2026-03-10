@@ -1,34 +1,39 @@
-# Cairo Chart Engine Workspace
+# Cairo Astronomy Engine Workspace
 
-This workspace contains the Cairo-native chart pipeline split into two crates:
+This workspace contains the active Cairo astronomy-engine crates plus retained historical reference crates.
 
-- `astronomy_engine_v1`: deterministic astronomy primitives and approximate 7-body/ascendant longitudes
-- `star_chart`: quantization + astrology derivation layer that emits canonical sign-level chart state
+## Active Workspace Members
 
-## Numeric policy (v1)
+- `astronomy_engine_v5`
+- `astronomy_engine_api`
+- `astronomy_engine_eval_runner`
+
+Historical R&D crates (`v1`..`v4`, `star_chart`) remain in `crates/` for reference but are not active workspace members.
+
+## Numeric Policy
 
 - Runtime fixed-point: `i64` scaled by `1e9`
 - Intermediate arithmetic: `i128`
 - Rounding: half-away-from-zero
 
-## Input policy (v1)
+## Input Policy
 
-- `time_minute_since_1900` (minute resolution)
-- `lat_bin` / `lon_bin` in `0.1°` bins
-- Onchain quantization to 15-minute buckets (`floor(minute/15)`)
+- Minute-resolution time inputs
+- Latitude/longitude bins in `0.1°`
+- Deterministic 15-minute quantization where chart-level derivation requires it
 
 ## Testing
 
-Run all Cairo tests:
+Run all active Cairo tests:
 
 ```bash
 scarb test
 ```
 
-Current test coverage includes:
+Core coverage includes:
 
 - fixed-point arithmetic and angle normalization
-- time conversion (`1900` epoch -> `J2000` days)
-- planetary longitude and ascendant normalization
-- sign/house/dignity/aspect/sect derivations
-- end-to-end canonical chart generation with deterministic golden vectors
+- time conversion and calendar transforms
+- planetary longitude computation
+- ascendant computation
+- eval-runner parity checks against oracle-generated expectations

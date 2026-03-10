@@ -1,6 +1,6 @@
 {
   "tsUtc": "2026-03-07T06:22:03.259Z",
-  "corpus": "/Users/kronosapiens/code/personal/SpacePrince/astro/evals/v5-heavy-planet-regression-corpus.ndjson",
+  "corpus": "/Users/kronosapiens/code/personal/astronomy-engine/astro/evals/v5-heavy-planet-regression-corpus.ndjson",
   "pointCount": 68,
   "passCount": 68,
   "failCount": 0,
