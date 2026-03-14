@@ -26,6 +26,12 @@ npm run eval:light
 npm run eval:heavy
 ```
 
+Default evaluator batching now uses:
+
+- `eval-cairo-engine`: `--batch-size 1`
+- heavy profile Cairo invocation size: `24` points
+- `eval-random-cairo-engine`: `--batch-points 24`
+
 Run resumable random evaluation with chunk summaries and cursor state:
 
 ```bash

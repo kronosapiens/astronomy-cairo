@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "config": {
+    "engine": "v5",
+    "seed": 1,
+    "points": 2400,
+    "startYear": 1,
+    "endYear": 4000,
+    "includePassingRows": false,
+    "batchPoints": 24
+  },
+  "startedAt": "2026-03-13T18:51:42.157Z",
+  "updatedAt": "2026-03-13T19:00:24.854Z",
+  "nextChunkStart": 2400,
+  "processedPoints": 2400,
+  "completedChunks": 100,
+  "mismatchCount": 0,
+  "completed": true,
+  "completedAt": "2026-03-13T19:00:24.854Z"
+}

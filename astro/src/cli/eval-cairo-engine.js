@@ -107,6 +107,114 @@ function sliceBatchPayload(pointData, expectedData, startPointIdx, endPointIdxEx
   };
 }
 
+function zeroBreakdown() {
+  return {
+    failCount: 0,
+    planetFailCount: 0,
+    ascFailCount: 0,
+    sunFailCount: 0,
+    moonFailCount: 0,
+    mercuryFailCount: 0,
+    venusFailCount: 0,
+    marsFailCount: 0,
+    jupiterFailCount: 0,
+    saturnFailCount: 0,
+  };
+}
+
+function addBreakdownTotals(target, source) {
+  target.failCount += source.failCount;
+  target.planetFailCount += source.planetFailCount;
+  target.ascFailCount += source.ascFailCount;
+  target.sunFailCount += source.sunFailCount;
+  target.moonFailCount += source.moonFailCount;
+  target.mercuryFailCount += source.mercuryFailCount;
+  target.venusFailCount += source.venusFailCount;
+  target.marsFailCount += source.marsFailCount;
+  target.jupiterFailCount += source.jupiterFailCount;
+  target.saturnFailCount += source.saturnFailCount;
+  return target;
+}
+
+function validateBreakdown(breakdown, pointCount) {
+  if (
+    !Number.isInteger(breakdown.failCount) ||
+    !Number.isInteger(breakdown.planetFailCount) ||
+    !Number.isInteger(breakdown.ascFailCount) ||
+    !Number.isInteger(breakdown.sunFailCount) ||
+    !Number.isInteger(breakdown.moonFailCount) ||
+    !Number.isInteger(breakdown.mercuryFailCount) ||
+    !Number.isInteger(breakdown.venusFailCount) ||
+    !Number.isInteger(breakdown.marsFailCount) ||
+    !Number.isInteger(breakdown.jupiterFailCount) ||
+    !Number.isInteger(breakdown.saturnFailCount) ||
+    breakdown.failCount < 0 ||
+    breakdown.failCount > pointCount ||
+    breakdown.planetFailCount < 0 ||
+    breakdown.planetFailCount > pointCount ||
+    breakdown.ascFailCount < 0 ||
+    breakdown.ascFailCount > pointCount ||
+    breakdown.sunFailCount < 0 ||
+    breakdown.sunFailCount > pointCount ||
+    breakdown.moonFailCount < 0 ||
+    breakdown.moonFailCount > pointCount ||
+    breakdown.mercuryFailCount < 0 ||
+    breakdown.mercuryFailCount > pointCount ||
+    breakdown.venusFailCount < 0 ||
+    breakdown.venusFailCount > pointCount ||
+    breakdown.marsFailCount < 0 ||
+    breakdown.marsFailCount > pointCount ||
+    breakdown.jupiterFailCount < 0 ||
+    breakdown.jupiterFailCount > pointCount ||
+    breakdown.saturnFailCount < 0 ||
+    breakdown.saturnFailCount > pointCount
+  ) {
+    throw new Error(`Unexpected batch breakdown from Cairo runner: ${JSON.stringify(breakdown)}`);
+  }
+}
+
+function runWindowBreakdown({
+  engineId,
+  batchPointData,
+  batchExpected,
+  batchPointCount,
+  pointsPerBatch,
+  noBuild,
+  runCairoBatchFn = runCairoBatch,
+}) {
+  if (pointsPerBatch >= batchPointCount) {
+    return runCairoBatchFn({
+      engineId,
+      packedPoints: batchPointData,
+      expectedPacked: batchExpected,
+      noBuild,
+      cairoDir: CAIRO_DIR,
+    });
+  }
+
+  const totals = zeroBreakdown();
+  for (let startPointIdx = 0; startPointIdx < batchPointCount; startPointIdx += pointsPerBatch) {
+    const endPointIdxExclusive = Math.min(startPointIdx + pointsPerBatch, batchPointCount);
+    const { pointSlice, expectedSlice } = sliceBatchPayload(
+      batchPointData,
+      batchExpected,
+      startPointIdx,
+      endPointIdxExclusive,
+    );
+    const chunk = runCairoBatchFn({
+      engineId,
+      packedPoints: pointSlice,
+      expectedPacked: expectedSlice,
+      noBuild,
+      cairoDir: CAIRO_DIR,
+    });
+    validateBreakdown(chunk, endPointIdxExclusive - startPointIdx);
+    addBreakdownTotals(totals, chunk);
+  }
+
+  return totals;
+}
+
 function collectMismatchRowsForBatch({
   engineId,
   engine,
@@ -250,7 +358,8 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const engine = getStringArg(args, "engine", "v5").toLowerCase();
   const profile = getStringArg(args, "profile", "light").toLowerCase();
-  const batchYears = getNumberArg(args, "batch-size", 20);
+  const batchYears = getNumberArg(args, "batch-size", 1);
+  const pointsPerBatchArg = getNumberArg(args, "points-per-batch", 0);
   const maxPointsPerBatch = getNumberArg(args, "max-batch", 2500);
   const logEveryChunks = getNumberArg(args, "log-every-chunks", 5);
   const quiet = Boolean(args.quiet);
@@ -277,6 +386,11 @@ function main() {
       `Invalid --max-batch=${maxPointsPerBatch}; expected a positive integer`,
     );
   }
+  if (!Number.isInteger(pointsPerBatchArg) || pointsPerBatchArg < 0) {
+    throw new Error(
+      `Invalid --points-per-batch=${pointsPerBatchArg}; expected a non-negative integer`,
+    );
+  }
 
   const capability = ENGINE_CONFIG[engine];
   const startYear = getNumberArg(args, "start-year", capability.startYear);
@@ -295,6 +409,7 @@ function main() {
   }
   const totalYears = endYear - startYear + 1;
   const totalPoints = totalYears * months * locations.length;
+  const pointsPerBatch = pointsPerBatchArg > 0 ? pointsPerBatchArg : requestedPointsPerBatch;
   if (
     !Number.isInteger(startYear) ||
     !Number.isInteger(endYear) ||
@@ -328,7 +443,7 @@ function main() {
   let processedBatches = 0;
   const runStart = Date.now();
   log(
-    `Starting eval: engine=${engine}, profile=${profile}, years=[${startYear}, ${endYear}] inclusive, totalPoints=${totalPoints}, batchYears=${batchYears}.`,
+    `Starting eval: engine=${engine}, profile=${profile}, years=[${startYear}, ${endYear}] inclusive, totalPoints=${totalPoints}, batchYears=${batchYears}, pointsPerBatch=${pointsPerBatch}.`,
   );
   const emit = (record) => {
     console.log(JSON.stringify(record));
@@ -344,47 +459,15 @@ function main() {
       locations,
     });
 
-    const batchResult = runCairoBatch({
+    const batchResult = runWindowBreakdown({
       engineId: capability.id,
-      packedPoints: batchPointData,
-      expectedPacked: batchExpected,
+      batchPointData,
+      batchExpected,
+      batchPointCount,
+      pointsPerBatch,
       noBuild: true,
-      cairoDir: CAIRO_DIR,
     });
-    if (
-      !Number.isInteger(batchResult.failCount) ||
-      !Number.isInteger(batchResult.planetFailCount) ||
-      !Number.isInteger(batchResult.ascFailCount) ||
-      !Number.isInteger(batchResult.sunFailCount) ||
-      !Number.isInteger(batchResult.moonFailCount) ||
-      !Number.isInteger(batchResult.mercuryFailCount) ||
-      !Number.isInteger(batchResult.venusFailCount) ||
-      !Number.isInteger(batchResult.marsFailCount) ||
-      !Number.isInteger(batchResult.jupiterFailCount) ||
-      !Number.isInteger(batchResult.saturnFailCount) ||
-      batchResult.failCount < 0 ||
-      batchResult.failCount > batchPointCount ||
-      batchResult.planetFailCount < 0 ||
-      batchResult.planetFailCount > batchPointCount ||
-      batchResult.ascFailCount < 0 ||
-      batchResult.ascFailCount > batchPointCount ||
-      batchResult.sunFailCount < 0 ||
-      batchResult.sunFailCount > batchPointCount ||
-      batchResult.moonFailCount < 0 ||
-      batchResult.moonFailCount > batchPointCount ||
-      batchResult.mercuryFailCount < 0 ||
-      batchResult.mercuryFailCount > batchPointCount ||
-      batchResult.venusFailCount < 0 ||
-      batchResult.venusFailCount > batchPointCount ||
-      batchResult.marsFailCount < 0 ||
-      batchResult.marsFailCount > batchPointCount ||
-      batchResult.jupiterFailCount < 0 ||
-      batchResult.jupiterFailCount > batchPointCount ||
-      batchResult.saturnFailCount < 0 ||
-      batchResult.saturnFailCount > batchPointCount
-    ) {
-      throw new Error(`Unexpected batch breakdown from Cairo runner: ${JSON.stringify(batchResult)}`);
-    }
+    validateBreakdown(batchResult, batchPointCount);
 
     const batchFailCount = batchResult.failCount;
     const batchPlanetFailCount = batchResult.planetFailCount;

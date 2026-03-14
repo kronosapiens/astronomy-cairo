@@ -39,7 +39,7 @@ const LAT_STRATA = [
   [601, 900],
 ];
 const YEAR_BUCKET_COUNT = 20;
-const BATCH_POINTS = 500;
+const BATCH_POINTS = 24;
 const STATE_VERSION = 1;
 
 export function encodePointArrays(points) {
