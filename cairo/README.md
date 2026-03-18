@@ -8,7 +8,7 @@ This workspace contains the active Cairo astronomy-engine crates plus retained h
 - `astronomy_engine_api`
 - `astronomy_engine_eval_runner`
 
-Historical R&D crates (`v1`..`v4`, `star_chart`) remain in `crates/` for reference but are not active workspace members.
+Historical R&D crates (`v1`..`v4`) remain in `crates/` for reference but are not active workspace members.
 
 ## Numeric Policy
 
