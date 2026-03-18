@@ -95,10 +95,8 @@ function runPointMask(engineId, minutePg, latBin, lonBin, expectedSigns) {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const corpusPath = getStringArg(args, "corpus", "");
-  const outPath = getStringArg(args, "out", "");
   const engineId = Number(getStringArg(args, "engine-id", "5"));
   if (!corpusPath) throw new Error("Missing --corpus <path>");
-  if (!outPath) throw new Error("Missing --out <path>");
 
   const rows = fs
     .readFileSync(corpusPath, "utf8")
@@ -131,7 +129,6 @@ function main() {
     ...breakdown,
     failedPoints,
   };
-  fs.writeFileSync(outPath, `${JSON.stringify(summary, null, 2)}\n`, "utf8");
   console.log(JSON.stringify(summary));
 }
 

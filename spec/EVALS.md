@@ -126,10 +126,8 @@ Random evaluation is exploratory coverage, not a substitute for deterministic co
 
 Because these runs can be long, they must support:
 
-- chunk-level progress summaries
-- durable cursor/state files
-- resumability
-- mismatch detail artifacts separate from summary artifacts
+- resumability via `--start-index` / `--end-index` (derived from inspecting existing output)
+- self-contained, job-invariant result rows
 
 ### 2.5 Diagnostic Mismatch Analysis
 
@@ -225,21 +223,20 @@ Purpose:
 Requirements:
 
 - deterministic sample generation from `(seed, sampleIndex)`
-- chunk summaries
-- resumable state file
-- optional mismatch detail file
+- all output to stdout as ndjson
+- resumable via `--start-index` / `--end-index`
 
 Random eval must be composable:
 
-- a chunk can be rerun independently
-- a run can be resumed from a saved cursor
-- outputs can be merged or analyzed without reinterpreting raw console logs
+- any index range can be run independently
+- outputs from different runs can be concatenated and deduplicated
+- a row is identical regardless of which job produced it
 
 ---
 
 ## 5. Output Contracts
 
-Output artifacts should be append-only NDJSON or stable JSON state files.
+Output artifacts should be append-only NDJSON written to stdout.
 
 Every entry in these output files should be a stand-alone piece of data.
 It should be possible to aggregate, splice, recombine outputs accurately, using only the data stored on the NDJSON entries.
@@ -258,31 +255,24 @@ In practice, that means a row must not depend on:
 - a separate state file
 - assumptions about whether the run was executed as one job or many jobs
 
-### 5.1 Summary Rows
+A stronger form of this rule: **result rows must be job-invariant.**
+A given point's row must be byte-identical regardless of what job produced it.
+Rows must not contain job-level configuration (run size, batch size, year range, include-passes mode) — only the fields that describe the point and its result.
+Two runs with different `--points` or `--start-index` / `--end-index` values but the same `seed` and `sampleIndex` must produce identical output rows.
+This means outputs from different jobs can be concatenated, deduplicated, and analyzed without distinguishing which job produced which row.
 
-Long-running evals should emit summary rows at chunk or window granularity.
+### 5.1 Result Rows
+
+Each result row represents one evaluated point.
+All output goes to stdout as ndjson.
+Aggregations (pass/fail counts, per-planet breakdowns, timing) are derived by consumers, not emitted by the tool.
 
 Minimum fields:
 
 - `type`
 - `engine`
-- `seed` or date-window identity
-- `chunkStart` / `chunkEnd` or `yearStart` / `yearEnd`
-- `pointCount`
-- `failCount`
-- per-planet fail counters where relevant
-- elapsed time
-- timestamp
-
-Summary rows may include operational metadata such as cumulative progress, but such fields are optional and must not be required to interpret the row.
-
-### 5.2 Mismatch Rows
-
-Mismatch rows should be point-specific and diagnostic.
-
-Minimum fields:
-
-- `sampleIndex` or equivalent point identity
+- `seed`
+- `sampleIndex`
 - timestamp/date components
 - `latBin`
 - `lonBin`
@@ -296,23 +286,12 @@ Recommended fields:
 - year bucket
 - latitude stratum
 
-### 5.3 State Files
+### 5.2 Resumability
 
-Resumable evals should persist state after each completed chunk.
+Resumability is achieved by inspecting existing output, not by maintaining state files.
+To resume an interrupted run, scan the output for completed `sampleIndex` values, identify gaps, and re-run with `--start-index` / `--end-index` targeting the missing range.
+The tool does not need a `--resume` flag or a state file.
 
-Minimum fields:
-
-- state format version
-- full run config
-- `nextChunkStart`
-- processed point count
-- completed chunk count
-- cumulative mismatch count
-- `completed`
-- timestamps
-
-State files are operational aids only.
-They may help a process resume efficiently, but they must not be required to interpret, trust, splice, or merge NDJSON result rows.
 ---
 
 ## 6. Pass/Fail Semantics
@@ -368,39 +347,21 @@ When debugging:
 
 Do not default to full-range heavy reruns for every hypothesis.
 
-### 7.3 Separate Summary From Detail
+### 7.3 One Row Type, One Stream
 
-Do not mix progress reporting and mismatch detail into a single hard-to-parse stream.
-
-Preferred pattern:
-
-- summary NDJSON
-- mismatch NDJSON
-- state JSON
+All result rows go to stdout as ndjson.
+Aggregations and summaries are derived by consumers (`grep`, `jq`, etc.), not emitted by the tool.
+Do not split output across multiple files or row types within a single tool.
 
 ### 7.4 Make Interrupted Runs Useful
 
 If a run is stopped midway, the partial outputs should still answer:
 
-- what chunks completed
-- how many points were processed
+- which points were evaluated
 - whether mismatches were found
 - where to resume
 
-That information should be derivable from the emitted rows themselves, not from the existence of a special terminal row.
-
-### 7.5 Record Configuration Explicitly
-
-The output location alone is not enough.
-
-Every resumable or long-running eval must record:
-
-- engine
-- seed
-- point count
-- year range
-- include-passes mode
-- chunk size
+That information should be derivable from the emitted rows themselves (via `sampleIndex`), not from a separate state file or terminal marker.
 
 ---
 
@@ -411,7 +372,7 @@ Current tooling in this repository maps to this spec as follows:
 - `astro/src/cli/eval-cairo-engine.js`
   - structured light/heavy window sweeps
 - `astro/src/cli/eval-random-cairo-engine.js`
-  - resumable random evaluation with chunk summaries, state, and mismatch artifacts
+  - random evaluation with stdout ndjson output, resumable via `--start-index` / `--end-index`
 - `astro/src/cli/eval-mismatch-corpus.js`
   - deterministic regression corpus gate
 - `astro/src/cli/build-mismatch-corpus.js`
@@ -435,11 +396,9 @@ For most engine changes:
 
 For long unattended validation:
 
-1. Start random or heavy evaluation with explicit artifact paths.
-2. Ensure chunk/window summaries are being written early.
-3. Confirm state/cursor artifacts are updating.
-4. Resume rather than restart when interrupted.
-5. Treat the run as complete only if a completion marker is present.
+1. Start random evaluation, piping stdout to an ndjson file.
+2. If interrupted, inspect the output for the highest `sampleIndex`.
+3. Re-run with `--start-index` covering the gap, appending to the same file.
 
 ---
 

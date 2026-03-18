@@ -2,69 +2,47 @@
 
 Oracle and evaluation tooling for the Cairo astronomy-engine workspace.
 
-- Active: `astronomy-engine` wrappers, corpus generation, mismatch analysis, and Cairo parity tooling.
-- Legacy: older archive/Chebyshev/parity experiments under `src/legacy/`.
+All evaluation output goes to stdout as ndjson.
+See [../spec/EVALS.md](../spec/EVALS.md) for the full evaluation specification.
 
-## CLI
+## Evaluation
 
-Build sign-level oracle corpus (7 planets + ascendant sign):
+Structured eval (12 months x 2 locations per year, deterministic grid):
 
 ```bash
-npm run build:sign-corpus -- \
+node src/cli/eval-cairo-engine.js --start-year 2000 --end-year 2100
+```
+
+Random eval (seed-deterministic sampling across full date/location range):
+
+```bash
+node src/cli/eval-random-cairo-engine.js --points 1000 --seed 42
+```
+
+Fill a gap in an interrupted random run:
+
+```bash
+node src/cli/eval-random-cairo-engine.js --points 1000 --seed 42 \
+  --start-index 48 --end-index 96 >> evals/run.ndjson
+```
+
+Corpus gate (deterministic regression check):
+
+```bash
+node src/cli/eval-mismatch-corpus.js --corpus evals/old/v5-heavy-planet-regression-corpus.ndjson
+```
+
+## Other CLI tools
+
+Build sign-level oracle corpus:
+
+```bash
+node src/cli/generate-corpus.js \
   --start 2026-01-01T00:00:00Z \
   --end 2026-01-02T00:00:00Z \
   --step-minutes 60 \
   --lat-bins 377 \
-  --lon-bins -1224 \
-  --out results/corpus/2026.sign-corpus.json
-```
-
-Evaluate Cairo v5 runner:
-
-```bash
-npm run eval:light
-npm run eval:heavy
-```
-
-Default evaluator batching now uses:
-
-- `eval-cairo-engine`: `--batch-size 1`
-- heavy profile Cairo invocation size: `24` points
-- `eval-random-cairo-engine`: `--batch-points 24`
-
-Run resumable random evaluation with chunk summaries and cursor state:
-
-```bash
-node src/cli/eval-random-cairo-engine.js \
-  --engine v5 \
-  --points 100000 \
-  --seed 20260310 \
-  --include-passes false \
-  --summary-file evals/v5-random-summary.ndjson \
-  --state-file evals/v5-random-state.json \
-  --mismatch-file evals/v5-random-mismatches.ndjson
-```
-
-Resume the same run later:
-
-```bash
-node src/cli/eval-random-cairo-engine.js \
-  --engine v5 \
-  --points 100000 \
-  --seed 20260310 \
-  --include-passes false \
-  --summary-file evals/v5-random-summary.ndjson \
-  --state-file evals/v5-random-state.json \
-  --mismatch-file evals/v5-random-mismatches.ndjson \
-  --resume true
-```
-
-Compare generated Cairo v5 tests against oracle signs:
-
-```bash
-node ../cairo/scripts/compare-v5-chart-parity.js \
-  --start 2026-01-01T00:00:00Z \
-  --end 2026-01-02T00:00:00Z
+  --lon-bins -1224
 ```
 
 Legacy scripts remain available via `npm run legacy:*`.

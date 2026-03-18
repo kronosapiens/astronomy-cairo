@@ -78,7 +78,6 @@ test("collectMismatchRowsForBatch recursively isolates failing points", () => {
   const result = collectMismatchRowsForBatch({
     engineId: 5,
     engine: "v5",
-    profile: "test",
     batchMeta,
     batchPointData,
     batchExpected,
@@ -104,7 +103,7 @@ test("collectMismatchRowsForBatch recursively isolates failing points", () => {
   assert.ok(result.subsetBatchCalls > 0);
 
   const extractedMinutes = result.mismatchRows
-    .map((line) => JSON.parse(line).minutePg)
+    .map((row) => row.minutePg)
     .sort((a, b) => a - b);
   assert.deepEqual(extractedMinutes, [1, 4, 7]);
 });

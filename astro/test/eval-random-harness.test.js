@@ -1,15 +1,9 @@
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
   buildChunkPoints,
   collectMismatchRowsForChunk,
-  createInitialState,
-  defaultRunConfig,
   samplePointForIndex,
-  validateResumeState,
 } from "../src/cli/eval-random-cairo-engine.js";
 
 test("samplePointForIndex is deterministic for seed and sample index", () => {
@@ -25,24 +19,6 @@ test("buildChunkPoints is composable across chunk boundaries", () => {
     ...buildChunkPoints({ seed: 7, startYear: 1, endYear: 4000, chunkStart: 12, chunkEnd: 15 }),
   ];
   assert.deepEqual(parts, whole);
-});
-
-test("validateResumeState rejects config mismatches", () => {
-  const config = defaultRunConfig({
-    engine: "v5",
-    seed: 5,
-    points: 1000,
-    startYear: 1,
-    endYear: 4000,
-    includePassingRows: false,
-    batchPoints: 500,
-  });
-  const state = createInitialState(config);
-  validateResumeState(state, config);
-  assert.throws(
-    () => validateResumeState(state, { ...config, seed: 6 }),
-    /Resume state config mismatch/,
-  );
 });
 
 test("collectMismatchRowsForChunk isolates only failing points", () => {

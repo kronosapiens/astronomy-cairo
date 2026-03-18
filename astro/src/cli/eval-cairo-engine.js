@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs, getNumberArg, getStringArg } from "./args.js";
@@ -31,8 +30,6 @@ const CAIRO_DIR = path.join(REPO_ROOT, "cairo");
 function buildBatchPayload({
   batchStartYear,
   batchEndYear,
-  runStartYear = batchStartYear,
-  runEndYear = batchEndYear,
   months,
   locations,
   computeExpectedSignsForPointFn = computeExpectedSignsForPoint,
@@ -63,10 +60,6 @@ function buildBatchPayload({
           signs[7],
         );
         batchMeta.push({
-          runStartYear,
-          runEndYear,
-          batchStartYear,
-          batchEndYear,
           year,
           month,
           location: loc.name,
@@ -218,7 +211,6 @@ function runWindowBreakdown({
 function collectMismatchRowsForBatch({
   engineId,
   engine,
-  profile,
   locationSet,
   monthsPerYear,
   batchMeta,
@@ -303,18 +295,10 @@ function collectMismatchRowsForBatch({
           oraclePlanetLongitudeFn("Jupiter", pointUnixMs),
           oraclePlanetLongitudeFn("Saturn", pointUnixMs),
         ];
-        mismatchRows.push(JSON.stringify(makeStructuredMismatchRow({
-          tsUtc: new Date().toISOString(),
+        mismatchRows.push(makeStructuredMismatchRow({
           engine,
-          profile,
           locationSet,
           monthsPerYear,
-          runStartYear: meta.runStartYear,
-          runEndYear: meta.runEndYear,
-          batchStartYear: meta.batchStartYear,
-          batchEndYear: meta.batchEndYear,
-          batchPointCount: batchMeta.length,
-          pointIndex: idx,
           year: meta.year,
           month: meta.month,
           location: meta.location,
@@ -326,7 +310,7 @@ function collectMismatchRowsForBatch({
           actualLongitudes1e9: detail.actualLongitudes1e9,
           oracleLongitudesDeg,
           mismatchMask: mask,
-        })));
+        }));
       }
       return;
     }
@@ -357,59 +341,31 @@ function locationSetId(locations) {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const engine = getStringArg(args, "engine", "v5").toLowerCase();
-  const profile = getStringArg(args, "profile", "light").toLowerCase();
-  const batchYears = getNumberArg(args, "batch-size", 1);
-  const pointsPerBatchArg = getNumberArg(args, "points-per-batch", 0);
-  const maxPointsPerBatch = getNumberArg(args, "max-batch", 2500);
   const logEveryChunks = getNumberArg(args, "log-every-chunks", 5);
   const quiet = Boolean(args.quiet);
   const failOnMismatch = Boolean(args["fail-on-mismatch"]);
-  const mismatchLogPath = args["mismatch-log"] ? String(args["mismatch-log"]) : null;
   const log = (line) => {
     if (!quiet) process.stderr.write(`[eval-cairo-engine] ${line}\n`);
   };
-  if (Object.hasOwn(args, "end-year-exclusive")) {
-    throw new Error("Flag --end-year-exclusive has been removed. Use --end-year (inclusive) instead.");
-  }
 
   if (!ENGINE_CONFIG[engine]) {
     throw new Error(`Unsupported --engine=${engine}; expected one of ${Object.keys(ENGINE_CONFIG).join(", ")}`);
   }
-  if (profile !== "light" && profile !== "heavy") {
-    throw new Error(`Unsupported --profile=${profile}; expected 'light' or 'heavy'`);
-  }
-  if (!Number.isInteger(batchYears) || batchYears <= 0) {
-    throw new Error(`Invalid --batch-size=${batchYears}; expected a positive integer number of years per batch`);
-  }
-  if (!Number.isInteger(maxPointsPerBatch) || maxPointsPerBatch <= 0) {
-    throw new Error(
-      `Invalid --max-batch=${maxPointsPerBatch}; expected a positive integer`,
-    );
-  }
-  if (!Number.isInteger(pointsPerBatchArg) || pointsPerBatchArg < 0) {
-    throw new Error(
-      `Invalid --points-per-batch=${pointsPerBatchArg}; expected a non-negative integer`,
-    );
-  }
 
   const capability = ENGINE_CONFIG[engine];
-  const startYear = getNumberArg(args, "start-year", capability.startYear);
-  const endYear = getNumberArg(args, "end-year", capability.endYear);
-  const locations = profile === "heavy" ? [NYC, ALEXANDRIA] : [NYC];
-  const locationSet = locationSetId(locations);
-  const months = profile === "heavy" ? 12 : 1;
-  const pointsPerYear = months * locations.length;
-  const requestedPointsPerBatch = batchYears * pointsPerYear;
-  if (requestedPointsPerBatch > maxPointsPerBatch) {
-    const suggestedBatchYears = Math.max(1, Math.floor(maxPointsPerBatch / pointsPerYear));
-    throw new Error(
-      `Requested batch is too large: ${requestedPointsPerBatch} points per batch (batchYears=${batchYears}, months=${months}, locations=${locations.length}). ` +
-      `Lower --batch-size to <= ${suggestedBatchYears} or increase --max-batch.`,
-    );
+  const startYear = getNumberArg(args, "start-year", NaN);
+  const endYear = getNumberArg(args, "end-year", NaN);
+  if (!Number.isInteger(startYear) || !Number.isInteger(endYear)) {
+    throw new Error("--start-year and --end-year are required");
   }
+  const locations = [NYC, ALEXANDRIA];
+  const locationSet = locationSetId(locations);
+  const months = 12;
+  const pointsPerYear = months * locations.length;
+  const batchYears = 1;
+  const pointsPerBatch = pointsPerYear;
   const totalYears = endYear - startYear + 1;
-  const totalPoints = totalYears * months * locations.length;
-  const pointsPerBatch = pointsPerBatchArg > 0 ? pointsPerBatchArg : requestedPointsPerBatch;
+  const totalPoints = totalYears * pointsPerYear;
   if (
     !Number.isInteger(startYear) ||
     !Number.isInteger(endYear) ||
@@ -443,7 +399,7 @@ function main() {
   let processedBatches = 0;
   const runStart = Date.now();
   log(
-    `Starting eval: engine=${engine}, profile=${profile}, years=[${startYear}, ${endYear}] inclusive, totalPoints=${totalPoints}, batchYears=${batchYears}, pointsPerBatch=${pointsPerBatch}.`,
+    `Starting eval: engine=${engine}, years=[${startYear}, ${endYear}] inclusive, totalPoints=${totalPoints}, pointsPerBatch=${pointsPerBatch}.`,
   );
   const emit = (record) => {
     console.log(JSON.stringify(record));
@@ -453,8 +409,6 @@ function main() {
     const { batchPointData, batchExpected, batchMeta, batchPointCount } = buildBatchPayload({
       batchStartYear,
       batchEndYear,
-      runStartYear: startYear,
-      runEndYear: endYear,
       months,
       locations,
     });
@@ -480,14 +434,13 @@ function main() {
     const batchJupiterFailCount = batchResult.jupiterFailCount;
     const batchSaturnFailCount = batchResult.saturnFailCount;
 
-    if (mismatchLogPath && batchFailCount > 0) {
+    if (batchFailCount > 0) {
       log(
         `Generating mismatch details for years ${batchStartYear}-${batchEndYear} with recursive isolation...`,
       );
       const { mismatchRows, pointMaskCalls, subsetBatchCalls } = collectMismatchRowsForBatch({
         engineId: capability.id,
         engine,
-        profile,
         locationSet,
         monthsPerYear: months,
         batchMeta,
@@ -496,8 +449,8 @@ function main() {
         rootBreakdown: batchResult,
         noBuild: true,
       });
-      if (mismatchRows.length > 0) {
-        fs.appendFileSync(mismatchLogPath, `${mismatchRows.join("\n")}\n`, "utf8");
+      for (const row of mismatchRows) {
+        emit(row);
       }
       log(
         `Mismatch details for ${batchStartYear}-${batchEndYear}: rows=${mismatchRows.length}, subsetChecks=${subsetBatchCalls}, pointMasks=${pointMaskCalls}.`,
@@ -520,14 +473,9 @@ function main() {
     const batchPassCount = batchPointCount - batchFailCount;
 
     emit(makeWindowSummaryRow({
-      tsUtc: new Date().toISOString(),
       engine,
-      profile,
       locationSet,
       monthsPerYear: months,
-      batchYears,
-      runStartYear: startYear,
-      runEndYear: endYear,
       yearStart: batchStartYear,
       yearEnd: batchEndYear,
       pointCount: batchPointCount,
@@ -542,7 +490,6 @@ function main() {
       marsFailCount: batchMarsFailCount,
       jupiterFailCount: batchJupiterFailCount,
       saturnFailCount: batchSaturnFailCount,
-      elapsedMs,
     }));
 
     if (processedBatches % logEveryChunks === 0 || processedYears === totalYears) {
