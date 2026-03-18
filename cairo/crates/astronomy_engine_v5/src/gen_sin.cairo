@@ -1,3 +1,9 @@
+// Generated sine lookup table: 7201 entries covering [0°, 360°) at 0.05° intervals.
+// Each entry is sin(k * 0.05°) scaled by 1e9. Used by trig.cairo for sin/cos evaluation
+// via linear interpolation between adjacent entries. The table wraps at index 7200 back
+// to index 0 for continuity at the 360° boundary. Do not edit manually; regenerate from
+// the upstream tooling if the resolution or scale needs to change.
+
 pub const SIN_TWENTIETH_DEG_1E9: [i64; 7201] = [
     0,
     872665,

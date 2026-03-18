@@ -1,3 +1,10 @@
+// Generated arctangent lookup table: 10001 entries covering z ∈ [0, 1] at Δz = 0.0001.
+// Each entry is atan(k/10000) in degrees scaled by 1e9. Used by trig.cairo for atan2
+// evaluation: values in [0, 1] are looked up directly with linear interpolation, while
+// values outside that range use the identity atan(z) = 90° - atan(1/z). Quadrant and
+// sign handling are done in the calling code. Do not edit manually; regenerate from the
+// upstream tooling if the resolution or scale needs to change.
+
 pub const ATAN_RATIO_1E4_DEG_1E9: [i64; 10001] = [
     0,
     5729578,

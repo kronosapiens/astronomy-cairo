@@ -1,4 +1,13 @@
-// Moon harmonic terms from astronomy-engine CalcMoon AddSol(...) and ADDN(...).
+// 104 harmonic terms for the Moon's longitude perturbation series, extracted from the
+// upstream astronomy-engine CalcMoon routine (AddSol calls). Each term is a tuple
+// (coeff_l_1e4, coeff_r_1e4, coeff_lat_1e4, p, q, r, s) where p/q/r/s are integer
+// multipliers for the four fundamental arguments (l = Moon mean anomaly, l' = Sun mean
+// anomaly, F = Moon argument of latitude, D = Moon mean elongation). During evaluation,
+// each term contributes coeff_l * Y(p,q,r,s) arcseconds to the longitude accumulator,
+// where Y is the product of amplitude factors and sin(p*l + q*l' + r*F + s*D). Only
+// the longitude coefficient (first element) is used in the current pipeline; the radial
+// and latitude coefficients are retained for potential future use. Do not edit manually.
+
 pub const MOON_SOLAR_TERMS: [(i64, i64, i64, i8, i8, i8, i8); 104] = [
     (139020, 140600, -10, 0, 0, 0, 4),
     (4030, -40100, 3940, 0, 0, 0, 3),
@@ -104,17 +113,4 @@ pub const MOON_SOLAR_TERMS: [(i64, i64, i64, i8, i8, i8, i8); 104] = [
     (-3720, -1900, 0, 1, -1, -2, 2),
     (4180, 0, 0, 0, 0, 4, 0),
     (-3300, -400, 0, 3, 0, 2, 0),
-];
-
-pub const MOON_N_TERMS: [(i64, i8, i8, i8, i8); 10] = [
-    (-526069, 0, 0, 1, -2),
-    (-3352, 0, 0, 1, -4),
-    (44297, 1, 0, 1, -2),
-    (-6000, 1, 0, 1, -4),
-    (20599, -1, 0, 1, 0),
-    (-30598, -1, 0, 1, -2),
-    (-24649, -2, 0, 1, 0),
-    (-2000, -2, 0, 1, -2),
-    (-22571, 0, 1, 1, -2),
-    (10985, 0, -1, 1, -2),
 ];

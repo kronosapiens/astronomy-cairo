@@ -1,18 +1,17 @@
+// Ascendant computation via horizon-ecliptic intersection. The ascendant is the ecliptic
+// longitude rising on the eastern horizon at a given time and location. This module solves
+// A*cos(λ) + B*sin(λ) = 0, where A and B encode the observer's latitude, local sidereal
+// time, and the true obliquity of the ecliptic. The solution λ = atan2(-A, B) yields two
+// antipodal intersection points; an eastern-branch test (checking the sign of the westward
+// displacement in the horizon frame) selects the correct one. This "robust form" avoids
+// explicit tan(lat) division, which would be numerically unstable near the poles. Latitude
+// and longitude are provided as 0.1-degree bins (i16), matching the resolution of the
+// onchain contract interface.
+
 use crate::fixed::norm360_i64_1e9;
 use crate::frames::{mean_true_obliquity_deg_1e9, sidereal_time_deg_1e9};
-use crate::time::{days_since_j2000_1e9_from_pg, minute_since_1900_to_pg};
+use crate::fixed::days_since_j2000_1e9_from_pg;
 use crate::trig::{atan2_deg_1e9, cos_deg_1e9, sin_deg_1e9};
-
-/// Approximate ascendant longitude using local sidereal angle and a small latitude term.
-/// Inputs:
-/// - minute_since_1900: minute count from 1900-01-01T00:00:00Z
-/// - lat_bin: latitude in 0.1-degree bins (-900..900)
-/// - lon_bin: longitude in 0.1-degree bins (-1800..1800)
-pub fn approximate_ascendant_longitude_1e9(
-    minute_since_1900: u32, lat_bin: i16, lon_bin: i16,
-) -> i64 {
-    approximate_ascendant_longitude_pg_1e9(minute_since_1900_to_pg(minute_since_1900), lat_bin, lon_bin)
-}
 
 /// Ascendant longitude from proleptic Gregorian minute epoch
 /// (`0001-01-01T00:00:00Z` => minute 0).
@@ -68,15 +67,16 @@ pub fn approximate_ascendant_longitude_pg_1e9(
 
 #[cfg(test)]
 mod tests {
-    use crate::ascendant::approximate_ascendant_longitude_1e9;
+    use crate::ascendant::approximate_ascendant_longitude_pg_1e9;
     use crate::fixed::SCALE_1E9;
 
     #[test]
     fn ascendant_output_is_normalized() {
-        let minute_1900: u32 = 65_000_000;
+        // minute_pg ≈ 1900 + 65M minutes ≈ year 2023
+        let minute_pg: i64 = 998_776_800 + 65_000_000;
         let lat_bin: i16 = 377;
         let lon_bin: i16 = -1224;
-        let lam = approximate_ascendant_longitude_1e9(minute_1900, lat_bin, lon_bin);
+        let lam = approximate_ascendant_longitude_pg_1e9(minute_pg, lat_bin, lon_bin);
         assert(lam >= 0 && lam < 360 * SCALE_1E9, 'asc range');
     }
 }

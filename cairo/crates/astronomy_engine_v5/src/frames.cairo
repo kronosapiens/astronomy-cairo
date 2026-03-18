@@ -1,4 +1,15 @@
-use crate::fixed::{norm360_i64_1e9, SCALE_1E9};
+// Coordinate frame transforms: the bridge between VSOP heliocentric output and ecliptic
+// longitude/latitude of date. The pipeline chains three stages: (1) a static rotation from
+// VSOP ecliptic coordinates to the J2000 equatorial frame (EQJ), using the obliquity of
+// the VSOP reference frame; (2) IAU 2006 precession from J2000 to the equator of date,
+// via 5th-degree polynomials for ψ_A, ω_A, χ_A; (3) IAU2000B nutation (5-term truncated
+// series for Δψ and Δε) to reach the true equator of date. The resulting equatorial-of-date
+// vector is then rotated by the true obliquity into ecliptic-of-date coordinates, where
+// atan2 yields the final longitude. Also provides Greenwich Apparent Sidereal Time (GAST)
+// via the Earth Rotation Angle plus the equation of the equinoxes, used by the ascendant
+// module for local sidereal time.
+
+use crate::fixed::{isqrt_i128, norm360_i64_1e9, SCALE_1E9};
 use crate::trig::{atan2_deg_1e9, cos_deg_1e9, sin_deg_1e9};
 
 const DAYS_PER_CENTURY_1E9: i64 = 36_525_000_000_000;
@@ -354,27 +365,17 @@ pub fn eqj_to_ecliptic_of_date_lon_lat_1e9(
     (lon, lat)
 }
 
-#[inline(never)]
-fn isqrt_i128(n: i128) -> i128 {
-    if n <= 0 {
-        return 0;
-    }
-    let mut x = n;
-    let mut y = (x + 1) / 2;
-    loop {
-        if y >= x {
-            break;
-        }
-        x = y;
-        y = (x + n / x) / 2;
-    };
-    x
-}
-
 #[cfg(test)]
 mod tests {
     use crate::fixed::SCALE_1E9;
-    use crate::frames::{eqj_to_ecliptic_of_date_longitude_1e9, vsop_ecliptic_to_eqj_1e9};
+    use crate::frames::{
+        eqj_to_ecliptic_of_date_lon_lat_1e9, eqj_to_ecliptic_of_date_longitude_1e9,
+        iau2000b_e_tilt, precession_from2000_1e9, sidereal_time_deg_1e9, vsop_ecliptic_to_eqj_1e9,
+    };
+
+    fn abs_i64(v: i64) -> i64 {
+        if v < 0 { -v } else { v }
+    }
 
     #[test]
     fn eqj_ecliptic_conversion_smoke() {
@@ -386,5 +387,41 @@ mod tests {
     fn vsop_rotation_smoke() {
         let (x, _, _) = vsop_ecliptic_to_eqj_1e9(1_000_000_000, 0, 0);
         assert(x > 999_999_000, 'x');
+    }
+
+    #[test]
+    fn precession_near_identity_at_j2000() {
+        // At J2000 (days=0), precession should be approximately identity.
+        let (rx, ry, rz) = precession_from2000_1e9(SCALE_1E9, 0, 0, 0);
+        assert(abs_i64(rx - SCALE_1E9) < 1_000, 'prec x');
+        assert(abs_i64(ry) < 1_000, 'prec y');
+        assert(abs_i64(rz) < 1_000, 'prec z');
+    }
+
+    #[test]
+    fn obliquity_at_j2000() {
+        // Mean obliquity at J2000 ≈ 23.4393° (IAU 2006 value: 84381.406 arcsec).
+        let tilt = iau2000b_e_tilt(0);
+        // 23.439279444° in 1e9 scale
+        assert(abs_i64(tilt.mobl_deg_1e9 - 23_439_279_444) < 100_000, 'mobl j2000');
+    }
+
+    #[test]
+    fn frame_transform_roundtrip_axis() {
+        // A vector along +x in EQJ at J2000 should map to lon≈0°, lat≈0° in ecliptic.
+        let (lon, lat) = eqj_to_ecliptic_of_date_lon_lat_1e9(SCALE_1E9, 0, 0, 0);
+        // lon should be near 0 (or 360), lat near 0.
+        let lon_wrapped = if lon > 350_000_000_000 { lon - 360_000_000_000 } else { lon };
+        assert(abs_i64(lon_wrapped) < 100_000_000, 'rt lon');
+        assert(abs_i64(lat) < 100_000_000, 'rt lat');
+    }
+
+    #[test]
+    fn sidereal_time_at_j2000() {
+        // GAST at J2000.0 ≈ 280.46° (Earth Rotation Angle component dominates).
+        let gast = sidereal_time_deg_1e9(0);
+        assert(gast >= 0 && gast < 360_000_000_000, 'gast range');
+        // ERA at J2000.0 = 360 * 0.7790572732640 ≈ 280.46°
+        assert(abs_i64(gast - 280_460_000_000) < 500_000_000, 'gast j2000');
     }
 }

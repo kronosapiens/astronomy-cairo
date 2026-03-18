@@ -1,21 +1,35 @@
-use crate::fixed::{div_round_half_away_from_zero, norm360_i64_1e9, SCALE_1E9};
+// Core planetary longitude computation and public API. Routes each of the seven bodies through
+// its appropriate model: the Sun uses a single-step VSOP evaluation (Earth heliocentric
+// position negated), the Moon uses a dedicated Meeus-style harmonic series with 104 solar
+// disturbance terms and 11 periodic corrections, and Mercury through Saturn share a unified
+// VSOP pipeline with iterative light-time correction (up to 10 Newton iterations). Also
+// contains the Espenak piecewise delta-T polynomial for UT-to-TT conversion, which is
+// needed by both the Moon path (via direct TT computation) and the outer planet paths (via
+// the light-time solve). This is the only module that external callers interact with for
+// longitude queries; all frame transforms and coordinate projections are handled internally.
+
+use crate::fixed::{
+    days_since_j2000_1e9_from_pg, div_round_half_away_from_zero, isqrt_i128, norm360_i64_1e9,
+    J2000_MINUTE_SINCE_PG, SCALE_1E9,
+};
 use crate::frames::{
     eqj_to_ecliptic_of_date_lon_lat_1e9, eqj_to_ecliptic_of_date_longitude_1e9,
     nutation_longitude_deg_1e9, vsop_ecliptic_to_eqj_1e9,
 };
-use crate::moon_terms::MOON_SOLAR_TERMS;
-use crate::time::{days_since_j2000_1e9_from_pg, minute_since_1900_to_pg, J2000_MINUTE_SINCE_PG};
+use crate::gen_moon::MOON_SOLAR_TERMS;
 use crate::trig::{cos_deg_1e9, sin_deg_1e9};
-use crate::types::PLANET_COUNT;
-use crate::vsop_gen::{
+pub const PLANET_COUNT: usize = 7;
+
+pub const SUN: u8 = 0;
+pub const MOON: u8 = 1;
+pub const MERCURY: u8 = 2;
+pub const VENUS: u8 = 3;
+pub const MARS: u8 = 4;
+pub const JUPITER: u8 = 5;
+pub const SATURN: u8 = 6;
+use crate::gen_vsop::{
     earth_helio, jupiter_helio, mars_helio, mercury_helio, saturn_helio, venus_helio, HelioState,
 };
-
-// Global Moon longitude bias model (non-pointwise).
-// Unit: degrees scaled by 1e9. offset = A + B * t_centuries + C * t_centuries^2.
-const MOON_LON_PARITY_OFFSET_A_DEG_1E9: i64 = 0;
-const MOON_LON_PARITY_OFFSET_B_DEG_1E9_PER_CENTURY: i64 = 0;
-const MOON_LON_PARITY_OFFSET_C_DEG_1E9_PER_CENTURY2: i64 = 0;
 
 fn div_round_i64(num: i128, den: i64) -> i64 {
     div_round_half_away_from_zero(num, den.into()).try_into().unwrap()
@@ -51,10 +65,7 @@ fn fac_pow_1e9(base_1e9: i64, exp_abs: i8) -> i64 {
     }
     let mut out: i128 = SCALE_1E9.into();
     let mut i: i8 = 0;
-    loop {
-        if i >= exp_abs {
-            break;
-        }
+    while i != exp_abs {
         out = (out * base_1e9.into()) / SCALE_1E9.into();
         i += 1;
     };
@@ -124,6 +135,10 @@ fn delta_poly_term_1e12(coeff_1e12: i64, p_1e9: i128) -> i128 {
     (coeff_1e12.into() * p_1e9) / 1_000_000_000_000_i64.into()
 }
 
+// Piecewise Espenak delta-T polynomial (UT->TT correction).
+// The piecewise structure and all coefficients come directly from the upstream formula.
+// High-order terms with very small coefficients (e.g. 0.0000121272) use `delta_poly_term_1e12`
+// instead of `delta_poly_term_1e9` to avoid losing all significant digits at 1e9 scale.
 fn delta_t_espenak_seconds_1e9(ut_days_since_j2000_1e9: i64) -> i64 {
     let scale_i128: i128 = SCALE_1E9.into();
     let y_1e9: i64 = 2_000_000_000_000
@@ -357,10 +372,7 @@ fn moon_longitude_1e9(d_days_1e9: i64) -> i64 {
 
     let mut dlam_arcsec_1e9: i64 = 0;
     let mut i: usize = 0;
-    loop {
-        if i >= 104 {
-            break;
-        }
+    while i != 104 {
         let term = *MOON_SOLAR_TERMS.span().at(i);
         let (coeff_l_1e4, _, _, p, q, r, s) = term;
         let y = moon_term_y_1e9(
@@ -385,40 +397,7 @@ fn moon_longitude_1e9(d_days_1e9: i64) -> i64 {
 
     // Ecliptic mean->true correction: add nutation in longitude (dpsi).
     let dpsi = nutation_longitude_deg_1e9(d_tt_1e9);
-    let t2_1e12_parity: i128 = div_round_half_away_from_zero(
-        t_1e12.into() * t_1e12.into(), t_scale.into(),
-    );
-    let moon_parity_linear: i128 =
-        div_round_half_away_from_zero(
-            MOON_LON_PARITY_OFFSET_B_DEG_1E9_PER_CENTURY.into() * t_1e12.into(),
-            t_scale.into(),
-        );
-    let moon_parity_quadratic: i128 =
-        div_round_half_away_from_zero(
-            MOON_LON_PARITY_OFFSET_C_DEG_1E9_PER_CENTURY2.into() * t2_1e12_parity,
-            t_scale.into(),
-        );
-    let moon_parity_offset: i64 = MOON_LON_PARITY_OFFSET_A_DEG_1E9
-        + moon_parity_linear.try_into().unwrap()
-        + moon_parity_quadratic.try_into().unwrap();
-    norm360_i64_1e9(l0_deg_1e9 + div_round_i64(dlam_arcsec_1e9.into(), 3600) + dpsi + moon_parity_offset)
-}
-
-#[inline(never)]
-fn isqrt_i128(n: i128) -> i128 {
-    if n <= 0 {
-        return 0;
-    }
-    let mut x = n;
-    let mut y = (x + 1) / 2;
-    loop {
-        if y >= x {
-            break;
-        }
-        x = y;
-        y = (x + n / x) / 2;
-    };
-    x
+    norm360_i64_1e9(l0_deg_1e9 + div_round_i64(dlam_arcsec_1e9.into(), 3600) + dpsi)
 }
 
 #[inline(never)]
@@ -587,85 +566,18 @@ fn geocentric_sun_longitude_vsop_pg_1e9(minute_since_pg: i64) -> i64 {
     eqj_to_ecliptic_of_date_longitude_1e9(-xe, -ye, -ze, obs_tt_1e9)
 }
 
-#[inline(never)]
-fn geocentric_sun_longitude_loworder_pg_1e9(minute_since_pg: i64) -> i64 {
-    let d_1e9 = days_since_j2000_1e9_from_pg(minute_since_pg);
-    // Higher-order analytic solar longitude model (Meeus-style terms).
-    // T is Julian centuries from J2000 in 1e9 fixed-point.
-    let t_1e9 = div_round_i64(d_1e9.into(), 36_525);
-    let t2_1e9 = div_round_i64(t_1e9.into() * t_1e9.into(), SCALE_1E9);
-    let t3_1e9 = div_round_i64(t2_1e9.into() * t_1e9.into(), SCALE_1E9);
-
-    // Mean geometric longitude of the Sun (deg):
-    // L0 = 280.46646 + 36000.76983*T + 0.0003032*T^2
-    let l0 = norm360_i64_1e9(
-        280_466_460_000
-            + div_round_i64(36_000_769_830_000_i64.into() * t_1e9.into(), SCALE_1E9)
-            + div_round_i64(303_200_i64.into() * t2_1e9.into(), SCALE_1E9),
-    );
-
-    // Mean anomaly (deg):
-    // M = 357.52911 + 35999.05029*T - 0.0001537*T^2 + T^3/24490000
-    let m = norm360_i64_1e9(
-        357_529_110_000
-            + div_round_i64(35_999_050_290_000_i64.into() * t_1e9.into(), SCALE_1E9)
-            - div_round_i64(153_700_i64.into() * t2_1e9.into(), SCALE_1E9)
-            + div_round_i64(t3_1e9.into(), 24_490_000),
-    );
-
-    // Equation of center coefficients (deg), varying with T.
-    // C = (1.914602 - 0.004817*T - 0.000014*T^2) sin(M)
-    //   + (0.019993 - 0.000101*T) sin(2M)
-    //   + 0.000289 sin(3M)
-    let c1_amp = 1_914_602_000
-        - div_round_i64(4_817_000_i64.into() * t_1e9.into(), SCALE_1E9)
-        - div_round_i64(14_000_i64.into() * t2_1e9.into(), SCALE_1E9);
-    let c2_amp = 19_993_000 - div_round_i64(101_000_i64.into() * t_1e9.into(), SCALE_1E9);
-    let c3_amp = 289_000_i64;
-
-    let c1 = div_round_i64(c1_amp.into() * sin_deg_1e9(m).into(), SCALE_1E9);
-    let c2 = div_round_i64(c2_amp.into() * sin_deg_1e9(2 * m).into(), SCALE_1E9);
-    let c3 = div_round_i64(c3_amp.into() * sin_deg_1e9(3 * m).into(), SCALE_1E9);
-
-    norm360_i64_1e9(l0 + c1 + c2 + c3)
-}
-
-pub fn approximate_planet_longitude_1e9(planet: u8, minute_since_1900: u32) -> i64 {
-    approximate_planet_longitude_pg_1e9(planet, minute_since_1900_to_pg(minute_since_1900))
-}
-
 pub fn approximate_planet_longitude_pg_1e9(planet: u8, minute_since_pg: i64) -> i64 {
     let idx: usize = planet.into();
     assert(idx < PLANET_COUNT, 'planet index out of range');
 
-    let d = days_since_j2000_1e9_from_pg(minute_since_pg);
     if planet == 0 {
         return geocentric_sun_longitude_vsop_pg_1e9(minute_since_pg);
     }
     if planet == 1 {
+        let d = days_since_j2000_1e9_from_pg(minute_since_pg);
         return moon_longitude_1e9(d);
     }
-    if planet == 2 {
-        return geocentric_longitude_vsop_pg_1e9(2, minute_since_pg);
-    }
-    if planet == 3 {
-        return geocentric_longitude_vsop_pg_1e9(3, minute_since_pg);
-    }
-    if planet == 4 {
-        return geocentric_longitude_vsop_pg_1e9(4, minute_since_pg);
-    }
-    if planet == 5 {
-        return geocentric_longitude_vsop_pg_1e9(5, minute_since_pg);
-    }
-    if planet == 6 {
-        return geocentric_longitude_vsop_pg_1e9(6, minute_since_pg);
-    }
-    0
-}
-
-#[inline(never)]
-pub fn all_planet_longitudes_1e9(minute_since_1900: u32) -> [i64; PLANET_COUNT] {
-    all_planet_longitudes_pg_1e9(minute_since_1900_to_pg(minute_since_1900))
+    geocentric_longitude_vsop_pg_1e9(planet.into(), minute_since_pg)
 }
 
 #[inline(never)]
@@ -685,34 +597,64 @@ pub fn all_planet_longitudes_pg_1e9(minute_since_pg: i64) -> [i64; PLANET_COUNT]
 mod tests {
     use crate::ascendant::approximate_ascendant_longitude_pg_1e9;
     use crate::fixed::{norm360_i64_1e9, SCALE_1E9};
-    use crate::planets::{approximate_planet_longitude_1e9, all_planet_longitudes_1e9};
-    use crate::planets::approximate_planet_longitude_pg_1e9;
+    use crate::planets::{approximate_planet_longitude_pg_1e9, all_planet_longitudes_pg_1e9};
+    use super::delta_t_espenak_seconds_1e9;
+
+    fn abs_i64(v: i64) -> i64 {
+        if v < 0 { -v } else { v }
+    }
 
     fn sign_from_lon_1e9(lon_1e9: i64) -> u8 {
         (norm360_i64_1e9(lon_1e9) / (30 * SCALE_1E9)).try_into().unwrap()
     }
 
     #[test]
-    fn smoke_parametric_all_planets() {
-        let minute: u32 = 66_348_000;
-        assert(approximate_planet_longitude_1e9(0, minute) >= 0, 'p0');
-        assert(approximate_planet_longitude_1e9(1, minute) >= 0, 'p1');
-        assert(approximate_planet_longitude_1e9(2, minute) >= 0, 'p2');
-        assert(approximate_planet_longitude_1e9(3, minute) >= 0, 'p3');
-        assert(approximate_planet_longitude_1e9(4, minute) >= 0, 'p4');
-        assert(approximate_planet_longitude_1e9(5, minute) >= 0, 'p5');
-        assert(approximate_planet_longitude_1e9(6, minute) >= 0, 'p6');
+    fn delta_t_at_j2000() {
+        // At J2000 (days=0), delta-T ≈ 63.83 seconds (published value).
+        let dt = delta_t_espenak_seconds_1e9(0);
+        // Allow ±0.5s tolerance for fixed-point rounding vs published tables.
+        assert(abs_i64(dt - 63_830_000_000) < 500_000_000, 'dt j2000');
     }
 
     #[test]
-    fn benchmark_parametric_all_planets_cheby() {
-        let minute: u32 = 66_348_000;
-        let vals = all_planet_longitudes_1e9(minute);
+    fn delta_t_at_1900() {
+        // 1900-01-01 is ~-36524.5 days from J2000. delta-T ≈ -2.79 seconds.
+        // (Espenak table: year 1900, dt ≈ -2.79s)
+        let days_1e9: i64 = -36_524_500_000_000;
+        let dt = delta_t_espenak_seconds_1e9(days_1e9);
+        assert(abs_i64(dt + 2_790_000_000) < 500_000_000, 'dt 1900');
+    }
+
+    #[test]
+    fn delta_t_at_1950() {
+        // 1950-01-01 is ~-18262 days from J2000. delta-T ≈ 29.07 seconds.
+        let days_1e9: i64 = -18_262_000_000_000;
+        let dt = delta_t_espenak_seconds_1e9(days_1e9);
+        assert(abs_i64(dt - 29_070_000_000) < 500_000_000, 'dt 1950');
+    }
+
+    #[test]
+    fn smoke_parametric_all_planets() {
+        // 998_776_800 (1900 pg offset) + 66_348_000 ≈ year 2026
+        let minute_pg: i64 = 1_065_124_800;
+        assert(approximate_planet_longitude_pg_1e9(0, minute_pg) >= 0, 'p0');
+        assert(approximate_planet_longitude_pg_1e9(1, minute_pg) >= 0, 'p1');
+        assert(approximate_planet_longitude_pg_1e9(2, minute_pg) >= 0, 'p2');
+        assert(approximate_planet_longitude_pg_1e9(3, minute_pg) >= 0, 'p3');
+        assert(approximate_planet_longitude_pg_1e9(4, minute_pg) >= 0, 'p4');
+        assert(approximate_planet_longitude_pg_1e9(5, minute_pg) >= 0, 'p5');
+        assert(approximate_planet_longitude_pg_1e9(6, minute_pg) >= 0, 'p6');
+    }
+
+    #[test]
+    fn benchmark_all_planets() {
+        let minute_pg: i64 = 1_065_124_800;
+        let vals = all_planet_longitudes_pg_1e9(minute_pg);
         assert(*vals.span().at(0) >= 0, 'v0');
         assert(*vals.span().at(1) >= 0, 'v1');
         assert(*vals.span().at(2) >= 0, 'v2');
         assert(*vals.span().at(3) >= 0, 'v3');
-        assert(*vals.span().at(4) >= 0, 'v5');
+        assert(*vals.span().at(4) >= 0, 'v4');
         assert(*vals.span().at(5) >= 0, 'v5');
         assert(*vals.span().at(6) >= 0, 'v6');
     }

@@ -33,14 +33,15 @@ pub fn compute_engine_signs_pg(engine_id: u8, minute_pg: i64, lat_bin: i16, lon_
     assert(engine_id == ENGINE_V5, 'invalid engine');
     assert(engine_supports_pg_minute(engine_id, minute_pg), 'minute out of supported range');
 
+    let lons = v5_planets::all_planet_longitudes_pg_1e9(minute_pg);
     [
-        sign_from_lon_1e9(v5_planets::approximate_planet_longitude_pg_1e9(0, minute_pg)),
-        sign_from_lon_1e9(v5_planets::approximate_planet_longitude_pg_1e9(1, minute_pg)),
-        sign_from_lon_1e9(v5_planets::approximate_planet_longitude_pg_1e9(2, minute_pg)),
-        sign_from_lon_1e9(v5_planets::approximate_planet_longitude_pg_1e9(3, minute_pg)),
-        sign_from_lon_1e9(v5_planets::approximate_planet_longitude_pg_1e9(4, minute_pg)),
-        sign_from_lon_1e9(v5_planets::approximate_planet_longitude_pg_1e9(5, minute_pg)),
-        sign_from_lon_1e9(v5_planets::approximate_planet_longitude_pg_1e9(6, minute_pg)),
+        sign_from_lon_1e9(*lons.span().at(0)),
+        sign_from_lon_1e9(*lons.span().at(1)),
+        sign_from_lon_1e9(*lons.span().at(2)),
+        sign_from_lon_1e9(*lons.span().at(3)),
+        sign_from_lon_1e9(*lons.span().at(4)),
+        sign_from_lon_1e9(*lons.span().at(5)),
+        sign_from_lon_1e9(*lons.span().at(6)),
         sign_from_lon_1e9(v5_asc::approximate_ascendant_longitude_pg_1e9(minute_pg, lat_bin, lon_bin)),
     ]
 }
@@ -49,15 +50,7 @@ pub fn compute_engine_planet_longitudes_pg_1e9(engine_id: u8, minute_pg: i64) ->
     assert(engine_id == ENGINE_V5, 'invalid engine');
     assert(engine_supports_pg_minute(engine_id, minute_pg), 'minute out of supported range');
 
-    [
-        v5_planets::approximate_planet_longitude_pg_1e9(0, minute_pg),
-        v5_planets::approximate_planet_longitude_pg_1e9(1, minute_pg),
-        v5_planets::approximate_planet_longitude_pg_1e9(2, minute_pg),
-        v5_planets::approximate_planet_longitude_pg_1e9(3, minute_pg),
-        v5_planets::approximate_planet_longitude_pg_1e9(4, minute_pg),
-        v5_planets::approximate_planet_longitude_pg_1e9(5, minute_pg),
-        v5_planets::approximate_planet_longitude_pg_1e9(6, minute_pg),
-    ]
+    v5_planets::all_planet_longitudes_pg_1e9(minute_pg)
 }
 
 pub fn compute_engine_planet_debug_frame_pg_1e9(
@@ -68,8 +61,8 @@ pub fn compute_engine_planet_debug_frame_pg_1e9(
     let (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9) = v5_planets::debug_planet_geocentric_eqj_pg_1e9(
         planet, minute_pg,
     );
-    let (frame_lon_1e9, frame_lat_1e9) = v5_planets::debug_planet_frame_lon_lat_pg_1e9(
-        planet, minute_pg,
+    let (frame_lon_1e9, frame_lat_1e9) = v5_frames::eqj_to_ecliptic_of_date_lon_lat_1e9(
+        dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9,
     );
     (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9, frame_lon_1e9, frame_lat_1e9)
 }

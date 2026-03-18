@@ -1,4 +1,13 @@
-// Generated from astronomy-engine VSOP data
+// Generated VSOP87D heliocentric position data and evaluators for Earth and the five
+// visible planets (Mercury, Venus, Mars, Jupiter, Saturn). Each body has series for three
+// coordinates: ecliptic longitude (L), latitude (B), and heliocentric distance (R), with
+// each coordinate expressed as a sum of orders: Σ t^n * Σ Aᵢ cos(Bᵢ + Cᵢt), where t is
+// Julian millennia from J2000. Coefficients are pre-converted from radians to degrees and
+// scaled by 1e9. The number of terms per order varies by body and was truncated from the
+// full VSOP87 tables to balance gas cost against sign-level accuracy. Earth's state is
+// evaluated for every query (it defines the geocentric origin); planet states are evaluated
+// at light-time-corrected epochs. Do not edit manually; regenerate via the upstream VSOP
+// extraction tooling.
 use crate::trig::cos_deg_1e9;
 
 const VSOP_SCALE_1E9: i64 = 1000000000;
@@ -94,10 +103,8 @@ fn earth_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
     } else {
         EARTH_R_ORDER_COUNT
     };
-    loop {
-        if order >= order_count {
-            break;
-        }
+    while order != order_count {
+        // `if false` is a Cairo idiom to force span type unification across branches.
         let terms = if coord == 0 {
             if false { EARTH_L_0.span() }
             else if order == 0 { EARTH_L_0.span() }
@@ -119,10 +126,7 @@ fn earth_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
         let mut order_sum: i128 = 0;
         let mut i: usize = 0;
         let n: usize = terms.len();
-        loop {
-            if i >= n {
-                break;
-            }
+        while i != n {
             let (a, b, c) = *terms.at(i);
             let angle_delta: i128 = (c.into() * t_millennia_1e9.into()) / VSOP_SCALE_1E9.into();
             let angle: i64 = b + angle_delta.try_into().unwrap();
@@ -205,10 +209,7 @@ fn mercury_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
     } else {
         MERCURY_R_ORDER_COUNT
     };
-    loop {
-        if order >= order_count {
-            break;
-        }
+    while order != order_count {
         let terms = if coord == 0 {
             if false { MERCURY_L_0.span() }
             else if order == 0 { MERCURY_L_0.span() }
@@ -228,10 +229,7 @@ fn mercury_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
         let mut order_sum: i128 = 0;
         let mut i: usize = 0;
         let n: usize = terms.len();
-        loop {
-            if i >= n {
-                break;
-            }
+        while i != n {
             let (a, b, c) = *terms.at(i);
             let angle_delta: i128 = (c.into() * t_millennia_1e9.into()) / VSOP_SCALE_1E9.into();
             let angle: i64 = b + angle_delta.try_into().unwrap();
@@ -311,10 +309,7 @@ fn venus_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
     } else {
         VENUS_R_ORDER_COUNT
     };
-    loop {
-        if order >= order_count {
-            break;
-        }
+    while order != order_count {
         let terms = if coord == 0 {
             if false { VENUS_L_0.span() }
             else if order == 0 { VENUS_L_0.span() }
@@ -334,10 +329,7 @@ fn venus_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
         let mut order_sum: i128 = 0;
         let mut i: usize = 0;
         let n: usize = terms.len();
-        loop {
-            if i >= n {
-                break;
-            }
+        while i != n {
             let (a, b, c) = *terms.at(i);
             let angle_delta: i128 = (c.into() * t_millennia_1e9.into()) / VSOP_SCALE_1E9.into();
             let angle: i64 = b + angle_delta.try_into().unwrap();
@@ -486,10 +478,7 @@ fn mars_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
     } else {
         MARS_R_ORDER_COUNT
     };
-    loop {
-        if order >= order_count {
-            break;
-        }
+    while order != order_count {
         let terms = if coord == 0 {
             if false { MARS_L_0.span() }
             else if order == 0 { MARS_L_0.span() }
@@ -511,10 +500,7 @@ fn mars_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
         let mut order_sum: i128 = 0;
         let mut i: usize = 0;
         let n: usize = terms.len();
-        loop {
-            if i >= n {
-                break;
-            }
+        while i != n {
             let (a, b, c) = *terms.at(i);
             let angle_delta: i128 = (c.into() * t_millennia_1e9.into()) / VSOP_SCALE_1E9.into();
             let angle: i64 = b + angle_delta.try_into().unwrap();
@@ -642,10 +628,7 @@ fn jupiter_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
     } else {
         JUPITER_R_ORDER_COUNT
     };
-    loop {
-        if order >= order_count {
-            break;
-        }
+    while order != order_count {
         let terms = if coord == 0 {
             if false { JUPITER_L_0.span() }
             else if order == 0 { JUPITER_L_0.span() }
@@ -666,10 +649,7 @@ fn jupiter_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
         let mut order_sum: i128 = 0;
         let mut i: usize = 0;
         let n: usize = terms.len();
-        loop {
-            if i >= n {
-                break;
-            }
+        while i != n {
             let (a, b, c) = *terms.at(i);
             let angle_delta: i128 = (c.into() * t_millennia_1e9.into()) / VSOP_SCALE_1E9.into();
             let angle: i64 = b + angle_delta.try_into().unwrap();
@@ -818,10 +798,7 @@ fn saturn_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
     } else {
         SATURN_R_ORDER_COUNT
     };
-    loop {
-        if order >= order_count {
-            break;
-        }
+    while order != order_count {
         let terms = if coord == 0 {
             if false { SATURN_L_0.span() }
             else if order == 0 { SATURN_L_0.span() }
@@ -843,10 +820,7 @@ fn saturn_coord(coord: u8, t_millennia_1e9: i64) -> i64 {
         let mut order_sum: i128 = 0;
         let mut i: usize = 0;
         let n: usize = terms.len();
-        loop {
-            if i >= n {
-                break;
-            }
+        while i != n {
             let (a, b, c) = *terms.at(i);
             let angle_delta: i128 = (c.into() * t_millennia_1e9.into()) / VSOP_SCALE_1E9.into();
             let angle: i64 = b + angle_delta.try_into().unwrap();
