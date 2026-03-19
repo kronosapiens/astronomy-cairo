@@ -475,9 +475,7 @@ function main() {
     emit(makeWindowSummaryRow({
       engine,
       locationSet,
-      monthsPerYear: months,
-      yearStart: batchStartYear,
-      yearEnd: batchEndYear,
+      year: batchStartYear,
       pointCount: batchPointCount,
       passCount: batchPassCount,
       failCount: batchFailCount,

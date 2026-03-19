@@ -232,7 +232,7 @@ export function buildChunkPoints({ seed, startYear, endYear, chunkStart, chunkEn
   return points;
 }
 
-// All output goes to stdout as ndjson. One chunk_summary row per chunk, plus
+// All output goes to stdout as ndjson. One random_eval row per chunk, plus
 // point_result rows for any failures. To resume an interrupted run, inspect the
 // existing output for completed chunks and re-run with --start-index / --end-index.
 export function runRandomEval({
@@ -280,11 +280,10 @@ export function runRandomEval({
     }
 
     emitJsonLine(process.stdout, {
-      type: "chunk_summary",
+      type: "random_eval",
       engine,
       seed,
-      chunkStart,
-      chunkEnd,
+      cursor: chunkStart,
       pointCount: chunkEnd - chunkStart,
       failCount: chunkBreakdown.failCount,
     });
