@@ -106,3 +106,42 @@ export function oracleAscSign(unixMs, latBin, lonBin) {
 
   return longitudeToSign(lon1);
 }
+
+/**
+ * Computes the ascendant ecliptic longitude (degrees) for a location and UTC timestamp.
+ * `latBin` and `lonBin` are in tenths of a degree.
+ *
+ * @param {number} unixMs
+ * @param {number} latBin
+ * @param {number} lonBin
+ * @returns {number}
+ */
+export function oracleAscLongitude(unixMs, latBin, lonBin) {
+  const date = new Date(unixMs);
+  const observer = new Astronomy.Observer(latBin / 10, lonBin / 10, 0);
+  const time = Astronomy.MakeTime(date);
+  const ectToEqd = Astronomy.Rotation_ECT_EQD(date);
+  const eqdToHor = Astronomy.Rotation_EQD_HOR(date, observer);
+
+  const exEqd = Astronomy.RotateVector(ectToEqd, new Astronomy.Vector(1, 0, 0, time));
+  const eyEqd = Astronomy.RotateVector(ectToEqd, new Astronomy.Vector(0, 1, 0, time));
+  const exHor = Astronomy.RotateVector(eqdToHor, exEqd);
+  const eyHor = Astronomy.RotateVector(eqdToHor, eyEqd);
+
+  let lon1 = normalizeDegrees((Math.atan2(-exHor.z, eyHor.z) * 180) / Math.PI);
+  const lon2 = normalizeDegrees(lon1 + 180);
+
+  function horizonYForEclipticLon(lonDeg) {
+    const r = (lonDeg * Math.PI) / 180;
+    const vecEct = new Astronomy.Vector(Math.cos(r), Math.sin(r), 0, time);
+    const vecEqd = Astronomy.RotateVector(ectToEqd, vecEct);
+    const vecHor = Astronomy.RotateVector(eqdToHor, vecEqd);
+    return vecHor.y;
+  }
+
+  const y1 = horizonYForEclipticLon(lon1);
+  const y2 = horizonYForEclipticLon(lon2);
+  if (y2 < y1) lon1 = lon2;
+
+  return normalizeDegrees(lon1);
+}

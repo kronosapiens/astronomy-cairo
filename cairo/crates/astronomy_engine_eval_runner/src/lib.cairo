@@ -1,4 +1,5 @@
 use astronomy_engine_api::{
+    compute_engine_all_longitudes_pg_1e9,
     compute_engine_frame_from_eqj_1e9, compute_engine_planet_debug_frame_pg_1e9,
     compute_engine_planet_longitudes_pg_1e9,
     compute_engine_signs_pg,
@@ -151,6 +152,17 @@ pub fn eval_batch_fail_breakdown(
         jupiter_fail_count,
         saturn_fail_count,
     )
+}
+
+/// Compute all 8 longitudes (1e9) for a single point.
+///
+/// Returns (sun, moon, mercury, venus, mars, jupiter, saturn, asc).
+pub fn eval_point_longitudes(
+    engine_id: u8, minute_pg: i64, lat_bin: i16, lon_bin: i16,
+) -> (i64, i64, i64, i64, i64, i64, i64, i64) {
+    let lons = compute_engine_all_longitudes_pg_1e9(engine_id, minute_pg, lat_bin, lon_bin);
+    let s = lons.span();
+    (*s.at(0), *s.at(1), *s.at(2), *s.at(3), *s.at(4), *s.at(5), *s.at(6), *s.at(7))
 }
 
 /// Compare one point and return an 8-bit mismatch mask:

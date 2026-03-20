@@ -2,13 +2,14 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs, getNumberArg, getStringArg } from "./args.js";
-import { oracleAscSign, oraclePlanetLongitude, oraclePlanetSign } from "../engine.js";
+import { oracleAscLongitude, oracleAscSign, oraclePlanetLongitude, oraclePlanetSign } from "../engine.js";
 import {
   EPOCH_PG_MS,
   makeUtcDate,
   minuteSincePg,
   parseReturnArray,
   runCairoBatch,
+  runCairoPointLongitudes,
   runCairoPointMismatchDetail,
   runScarb,
 } from "./lib/eval-core.js";
@@ -324,6 +325,28 @@ function collectMismatchRowsForBatch({
   return { mismatchRows, pointMaskCalls, subsetBatchCalls };
 }
 
+const BODY_NAMES = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "asc"];
+
+function angularErrorDeg(cairoLon1e9, oracleLonDeg) {
+  const cairoDeg = cairoLon1e9 / 1e9;
+  let err = Math.abs(cairoDeg - oracleLonDeg) % 360;
+  if (err > 180) err = 360 - err;
+  return err;
+}
+
+function computeOracleLongitudes(unixMs, latBin, lonBin) {
+  return [
+    oraclePlanetLongitude("Sun", unixMs),
+    oraclePlanetLongitude("Moon", unixMs),
+    oraclePlanetLongitude("Mercury", unixMs),
+    oraclePlanetLongitude("Venus", unixMs),
+    oraclePlanetLongitude("Mars", unixMs),
+    oraclePlanetLongitude("Jupiter", unixMs),
+    oraclePlanetLongitude("Saturn", unixMs),
+    oracleAscLongitude(unixMs, latBin, lonBin),
+  ];
+}
+
 function formatDuration(ms) {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   const h = Math.floor(totalSeconds / 3600);
@@ -343,6 +366,10 @@ function main() {
   const engine = getStringArg(args, "engine", "v5").toLowerCase();
   const logEveryChunks = getNumberArg(args, "log-every-chunks", 5);
   const quiet = Boolean(args.quiet);
+  const mode = getStringArg(args, "mode", "signs");
+  if (mode !== "signs" && mode !== "precision") {
+    throw new Error(`--mode must be "signs" or "precision"`);
+  }
   const failOnMismatch = Boolean(args["fail-on-mismatch"]);
   const log = (line) => {
     if (!quiet) process.stderr.write(`[eval-cairo-engine] ${line}\n`);
@@ -385,6 +412,17 @@ function main() {
   runScarb(["build", "-p", "astronomy_engine_eval_runner"], CAIRO_DIR);
   log(`Build complete in ${formatDuration(Date.now() - buildStart)}.`);
 
+  let processedYears = 0;
+  let processedBatches = 0;
+  const runStart = Date.now();
+  log(
+    `Starting eval: mode=${mode}, engine=${engine}, years=[${startYear}, ${endYear}] inclusive, totalPoints=${totalPoints}, pointsPerBatch=${pointsPerBatch}.`,
+  );
+  const emit = (record) => {
+    console.log(JSON.stringify(record));
+  };
+
+  // Accumulators for signs mode
   let failCount = 0;
   let planetFailCount = 0;
   let ascFailCount = 0;
@@ -395,15 +433,7 @@ function main() {
   let marsFailCount = 0;
   let jupiterFailCount = 0;
   let saturnFailCount = 0;
-  let processedYears = 0;
-  let processedBatches = 0;
-  const runStart = Date.now();
-  log(
-    `Starting eval: engine=${engine}, years=[${startYear}, ${endYear}] inclusive, totalPoints=${totalPoints}, pointsPerBatch=${pointsPerBatch}.`,
-  );
-  const emit = (record) => {
-    console.log(JSON.stringify(record));
-  };
+
   for (let batchStartYear = startYear; batchStartYear <= endYear; batchStartYear += batchYears) {
     const batchEndYear = Math.min(batchStartYear + batchYears - 1, endYear);
     const { batchPointData, batchExpected, batchMeta, batchPointCount } = buildBatchPayload({
@@ -413,89 +443,117 @@ function main() {
       locations,
     });
 
-    const batchResult = runWindowBreakdown({
-      engineId: capability.id,
-      batchPointData,
-      batchExpected,
-      batchPointCount,
-      pointsPerBatch,
-      noBuild: true,
-    });
-    validateBreakdown(batchResult, batchPointCount);
+    if (mode === "precision") {
+      let maxErrorDeg = 0;
+      let maxErrorBody = null;
+      let maxErrorMinutePg = null;
+      for (let i = 0; i < batchPointCount; i += 1) {
+        const meta = batchMeta[i];
+        const cairoLons = runCairoPointLongitudes({
+          engineId: capability.id,
+          minutePg: meta.minutePg,
+          latBin: meta.latBin,
+          lonBin: meta.lonBin,
+          noBuild: true,
+          cairoDir: CAIRO_DIR,
+        });
+        const pointUnixMs = EPOCH_PG_MS + meta.minutePg * 60_000;
+        const oracleLons = computeOracleLongitudes(pointUnixMs, meta.latBin, meta.lonBin);
+        for (let b = 0; b < 8; b += 1) {
+          const err = angularErrorDeg(cairoLons[b], oracleLons[b]);
+          if (err > maxErrorDeg) {
+            maxErrorDeg = err;
+            maxErrorBody = BODY_NAMES[b];
+            maxErrorMinutePg = meta.minutePg;
+          }
+        }
+      }
 
-    const batchFailCount = batchResult.failCount;
-    const batchPlanetFailCount = batchResult.planetFailCount;
-    const batchAscFailCount = batchResult.ascFailCount;
-    const batchSunFailCount = batchResult.sunFailCount;
-    const batchMoonFailCount = batchResult.moonFailCount;
-    const batchMercuryFailCount = batchResult.mercuryFailCount;
-    const batchVenusFailCount = batchResult.venusFailCount;
-    const batchMarsFailCount = batchResult.marsFailCount;
-    const batchJupiterFailCount = batchResult.jupiterFailCount;
-    const batchSaturnFailCount = batchResult.saturnFailCount;
-
-    if (batchFailCount > 0) {
-      log(
-        `Generating mismatch details for years ${batchStartYear}-${batchEndYear} with recursive isolation...`,
-      );
-      const { mismatchRows, pointMaskCalls, subsetBatchCalls } = collectMismatchRowsForBatch({
-        engineId: capability.id,
+      emit({
+        type: "precision_eval",
         engine,
         locationSet,
-        monthsPerYear: months,
-        batchMeta,
+        year: batchStartYear,
+        pointCount: batchPointCount,
+        maxErrorDeg: Math.round(maxErrorDeg * 1e9) / 1e9,
+        maxErrorBody,
+        maxErrorMinutePg,
+      });
+    } else {
+      const batchResult = runWindowBreakdown({
+        engineId: capability.id,
         batchPointData,
         batchExpected,
-        rootBreakdown: batchResult,
+        batchPointCount,
+        pointsPerBatch,
         noBuild: true,
       });
-      for (const row of mismatchRows) {
-        emit(row);
+      validateBreakdown(batchResult, batchPointCount);
+
+      const batchFailCount = batchResult.failCount;
+      if (batchFailCount > 0) {
+        log(
+          `Generating mismatch details for years ${batchStartYear}-${batchEndYear} with recursive isolation...`,
+        );
+        const { mismatchRows, pointMaskCalls, subsetBatchCalls } = collectMismatchRowsForBatch({
+          engineId: capability.id,
+          engine,
+          locationSet,
+          monthsPerYear: months,
+          batchMeta,
+          batchPointData,
+          batchExpected,
+          rootBreakdown: batchResult,
+          noBuild: true,
+        });
+        for (const row of mismatchRows) {
+          emit(row);
+        }
+        log(
+          `Mismatch details for ${batchStartYear}-${batchEndYear}: rows=${mismatchRows.length}, subsetChecks=${subsetBatchCalls}, pointMasks=${pointMaskCalls}.`,
+        );
       }
-      log(
-        `Mismatch details for ${batchStartYear}-${batchEndYear}: rows=${mismatchRows.length}, subsetChecks=${subsetBatchCalls}, pointMasks=${pointMaskCalls}.`,
-      );
+
+      failCount += batchResult.failCount;
+      planetFailCount += batchResult.planetFailCount;
+      ascFailCount += batchResult.ascFailCount;
+      sunFailCount += batchResult.sunFailCount;
+      moonFailCount += batchResult.moonFailCount;
+      mercuryFailCount += batchResult.mercuryFailCount;
+      venusFailCount += batchResult.venusFailCount;
+      marsFailCount += batchResult.marsFailCount;
+      jupiterFailCount += batchResult.jupiterFailCount;
+      saturnFailCount += batchResult.saturnFailCount;
+
+      emit(makeWindowSummaryRow({
+        engine,
+        locationSet,
+        year: batchStartYear,
+        pointCount: batchPointCount,
+        passCount: batchPointCount - batchResult.failCount,
+        failCount: batchResult.failCount,
+        planetFailCount: batchResult.planetFailCount,
+        ascFailCount: batchResult.ascFailCount,
+        sunFailCount: batchResult.sunFailCount,
+        moonFailCount: batchResult.moonFailCount,
+        mercuryFailCount: batchResult.mercuryFailCount,
+        venusFailCount: batchResult.venusFailCount,
+        marsFailCount: batchResult.marsFailCount,
+        jupiterFailCount: batchResult.jupiterFailCount,
+        saturnFailCount: batchResult.saturnFailCount,
+      }));
     }
 
     processedBatches += 1;
     processedYears += batchEndYear - batchStartYear + 1;
-    failCount += batchFailCount;
-    planetFailCount += batchPlanetFailCount;
-    ascFailCount += batchAscFailCount;
-    sunFailCount += batchSunFailCount;
-    moonFailCount += batchMoonFailCount;
-    mercuryFailCount += batchMercuryFailCount;
-    venusFailCount += batchVenusFailCount;
-    marsFailCount += batchMarsFailCount;
-    jupiterFailCount += batchJupiterFailCount;
-    saturnFailCount += batchSaturnFailCount;
-    const elapsedMs = Date.now() - runStart;
-    const batchPassCount = batchPointCount - batchFailCount;
-
-    emit(makeWindowSummaryRow({
-      engine,
-      locationSet,
-      year: batchStartYear,
-      pointCount: batchPointCount,
-      passCount: batchPassCount,
-      failCount: batchFailCount,
-      planetFailCount: batchPlanetFailCount,
-      ascFailCount: batchAscFailCount,
-      sunFailCount: batchSunFailCount,
-      moonFailCount: batchMoonFailCount,
-      mercuryFailCount: batchMercuryFailCount,
-      venusFailCount: batchVenusFailCount,
-      marsFailCount: batchMarsFailCount,
-      jupiterFailCount: batchJupiterFailCount,
-      saturnFailCount: batchSaturnFailCount,
-    }));
 
     if (processedBatches % logEveryChunks === 0 || processedYears === totalYears) {
+      const elapsedMs = Date.now() - runStart;
       const progress = totalYears > 0 ? processedYears / totalYears : 1;
       const estTotalMs = progress > 0 ? elapsedMs / progress : 0;
       const etaMs = Math.max(0, estTotalMs - elapsedMs);
       log(
-        `Progress years ${processedYears}/${totalYears} (${(progress * 100).toFixed(2)}%), fail=${failCount} (planet=${planetFailCount}, asc=${ascFailCount}, s=${sunFailCount}, m=${moonFailCount}, me=${mercuryFailCount}, v=${venusFailCount}, ma=${marsFailCount}, j=${jupiterFailCount}, sa=${saturnFailCount}), elapsed=${formatDuration(elapsedMs)}, eta=${formatDuration(etaMs)}.`,
+        `Progress years ${processedYears}/${totalYears} (${(progress * 100).toFixed(2)}%), elapsed=${formatDuration(elapsedMs)}, eta=${formatDuration(etaMs)}.`,
       );
     }
   }

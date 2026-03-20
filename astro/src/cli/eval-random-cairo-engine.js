@@ -2,13 +2,14 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs, getNumberArg, getStringArg } from "./args.js";
-import { oracleAscSign, oraclePlanetSign } from "../engine.js";
+import { oracleAscLongitude, oracleAscSign, oraclePlanetLongitude, oraclePlanetSign } from "../engine.js";
 import {
   EPOCH_PG_MS,
   emitJsonLine,
   makeUtcDate,
   minuteSincePg,
   runCairoBatch,
+  runCairoPointLongitudes,
   runCairoPointMismatchDetail,
   runScarb,
 } from "./lib/eval-core.js";
@@ -290,9 +291,91 @@ export function runRandomEval({
   }
 }
 
+const BODY_NAMES = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "asc"];
+
+function angularErrorDeg(cairoLon1e9, oracleLonDeg) {
+  const cairoDeg = cairoLon1e9 / 1e9;
+  let err = Math.abs(cairoDeg - oracleLonDeg) % 360;
+  if (err > 180) err = 360 - err;
+  return err;
+}
+
+function computeOracleLongitudes(unixMs, latBin, lonBin) {
+  return [
+    oraclePlanetLongitude("Sun", unixMs),
+    oraclePlanetLongitude("Moon", unixMs),
+    oraclePlanetLongitude("Mercury", unixMs),
+    oraclePlanetLongitude("Venus", unixMs),
+    oraclePlanetLongitude("Mars", unixMs),
+    oraclePlanetLongitude("Jupiter", unixMs),
+    oraclePlanetLongitude("Saturn", unixMs),
+    oracleAscLongitude(unixMs, latBin, lonBin),
+  ];
+}
+
+export function runRandomPrecisionEval({
+  engine,
+  seed,
+  points,
+  startYear,
+  endYear,
+  startIndex = 0,
+  endIndex = null,
+  batchPoints = BATCH_POINTS,
+}) {
+  const capability = ENGINE_CONFIG[engine];
+  const effectiveEnd = endIndex !== null ? Math.min(endIndex, points) : points;
+  const noBuild = true;
+
+  runScarb(["build", "-p", "astronomy_engine_eval_runner"], CAIRO_DIR);
+
+  for (let chunkStart = startIndex; chunkStart < effectiveEnd; chunkStart += batchPoints) {
+    const chunkEnd = Math.min(chunkStart + batchPoints, effectiveEnd);
+    const chunkPoints = buildChunkPoints({ seed, startYear, endYear, chunkStart, chunkEnd });
+
+    let maxErrorDeg = 0;
+    let maxErrorBody = null;
+    let maxErrorMinutePg = null;
+    for (const pt of chunkPoints) {
+      const cairoLons = runCairoPointLongitudes({
+        engineId: capability.id,
+        minutePg: pt.minutePg,
+        latBin: pt.latBin,
+        lonBin: pt.lonBin,
+        noBuild,
+        cairoDir: CAIRO_DIR,
+      });
+      const oracleLons = computeOracleLongitudes(pt.sampleUnixMs, pt.latBin, pt.lonBin);
+      for (let b = 0; b < 8; b += 1) {
+        const err = angularErrorDeg(cairoLons[b], oracleLons[b]);
+        if (err > maxErrorDeg) {
+          maxErrorDeg = err;
+          maxErrorBody = BODY_NAMES[b];
+          maxErrorMinutePg = pt.minutePg;
+        }
+      }
+    }
+
+    emitJsonLine(process.stdout, {
+      type: "random_precision_eval",
+      engine,
+      seed,
+      cursor: chunkStart,
+      pointCount: chunkEnd - chunkStart,
+      maxErrorDeg: Math.round(maxErrorDeg * 1e9) / 1e9,
+      maxErrorBody,
+      maxErrorMinutePg,
+    });
+  }
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const engine = getStringArg(args, "engine", "v5").toLowerCase();
+  const mode = getStringArg(args, "mode", "signs");
+  if (mode !== "signs" && mode !== "precision") {
+    throw new Error(`--mode must be "signs" or "precision"`);
+  }
   const points = getNumberArg(args, "points", 1000);
   const seed = getNumberArg(args, "seed", 1);
   const startIndex = getNumberArg(args, "start-index", 0);
@@ -324,7 +407,8 @@ function main() {
     );
   }
 
-  runRandomEval({
+  const runFn = mode === "precision" ? runRandomPrecisionEval : runRandomEval;
+  runFn({
     engine,
     seed,
     points,

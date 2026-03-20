@@ -146,6 +146,39 @@ export function runCairoBatch({
   }
 }
 
+export function runCairoPointLongitudes({
+  engineId,
+  minutePg,
+  latBin,
+  lonBin,
+  noBuild,
+  cairoDir,
+}) {
+  const argsPayload = [engineId, minutePg, latBin, lonBin];
+  const tmpPath = writeTempArgsFile("eval_point_lons", argsPayload);
+
+  try {
+    const cmdArgs = [
+      "cairo-run",
+      "-p",
+      "astronomy_engine_eval_runner",
+      "--function",
+      "eval_point_longitudes",
+      "--arguments-file",
+      tmpPath,
+    ];
+    if (noBuild) cmdArgs.push("--no-build");
+    const out = runScarb(cmdArgs, cairoDir);
+    const values = parseReturnArray(out).map((x) => Number(x));
+    if (values.length !== 8) {
+      throw new Error(`Unexpected point longitudes return shape: expected 8 values, got ${values.length}`);
+    }
+    return values;
+  } finally {
+    fs.rmSync(tmpPath, { force: true });
+  }
+}
+
 export function runCairoPointMismatchDetail({
   engineId,
   minutePg,

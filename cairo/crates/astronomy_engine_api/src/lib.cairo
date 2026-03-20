@@ -46,6 +46,24 @@ pub fn compute_engine_signs_pg(engine_id: u8, minute_pg: i64, lat_bin: i16, lon_
     ]
 }
 
+pub fn compute_engine_all_longitudes_pg_1e9(engine_id: u8, minute_pg: i64, lat_bin: i16, lon_bin: i16) -> [i64; 8] {
+    assert(engine_id == ENGINE_V5, 'invalid engine');
+    assert(engine_supports_pg_minute(engine_id, minute_pg), 'minute out of supported range');
+
+    let lons = v5_planets::all_planet_longitudes_pg_1e9(minute_pg);
+    let asc = v5_asc::approximate_ascendant_longitude_pg_1e9(minute_pg, lat_bin, lon_bin);
+    [
+        *lons.span().at(0),
+        *lons.span().at(1),
+        *lons.span().at(2),
+        *lons.span().at(3),
+        *lons.span().at(4),
+        *lons.span().at(5),
+        *lons.span().at(6),
+        asc,
+    ]
+}
+
 pub fn compute_engine_planet_longitudes_pg_1e9(engine_id: u8, minute_pg: i64) -> [i64; 7] {
     assert(engine_id == ENGINE_V5, 'invalid engine');
     assert(engine_supports_pg_minute(engine_id, minute_pg), 'minute out of supported range');
