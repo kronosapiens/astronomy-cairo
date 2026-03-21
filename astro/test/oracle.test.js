@@ -17,8 +17,8 @@ test("generateSignCorpus emits deterministic sign payloads", () => {
     startUnixMs: Date.UTC(2026, 1, 24, 0, 0, 0),
     endUnixMs: Date.UTC(2026, 1, 24, 1, 0, 0),
     stepMinutes: 30,
-    latBins: [377],
-    lonBins: [-1224],
+    latBins: [3770],
+    lonBins: [-12240],
   };
 
   const a = generateSignCorpus(input);

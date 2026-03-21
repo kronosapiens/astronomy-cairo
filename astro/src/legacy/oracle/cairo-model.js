@@ -303,9 +303,9 @@ export function approximateAscendantLongitude1e9(minuteSince1900, latBin, lonBin
   const epsilonTrue = epsilon + deltaEps;
   const eqeq = Math.trunc((deltaPsi * cosDeg1e9(epsilonTrue)) / SCALE);
 
-  const lonDeg = lonBin * 100_000_000;
+  const lonDeg = lonBin * 10_000_000;
   const lst = norm360(280_460_618_370 + gmstDelta + gmstT2 - gmstT3 + eqeq + lonDeg);
-  const lat = latBin * 100_000_000;
+  const lat = latBin * 10_000_000;
 
   const sinTheta = sinDeg1e9(lst);
   const cosTheta = cosDeg1e9(lst);
@@ -345,7 +345,7 @@ export function oraclePlanetSign(planet, unixMs) {
 
 export function oracleAscSign(unixMs, latBin, lonBin) {
   const date = new Date(unixMs);
-  const observer = new Astronomy.Observer(latBin / 10, lonBin / 10, 0);
+  const observer = new Astronomy.Observer(latBin / 100, lonBin / 100, 0);
   const time = Astronomy.MakeTime(date);
   const ectToEqd = Astronomy.Rotation_ECT_EQD(date);
   const eqdToHor = Astronomy.Rotation_EQD_HOR(date, observer);

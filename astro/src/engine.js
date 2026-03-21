@@ -63,7 +63,7 @@ export function oraclePlanetSign(planet, unixMs) {
 
 /**
  * Computes the ascendant sign index (0-11) for a location and UTC timestamp.
- * `latBin` and `lonBin` are in tenths of a degree.
+ * `latBin` and `lonBin` are in hundredths of a degree.
  *
  * @param {number} unixMs
  * @param {number} latBin
@@ -72,7 +72,7 @@ export function oraclePlanetSign(planet, unixMs) {
  */
 export function oracleAscSign(unixMs, latBin, lonBin) {
   const date = new Date(unixMs);
-  const observer = new Astronomy.Observer(latBin / 10, lonBin / 10, 0);
+  const observer = new Astronomy.Observer(latBin / 100, lonBin / 100, 0);
   const time = Astronomy.MakeTime(date);
   const ectToEqd = Astronomy.Rotation_ECT_EQD(date);
   const eqdToHor = Astronomy.Rotation_EQD_HOR(date, observer);
@@ -109,7 +109,7 @@ export function oracleAscSign(unixMs, latBin, lonBin) {
 
 /**
  * Computes the ascendant ecliptic longitude (degrees) for a location and UTC timestamp.
- * `latBin` and `lonBin` are in tenths of a degree.
+ * `latBin` and `lonBin` are in hundredths of a degree.
  *
  * @param {number} unixMs
  * @param {number} latBin
@@ -118,7 +118,7 @@ export function oracleAscSign(unixMs, latBin, lonBin) {
  */
 export function oracleAscLongitude(unixMs, latBin, lonBin) {
   const date = new Date(unixMs);
-  const observer = new Astronomy.Observer(latBin / 10, lonBin / 10, 0);
+  const observer = new Astronomy.Observer(latBin / 100, lonBin / 100, 0);
   const time = Astronomy.MakeTime(date);
   const ectToEqd = Astronomy.Rotation_ECT_EQD(date);
   const eqdToHor = Astronomy.Rotation_EQD_HOR(date, observer);

@@ -48,7 +48,7 @@ function main() {
 
   const stepMinutes = getNumberArg(args, "step-minutes", 60);
   const quantizeMinutes = getNumberArg(args, "quantize-minutes", 15);
-  const locationsRaw = getStringArg(args, "locations", "377,-1224");
+  const locationsRaw = getStringArg(args, "locations", "3770,-12240");
   const locations = parseLocations(locationsRaw);
   const exampleLimit = getNumberArg(args, "example-limit", 40);
 

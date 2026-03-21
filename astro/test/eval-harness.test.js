@@ -24,8 +24,8 @@ test("parseReturnArray extracts trailing cairo-run return array", () => {
 
 test("buildBatchPayload packs points/expectations in deterministic year-month-location order", () => {
   const locations = [
-    { name: "A", latBin: 10, lonBin: 20 },
-    { name: "B", latBin: -30, lonBin: 40 },
+    { name: "A", latBin: 100, lonBin: 200 },
+    { name: "B", latBin: -300, lonBin: 400 },
   ];
   const payload = buildBatchPayload({
     batchStartYear: 2026,

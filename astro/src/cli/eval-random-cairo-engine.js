@@ -27,11 +27,11 @@ const REPO_ROOT = path.resolve(CLI_DIR, "..", "..", "..");
 const CAIRO_DIR = path.join(REPO_ROOT, "cairo");
 
 const LAT_STRATA = [
-  [-900, -601],
-  [-600, -301],
-  [-300, 300],
-  [301, 600],
-  [601, 900],
+  [-9000, -6010],
+  [-6000, -3010],
+  [-3000, 3000],
+  [3010, 6000],
+  [6010, 9000],
 ];
 const YEAR_BUCKET_COUNT = 20;
 const BATCH_POINTS = 24;
@@ -117,7 +117,7 @@ export function samplePointForIndex({
   const latStratum = sampleIndex % LAT_STRATA.length;
   const latRange = LAT_STRATA[latStratum];
   const latBin = randIntInclusive(rng, latRange[0], latRange[1]);
-  const lonBin = randIntInclusive(rng, -1800, 1800);
+  const lonBin = randIntInclusive(rng, -18000, 18000);
 
   const unixMs = makeUtcDate(year, month, day, hour, minute).getTime();
   const minutePg = minuteSincePg(unixMs);

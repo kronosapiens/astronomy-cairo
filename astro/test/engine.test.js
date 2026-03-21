@@ -30,10 +30,10 @@ test("engine longitude function keeps Mercury/Venus near Sun", () => {
 
 test("oracleAscLongitude is consistent with oracleAscSign", () => {
   const locations = [
-    { latBin: 407, lonBin: -740 },   // NYC
-    { latBin: 312, lonBin: 299 },    // Alexandria
-    { latBin: -338, lonBin: 1514 },  // Sydney
-    { latBin: 0, lonBin: 0 },        // Equator/prime meridian
+    { latBin: 4070, lonBin: -7400 },   // NYC
+    { latBin: 3120, lonBin: 2990 },    // Alexandria
+    { latBin: -3380, lonBin: 15140 },  // Sydney
+    { latBin: 0, lonBin: 0 },          // Equator/prime meridian
   ];
   const timestamps = [
     Date.UTC(2000, 0, 1, 0, 0),

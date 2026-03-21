@@ -22,8 +22,8 @@ const ENGINE_CONFIG = {
   v5: { id: 5, startYear: 1, endYear: 4000 },
 };
 
-const NYC = { name: "NYC", latBin: 407, lonBin: -740 };
-const ALEXANDRIA = { name: "Alexandria", latBin: 312, lonBin: 299 };
+const NYC = { name: "NYC", latBin: 4070, lonBin: -7400 };
+const ALEXANDRIA = { name: "Alexandria", latBin: 3120, lonBin: 2990 };
 const CLI_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(CLI_DIR, "..", "..", "..");
 const CAIRO_DIR = path.join(REPO_ROOT, "cairo");

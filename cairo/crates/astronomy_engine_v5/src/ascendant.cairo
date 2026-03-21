@@ -5,8 +5,7 @@
 // antipodal intersection points; an eastern-branch test (checking the sign of the westward
 // displacement in the horizon frame) selects the correct one. This "robust form" avoids
 // explicit tan(lat) division, which would be numerically unstable near the poles. Latitude
-// and longitude are provided as 0.1-degree bins (i16), matching the resolution of the
-// onchain contract interface.
+// and longitude are provided as 0.01-degree bins (i16).
 
 use crate::fixed::norm360_i64_1e9;
 use crate::frames::{mean_true_obliquity_deg_1e9, sidereal_time_deg_1e9};
@@ -20,10 +19,10 @@ pub fn approximate_ascendant_longitude_pg_1e9(
 ) -> i64 {
     let d = days_since_j2000_1e9_from_pg(minute_since_pg);
     let epsilon_true = mean_true_obliquity_deg_1e9(d);
-    let lon_deg_1e9: i64 = lon_bin.into() * 100_000_000; // 0.1 deg bin -> 1e9 scale
+    let lon_deg_1e9: i64 = lon_bin.into() * 10_000_000; // 0.01 deg bin -> 1e9 scale
     let lst = norm360_i64_1e9(sidereal_time_deg_1e9(d) + lon_deg_1e9);
 
-    let lat = lat_bin.into() * 100_000_000; // 0.1 deg bin -> 1e9 scale
+    let lat = lat_bin.into() * 10_000_000; // 0.01 deg bin -> 1e9 scale
 
     let sin_theta: i64 = sin_deg_1e9(lst);
     let cos_theta: i64 = cos_deg_1e9(lst);
@@ -74,8 +73,8 @@ mod tests {
     fn ascendant_output_is_normalized() {
         // minute_pg ≈ 1900 + 65M minutes ≈ year 2023
         let minute_pg: i64 = 998_776_800 + 65_000_000;
-        let lat_bin: i16 = 377;
-        let lon_bin: i16 = -1224;
+        let lat_bin: i16 = 3770;
+        let lon_bin: i16 = -12240;
         let lam = approximate_ascendant_longitude_pg_1e9(minute_pg, lat_bin, lon_bin);
         assert(lam >= 0 && lam < 360 * SCALE_1E9, 'asc range');
     }

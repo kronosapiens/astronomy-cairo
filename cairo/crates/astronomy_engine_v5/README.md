@@ -4,7 +4,7 @@ Deterministic onchain ephemeris for the seven classical planets.
 Computes ecliptic longitudes for Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, and the ascendant — accurate to ~1.4 arcseconds against the upstream oracle across 4,000 years.
 Sufficient for fully onchain natal chart computation, with precision supporting degree-level work (aspects, transits, progressions).
 
-- **Input:** timestamp (minutes since proleptic Gregorian epoch) + observer location (0.1° lat/lon bins)
+- **Input:** timestamp (minutes since proleptic Gregorian epoch) + observer location (0.01° lat/lon bins)
 - **Output:** ecliptic longitudes (`i64` scaled by `1e9`) or zodiac sign indices (0–11)
 - **Range:** years 0001 AD – 4000 AD
 - **Precision:** < 0.0004° (within professional ephemeris thresholds of 0.01°)
@@ -32,7 +32,7 @@ let longitudes: [i64; 7] = all_planet_longitudes_pg_1e9(minute_since_pg);
 // Single planet longitude (planet indices: SUN=0, MOON=1, MERCURY=2, ..., SATURN=6)
 let sun_lon: i64 = approximate_planet_longitude_pg_1e9(SUN, minute_since_pg);
 
-// Ascendant (requires observer location as 0.1° bins, e.g. 407 = 40.7°N)
+// Ascendant (requires observer location as 0.01° bins, e.g. 4070 = 40.70°N)
 let asc_lon: i64 = approximate_ascendant_longitude_pg_1e9(minute_since_pg, lat_bin, lon_bin);
 ```
 
@@ -68,11 +68,15 @@ Sign indices (0–11) are also available as a convenience mapping.
 
 | Dataset | Points | Failures |
 | --- | --- | --- |
-| Random (seed 42, arbitrary dates/times/locations) | 96,000 | 0 |
+| Random (seed 42, 0.1° locations) | 96,000 | 0 |
+| Random (seed 99, 0.01° locations) | 96,000 | 1 |
 | Structured (years 1–4000, 12 months × 2 locations) | 96,000 | 0 |
 
-**99.997% accuracy** at 95% confidence (rule of three on 96,000 random points).
+**99.997% accuracy** at 95% confidence (1 failure in 192,000 random points).
 The structured dataset provides additional coverage across the full 4,000-year range.
+
+The single failure is a cusp-boundary case: Sun at 90.000029° (year 3253), where the true longitude falls within 0.00003° of the Gemini/Cancer boundary.
+At sub-arcsecond precision, sign disagreements near exact 30° boundaries are irreducible — any two ephemerides that differ by even 0.0001° will disagree on sign when the true position is that close to a boundary.
 
 ### Degree precision
 

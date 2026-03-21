@@ -143,8 +143,8 @@ function main() {
   const end = parseDate(requireStringArg(args, "end"), "end");
   const stepMinutes = getNumberArg(args, "step-minutes", 60);
   const quantizeMinutes = getNumberArg(args, "quantize-minutes", 15);
-  const latBin = getNumberArg(args, "lat-bin", 377);
-  const lonBin = getNumberArg(args, "lon-bin", -1224);
+  const latBin = getNumberArg(args, "lat-bin", 3770);
+  const lonBin = getNumberArg(args, "lon-bin", -12240);
   const dataPath =
     typeof args["data-path"] === "string"
       ? args["data-path"]

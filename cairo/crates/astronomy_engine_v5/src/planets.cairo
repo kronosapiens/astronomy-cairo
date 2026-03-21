@@ -663,8 +663,8 @@ mod tests {
     fn chart_snapshot_2000_sf() {
         // 2000-01-01T12:00:00Z, lat/lon = 37.7/-122.4
         let minute_pg: i64 = 1_051_372_080;
-        let lat_bin: i16 = 377;
-        let lon_bin: i16 = -1224;
+        let lat_bin: i16 = 3770;
+        let lon_bin: i16 = -12240;
         let expected_planet: [u8; 7] = [9, 7, 9, 8, 10, 0, 1];
         let expected_asc: u8 = 7;
 
@@ -682,8 +682,8 @@ mod tests {
     fn chart_snapshot_2024_nyc() {
         // 2024-04-08T18:00:00Z, lat/lon = 40.7/-74.0
         let minute_pg: i64 = 1_064_136_600;
-        let lat_bin: i16 = 407;
-        let lon_bin: i16 = -740;
+        let lat_bin: i16 = 4070;
+        let lon_bin: i16 = -7400;
         let expected_planet: [u8; 7] = [0, 0, 0, 0, 11, 1, 11];
         let expected_asc: u8 = 4;
 
@@ -701,8 +701,8 @@ mod tests {
     fn chart_snapshot_2500_sydney() {
         // 2500-06-15T03:00:00Z, lat/lon = -33.8/151.2
         let minute_pg: i64 = 1_314_584_820;
-        let lat_bin: i16 = -338;
-        let lon_bin: i16 = 1512;
+        let lat_bin: i16 = -3380;
+        let lon_bin: i16 = 15120;
         let expected_planet: [u8; 7] = [2, 9, 3, 1, 1, 3, 1];
         let expected_asc: u8 = 6;
 

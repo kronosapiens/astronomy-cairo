@@ -20,8 +20,8 @@ test("generateSignCorpus is deterministic and ordered for mixed location grids",
     startUnixMs: Date.UTC(2026, 1, 24, 0, 0, 0),
     endUnixMs: Date.UTC(2026, 1, 24, 1, 0, 0),
     stepMinutes: 60,
-    latBins: [407, 312],
-    lonBins: [-740, 299],
+    latBins: [4070, 3120],
+    lonBins: [-7400, 2990],
   };
 
   const a = generateSignCorpus(input);
@@ -34,14 +34,14 @@ test("generateSignCorpus is deterministic and ordered for mixed location grids",
     minuteSince1900(Date.UTC(2026, 1, 24, 1, 0, 0)),
   ];
   const expectedOrder = [
-    [minutes[0], 407, -740],
-    [minutes[0], 407, 299],
-    [minutes[0], 312, -740],
-    [minutes[0], 312, 299],
-    [minutes[1], 407, -740],
-    [minutes[1], 407, 299],
-    [minutes[1], 312, -740],
-    [minutes[1], 312, 299],
+    [minutes[0], 4070, -7400],
+    [minutes[0], 4070, 2990],
+    [minutes[0], 3120, -7400],
+    [minutes[0], 3120, 2990],
+    [minutes[1], 4070, -7400],
+    [minutes[1], 4070, 2990],
+    [minutes[1], 3120, -7400],
+    [minutes[1], 3120, 2990],
   ];
   const actualOrder = a.entries.map((row) => [row.time_minute, row.lat_bin, row.lon_bin]);
   assert.deepEqual(actualOrder, expectedOrder);
