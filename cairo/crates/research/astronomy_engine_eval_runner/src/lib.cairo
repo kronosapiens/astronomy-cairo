@@ -56,6 +56,7 @@ fn compute_longitudes(minute_pg: i64, lat_bin: i16, lon_bin: i16) -> [i64; 8] {
 /// - planet_fail_count: points with any planet mismatch (bits 0..6)
 /// - asc_fail_count: points with ascendant mismatch (bit 7)
 /// - sun_fail_count .. saturn_fail_count: per-planet fail-point counters
+#[executable]
 pub fn eval_batch_fail_breakdown(
     point_data: Array<i64>, expected_signs: Array<i64>
 ) -> (u32, u32, u32, u32, u32, u32, u32, u32, u32, u32) {
@@ -150,6 +151,7 @@ pub fn eval_batch_fail_breakdown(
 /// Compute all 8 longitudes (1e9) for a single point.
 ///
 /// Returns (sun, moon, mercury, venus, mars, jupiter, saturn, asc).
+#[executable]
 pub fn eval_point_longitudes(
     minute_pg: i64, lat_bin: i16, lon_bin: i16,
 ) -> (i64, i64, i64, i64, i64, i64, i64, i64) {
@@ -160,6 +162,7 @@ pub fn eval_point_longitudes(
 
 /// Compare one point and return an 8-bit mismatch mask:
 /// 0 Sun, 1 Moon, 2 Mercury, 3 Venus, 4 Mars, 5 Jupiter, 6 Saturn, 7 Ascendant
+#[executable]
 pub fn eval_point_mismatch_mask(
     minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
 ) -> i64 {
@@ -185,6 +188,7 @@ pub fn eval_point_mismatch_mask(
 ///
 /// Returns:
 /// (mask, sun, moon, mercury, venus, mars, jupiter, saturn, asc)
+#[executable]
 pub fn eval_point_mismatch_mask_and_actual(
     minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
 ) -> (i64, i64, i64, i64, i64, i64, i64, i64, i64) {
@@ -221,6 +225,7 @@ pub fn eval_point_mismatch_mask_and_actual(
 ///
 /// Returns:
 /// (mask, 8 signs..., 7 longitudes_1e9...)
+#[executable]
 pub fn eval_point_mismatch_detail(
     minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
 ) -> (
@@ -253,6 +258,7 @@ pub fn eval_point_mismatch_detail(
 
 /// Returns debug internals for one non-luminary planet (Mercury..Saturn = 2..6).
 /// (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9, frame_lon_1e9, frame_lat_1e9)
+#[executable]
 pub fn eval_point_planet_debug_frame(
     planet: u8, minute_pg: i64
 ) -> (i64, i64, i64, i64, i64, i64) {
@@ -273,6 +279,7 @@ pub fn eval_point_planet_debug_frame(
 
 /// Projects an arbitrary EQJ vector into Cairo ecliptic-of-date frame.
 /// Returns (lon_1e9, lat_1e9), bias-encoded to avoid felt negative wrap.
+#[executable]
 pub fn eval_frame_from_eqj(
     x_eqj_1e9: i64, y_eqj_1e9: i64, z_eqj_1e9: i64, days_since_j2000_1e9: i64
 ) -> (i64, i64) {

@@ -5,3 +5,32 @@ edition.workspace = true
 
 [dependencies]
 astronomy_engine_v6 = { path = "../astronomy_engine_v6" }
+cairo_execute = "2.16.1"
+
+[[target.executable]]
+name = "eval_batch_fail_breakdown"
+function = "astronomy_engine_eval_runner::eval_batch_fail_breakdown"
+
+[[target.executable]]
+name = "eval_point_longitudes"
+function = "astronomy_engine_eval_runner::eval_point_longitudes"
+
+[[target.executable]]
+name = "eval_point_mismatch_mask"
+function = "astronomy_engine_eval_runner::eval_point_mismatch_mask"
+
+[[target.executable]]
+name = "eval_point_mismatch_mask_and_actual"
+function = "astronomy_engine_eval_runner::eval_point_mismatch_mask_and_actual"
+
+[[target.executable]]
+name = "eval_point_mismatch_detail"
+function = "astronomy_engine_eval_runner::eval_point_mismatch_detail"
+
+[[target.executable]]
+name = "eval_point_planet_debug_frame"
+function = "astronomy_engine_eval_runner::eval_point_planet_debug_frame"
+
+[[target.executable]]
+name = "eval_frame_from_eqj"
+function = "astronomy_engine_eval_runner::eval_frame_from_eqj"

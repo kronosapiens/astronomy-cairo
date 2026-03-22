@@ -1,0 +1,5 @@
+
+[sncast.deployer]
+account = "deployer"
+accounts-file = "/Users/kronosapiens/.starknet_accounts/starknet_open_zeppelin_accounts.json"
+network = "sepolia"

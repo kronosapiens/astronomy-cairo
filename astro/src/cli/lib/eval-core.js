@@ -80,6 +80,49 @@ export function minuteSincePg(unixMs) {
   return Math.floor((unixMs - EPOCH_PG_MS) / 60_000);
 }
 
+// Felt252 field prime for 2's complement encoding of negative integers.
+const FELT_PRIME = 2n ** 251n + 17n * 2n ** 192n + 1n;
+
+function intToFeltHex(value) {
+  const v = BigInt(value);
+  const felt = v >= 0n ? v : FELT_PRIME + v;
+  return `0x${felt.toString(16)}`;
+}
+
+function feltToSignedInt(feltStr) {
+  const v = BigInt(feltStr);
+  const half = FELT_PRIME / 2n;
+  return v > half ? Number(v - FELT_PRIME) : Number(v);
+}
+
+function serializeArgs(payload) {
+  const felts = [];
+  for (const item of payload) {
+    if (Array.isArray(item)) {
+      felts.push(intToFeltHex(item.length));
+      for (const v of item) {
+        felts.push(intToFeltHex(v));
+      }
+    } else {
+      felts.push(intToFeltHex(item));
+    }
+  }
+  return felts;
+}
+
+function parseProgramOutput(rawOutput) {
+  const marker = "Program output:";
+  const idx = rawOutput.indexOf(marker);
+  if (idx < 0) {
+    throw new Error(`Could not parse scarb execute output: missing '${marker}' marker`);
+  }
+  const lines = rawOutput.slice(idx + marker.length).trim().split(/\n/);
+  return lines
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith("Saving output"));
+}
+
+// Legacy parser kept for reference during migration; remove once fully migrated.
 export function parseReturnArray(rawOutput) {
   const marker = "returning";
   const idx = rawOutput.lastIndexOf(marker);
@@ -94,13 +137,36 @@ export function parseReturnArray(rawOutput) {
   return JSON.parse(rawOutput.slice(start, end + 1));
 }
 
-function writeTempArgsFile(prefix, payload) {
+function writeTempArgsFile(prefix, felts) {
   const tmpPath = path.join(
     os.tmpdir(),
     `${prefix}_${Date.now()}_${Math.floor(Math.random() * 1_000_000)}.json`,
   );
-  fs.writeFileSync(tmpPath, `${JSON.stringify(payload)}\n`, "utf8");
+  fs.writeFileSync(tmpPath, `${JSON.stringify(felts)}\n`, "utf8");
   return tmpPath;
+}
+
+function runExecutable(executableName, payload, { noBuild, cairoDir }) {
+  const felts = serializeArgs(payload);
+  const tmpPath = writeTempArgsFile(executableName, felts);
+
+  try {
+    const cmdArgs = [
+      "execute",
+      "-p",
+      "astronomy_engine_eval_runner",
+      "--executable-name",
+      executableName,
+      "--arguments-file",
+      tmpPath,
+      "--print-program-output",
+    ];
+    if (noBuild) cmdArgs.push("--no-build");
+    const out = runScarb(cmdArgs, cairoDir);
+    return parseProgramOutput(out).map((v) => feltToSignedInt(v));
+  } finally {
+    fs.rmSync(tmpPath, { force: true });
+  }
 }
 
 export function runCairoBatch({
@@ -109,40 +175,22 @@ export function runCairoBatch({
   noBuild,
   cairoDir,
 }) {
-  const argsPayload = [packedPoints, expectedPacked];
-  const tmpPath = writeTempArgsFile("eval_batch", argsPayload);
-
-  try {
-    const cmdArgs = [
-      "cairo-run",
-      "-p",
-      "astronomy_engine_eval_runner",
-      "--function",
-      "eval_batch_fail_breakdown",
-      "--arguments-file",
-      tmpPath,
-    ];
-    if (noBuild) cmdArgs.push("--no-build");
-    const out = runScarb(cmdArgs, cairoDir);
-    const values = parseReturnArray(out).map((x) => Number(x));
-    if (values.length !== 10) {
-      throw new Error(`Unexpected cairo-run return shape: expected 10 values, got ${values.length}`);
-    }
-    return {
-      failCount: values[0],
-      planetFailCount: values[1],
-      ascFailCount: values[2],
-      sunFailCount: values[3],
-      moonFailCount: values[4],
-      mercuryFailCount: values[5],
-      venusFailCount: values[6],
-      marsFailCount: values[7],
-      jupiterFailCount: values[8],
-      saturnFailCount: values[9],
-    };
-  } finally {
-    fs.rmSync(tmpPath, { force: true });
+  const values = runExecutable("eval_batch_fail_breakdown", [packedPoints, expectedPacked], { noBuild, cairoDir });
+  if (values.length !== 10) {
+    throw new Error(`Unexpected batch return shape: expected 10 values, got ${values.length}`);
   }
+  return {
+    failCount: values[0],
+    planetFailCount: values[1],
+    ascFailCount: values[2],
+    sunFailCount: values[3],
+    moonFailCount: values[4],
+    mercuryFailCount: values[5],
+    venusFailCount: values[6],
+    marsFailCount: values[7],
+    jupiterFailCount: values[8],
+    saturnFailCount: values[9],
+  };
 }
 
 export function runCairoPointLongitudes({
@@ -152,29 +200,11 @@ export function runCairoPointLongitudes({
   noBuild,
   cairoDir,
 }) {
-  const argsPayload = [minutePg, latBin, lonBin];
-  const tmpPath = writeTempArgsFile("eval_point_lons", argsPayload);
-
-  try {
-    const cmdArgs = [
-      "cairo-run",
-      "-p",
-      "astronomy_engine_eval_runner",
-      "--function",
-      "eval_point_longitudes",
-      "--arguments-file",
-      tmpPath,
-    ];
-    if (noBuild) cmdArgs.push("--no-build");
-    const out = runScarb(cmdArgs, cairoDir);
-    const values = parseReturnArray(out).map((x) => Number(x));
-    if (values.length !== 8) {
-      throw new Error(`Unexpected point longitudes return shape: expected 8 values, got ${values.length}`);
-    }
-    return values;
-  } finally {
-    fs.rmSync(tmpPath, { force: true });
+  const values = runExecutable("eval_point_longitudes", [minutePg, latBin, lonBin], { noBuild, cairoDir });
+  if (values.length !== 8) {
+    throw new Error(`Unexpected point longitudes return shape: expected 8 values, got ${values.length}`);
   }
+  return values;
 }
 
 export function runCairoPointMismatchDetail({
@@ -186,33 +216,15 @@ export function runCairoPointMismatchDetail({
   cairoDir,
   tempPrefix = "eval_point_detail",
 }) {
-  const argsPayload = [minutePg, latBin, lonBin, expectedSigns];
-  const tmpPath = writeTempArgsFile(tempPrefix, argsPayload);
-
-  try {
-    const cmdArgs = [
-      "cairo-run",
-      "-p",
-      "astronomy_engine_eval_runner",
-      "--function",
-      "eval_point_mismatch_detail",
-      "--arguments-file",
-      tmpPath,
-    ];
-    if (noBuild) cmdArgs.push("--no-build");
-    const out = runScarb(cmdArgs, cairoDir);
-    const values = parseReturnArray(out).map((x) => Number(x));
-    if (values.length !== 16) {
-      throw new Error(`Unexpected point detail return shape: expected 16 values, got ${values.length}`);
-    }
-    return {
-      mask: values[0],
-      actualSigns: values.slice(1, 9),
-      actualLongitudes1e9: values.slice(9, 16),
-    };
-  } finally {
-    fs.rmSync(tmpPath, { force: true });
+  const values = runExecutable("eval_point_mismatch_detail", [minutePg, latBin, lonBin, expectedSigns], { noBuild, cairoDir });
+  if (values.length !== 16) {
+    throw new Error(`Unexpected point detail return shape: expected 16 values, got ${values.length}`);
   }
+  return {
+    mask: values[0],
+    actualSigns: values.slice(1, 9),
+    actualLongitudes1e9: values.slice(9, 16),
+  };
 }
 
 export function ensureParentDir(filePath) {
