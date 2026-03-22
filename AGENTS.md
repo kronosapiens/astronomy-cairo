@@ -18,4 +18,4 @@ See per-crate READMEs for details.
 - `v6`: deployment-optimized v5 with reduced trig tables (76% fewer entries).
 Fits within Starknet's 4 MB contract class size limit.
 
-See [RESEARCH.md](RESEARCH.md) for the full development arc.
+See [cairo/research/RESEARCH.md](cairo/research/RESEARCH.md) for the full development arc.

@@ -16,7 +16,7 @@ use crate::frames::{
     eqj_to_ecliptic_of_date_lon_lat_1e9, eqj_to_ecliptic_of_date_longitude_1e9,
     nutation_longitude_deg_1e9, vsop_ecliptic_to_eqj_1e9,
 };
-use crate::gen_moon::MOON_SOLAR_TERMS;
+use crate::gen::moon::MOON_SOLAR_TERMS;
 use crate::trig::{cos_deg_1e9, sin_deg_1e9};
 pub const PLANET_COUNT: usize = 7;
 
@@ -27,7 +27,7 @@ pub const VENUS: u8 = 3;
 pub const MARS: u8 = 4;
 pub const JUPITER: u8 = 5;
 pub const SATURN: u8 = 6;
-use crate::gen_vsop::{
+use crate::gen::vsop::{
     earth_helio, jupiter_helio, mars_helio, mercury_helio, saturn_helio, venus_helio, HelioState,
 };
 

@@ -1,0 +1,11 @@
+[workspace]
+members = [
+  "crates/astronomy_engine",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024_07"
+
+[workspace.dependencies]
+starknet = "2.11.4"

@@ -6,8 +6,8 @@
 // explicit quadrant handling. All inputs and outputs are in degrees scaled by 1e9.
 
 use crate::fixed::{norm360_i64_1e9, SCALE_1E9};
-use crate::gen_atan::ATAN_TABLE_501;
-use crate::gen_sin::SIN_TABLE_3601;
+use crate::gen::atan::ATAN_TABLE_501;
+use crate::gen::sin::SIN_TABLE_3601;
 
 const DEG_180_1E9: i64 = 180 * SCALE_1E9;
 

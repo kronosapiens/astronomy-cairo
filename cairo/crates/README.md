@@ -1,6 +1,6 @@
-# Deployable Contract Crates
+# Deployable Contract Crate
 
-Reserved for Starknet contract crates to be generated from the finalized research engine.
+Thin Starknet contract wrapper around the v6 research engine.
+To upgrade to a future engine version, change the dependency path in `Scarb.toml`.
 
-The deployment architecture splits the engine across four contract classes to fit within Starknet's 4 MB declaration limit.
-See `cairo/research/crates/astronomy_engine_v6/README.md` for the size optimization analysis and split design.
+See the [repo root README](../../README.md) for interface documentation, validation results, and usage.

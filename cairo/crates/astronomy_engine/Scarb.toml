@@ -1,0 +1,10 @@
+[package]
+name = "astronomy_engine"
+version = "0.1.0"
+edition = "2024_07"
+
+[dependencies]
+astronomy_engine_v6 = { path = "../../research/crates/astronomy_engine_v6" }
+starknet = "2.11.4"
+
+[[target.starknet-contract]]
