@@ -1,8 +1,10 @@
 [workspace]
 members = [
-  "crates/astronomy_engine_v5",
-  "crates/astronomy_engine_api",
-  "crates/astronomy_engine_eval_runner",
+  "crates/astronomy_engine_types",
+  "crates/astronomy_engine_trig",
+  "crates/astronomy_engine_frames",
+  "crates/astronomy_engine_planets",
+  "crates/astronomy_engine",
 ]
 
 [workspace.package]
@@ -10,3 +12,4 @@ version = "0.1.0"
 edition = "2024_07"
 
 [workspace.dependencies]
+starknet = "2.11.4"

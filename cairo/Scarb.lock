@@ -2,19 +2,39 @@
 version = 1
 
 [[package]]
-name = "astronomy_engine_api"
+name = "astronomy_engine"
 version = "0.1.0"
 dependencies = [
- "astronomy_engine_v5",
+ "astronomy_engine_frames",
+ "astronomy_engine_planets",
+ "astronomy_engine_trig",
+ "astronomy_engine_types",
 ]
 
 [[package]]
-name = "astronomy_engine_eval_runner"
+name = "astronomy_engine_frames"
 version = "0.1.0"
 dependencies = [
- "astronomy_engine_api",
+ "astronomy_engine_trig",
+ "astronomy_engine_types",
 ]
 
 [[package]]
-name = "astronomy_engine_v5"
+name = "astronomy_engine_planets"
+version = "0.1.0"
+dependencies = [
+ "astronomy_engine_frames",
+ "astronomy_engine_trig",
+ "astronomy_engine_types",
+]
+
+[[package]]
+name = "astronomy_engine_trig"
+version = "0.1.0"
+dependencies = [
+ "astronomy_engine_types",
+]
+
+[[package]]
+name = "astronomy_engine_types"
 version = "0.1.0"
