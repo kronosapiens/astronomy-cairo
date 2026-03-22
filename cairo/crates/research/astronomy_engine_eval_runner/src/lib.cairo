@@ -1,59 +1,52 @@
-use astronomy_engine_api::{
-    compute_engine_all_longitudes_pg_1e9,
-    compute_engine_frame_from_eqj_1e9, compute_engine_planet_debug_frame_pg_1e9,
-    compute_engine_planet_longitudes_pg_1e9,
-    compute_engine_signs_pg,
+use astronomy_engine_v6::ascendant::approximate_ascendant_longitude_pg_1e9;
+use astronomy_engine_v6::fixed::SCALE_1E9;
+use astronomy_engine_v6::frames::eqj_to_ecliptic_of_date_lon_lat_1e9;
+use astronomy_engine_v6::planets::{
+    all_planet_longitudes_pg_1e9,
+    debug_planet_geocentric_eqj_pg_1e9,
 };
 
 const DEBUG_EQJ_BIAS_1E9: i64 = 100_000_000_000;
 const DEBUG_TT_BIAS_1E9: i64 = 4_000_000_000_000_000;
 const DEBUG_FRAME_BIAS_1E9: i64 = 360_000_000_000;
 
-/// Compare a batch of Cairo-computed chart signs against expected signs.
-///
-/// `point_data` is a flat list of triples:
-/// `[minute_pg_0, lat_bin_0, lon_bin_0, minute_pg_1, lat_bin_1, lon_bin_1, ...]`
-///
-/// `expected_signs` is a flat list of 8-sign tuples:
-/// `[sun, moon, mercury, venus, mars, jupiter, saturn, asc, ...]`
-pub fn eval_batch_fail_count(engine_id: u8, point_data: Array<i64>, expected_signs: Array<i64>) -> u32 {
-    let point_len = point_data.len();
-    assert(point_len != 0, 'empty points');
-    assert(point_len % 3 == 0, 'points % 3 != 0');
-    assert(expected_signs.len() == (point_len / 3) * 8, 'expected len mismatch');
+fn sign_from_lon_1e9(lon_1e9: i64) -> i64 {
+    let period: i64 = 360 * SCALE_1E9;
+    let mut normalized = lon_1e9 % period;
+    if normalized < 0 {
+        normalized += period;
+    }
+    normalized / (30 * SCALE_1E9)
+}
 
-    let mut point_span = point_data.span();
-    let mut expected_span = expected_signs.span();
-    let mut fail_count: u32 = 0;
-    let point_count = point_len / 3;
+fn compute_signs(minute_pg: i64, lat_bin: i16, lon_bin: i16) -> [i64; 8] {
+    let lons = all_planet_longitudes_pg_1e9(minute_pg);
+    let asc = approximate_ascendant_longitude_pg_1e9(minute_pg, lat_bin, lon_bin);
+    [
+        sign_from_lon_1e9(*lons.span().at(0)),
+        sign_from_lon_1e9(*lons.span().at(1)),
+        sign_from_lon_1e9(*lons.span().at(2)),
+        sign_from_lon_1e9(*lons.span().at(3)),
+        sign_from_lon_1e9(*lons.span().at(4)),
+        sign_from_lon_1e9(*lons.span().at(5)),
+        sign_from_lon_1e9(*lons.span().at(6)),
+        sign_from_lon_1e9(asc),
+    ]
+}
 
-    let mut point_idx: usize = 0;
-    while point_idx != point_count {
-        let minute_pg = *point_span.pop_front().unwrap();
-        let lat_bin_raw = *point_span.pop_front().unwrap();
-        let lon_bin_raw = *point_span.pop_front().unwrap();
-        let lat_bin: i16 = lat_bin_raw.try_into().unwrap();
-        let lon_bin: i16 = lon_bin_raw.try_into().unwrap();
-
-        let signs = compute_engine_signs_pg(engine_id, minute_pg, lat_bin, lon_bin);
-        let mut sign_span = signs.span();
-
-        let mut all_match = true;
-        let mut j: usize = 0;
-        while j != 8 {
-            if *sign_span.pop_front().unwrap() != *expected_span.pop_front().unwrap() {
-                all_match = false;
-            }
-            j += 1;
-        };
-        if !all_match {
-            fail_count += 1;
-        }
-
-        point_idx += 1;
-    };
-
-    fail_count
+fn compute_longitudes(minute_pg: i64, lat_bin: i16, lon_bin: i16) -> [i64; 8] {
+    let lons = all_planet_longitudes_pg_1e9(minute_pg);
+    let asc = approximate_ascendant_longitude_pg_1e9(minute_pg, lat_bin, lon_bin);
+    [
+        *lons.span().at(0),
+        *lons.span().at(1),
+        *lons.span().at(2),
+        *lons.span().at(3),
+        *lons.span().at(4),
+        *lons.span().at(5),
+        *lons.span().at(6),
+        asc,
+    ]
 }
 
 /// Compare a batch and return split fail counters.
@@ -64,7 +57,7 @@ pub fn eval_batch_fail_count(engine_id: u8, point_data: Array<i64>, expected_sig
 /// - asc_fail_count: points with ascendant mismatch (bit 7)
 /// - sun_fail_count .. saturn_fail_count: per-planet fail-point counters
 pub fn eval_batch_fail_breakdown(
-    engine_id: u8, point_data: Array<i64>, expected_signs: Array<i64>
+    point_data: Array<i64>, expected_signs: Array<i64>
 ) -> (u32, u32, u32, u32, u32, u32, u32, u32, u32, u32) {
     let point_len = point_data.len();
     assert(point_len != 0, 'empty points');
@@ -93,7 +86,7 @@ pub fn eval_batch_fail_breakdown(
         let lat_bin: i16 = lat_bin_raw.try_into().unwrap();
         let lon_bin: i16 = lon_bin_raw.try_into().unwrap();
 
-        let signs = compute_engine_signs_pg(engine_id, minute_pg, lat_bin, lon_bin);
+        let signs = compute_signs(minute_pg, lat_bin, lon_bin);
         let mut sign_span = signs.span();
 
         let mut any_mismatch = false;
@@ -158,9 +151,9 @@ pub fn eval_batch_fail_breakdown(
 ///
 /// Returns (sun, moon, mercury, venus, mars, jupiter, saturn, asc).
 pub fn eval_point_longitudes(
-    engine_id: u8, minute_pg: i64, lat_bin: i16, lon_bin: i16,
+    minute_pg: i64, lat_bin: i16, lon_bin: i16,
 ) -> (i64, i64, i64, i64, i64, i64, i64, i64) {
-    let lons = compute_engine_all_longitudes_pg_1e9(engine_id, minute_pg, lat_bin, lon_bin);
+    let lons = compute_longitudes(minute_pg, lat_bin, lon_bin);
     let s = lons.span();
     (*s.at(0), *s.at(1), *s.at(2), *s.at(3), *s.at(4), *s.at(5), *s.at(6), *s.at(7))
 }
@@ -168,11 +161,11 @@ pub fn eval_point_longitudes(
 /// Compare one point and return an 8-bit mismatch mask:
 /// 0 Sun, 1 Moon, 2 Mercury, 3 Venus, 4 Mars, 5 Jupiter, 6 Saturn, 7 Ascendant
 pub fn eval_point_mismatch_mask(
-    engine_id: u8, minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
+    minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
 ) -> i64 {
     assert(expected_signs.len() == 8, 'expected len mismatch');
     let expected_span = expected_signs.span();
-    let signs = compute_engine_signs_pg(engine_id, minute_pg, lat_bin, lon_bin);
+    let signs = compute_signs(minute_pg, lat_bin, lon_bin);
     let sign_span = signs.span();
 
     let mut mask: i64 = 0;
@@ -193,11 +186,11 @@ pub fn eval_point_mismatch_mask(
 /// Returns:
 /// (mask, sun, moon, mercury, venus, mars, jupiter, saturn, asc)
 pub fn eval_point_mismatch_mask_and_actual(
-    engine_id: u8, minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
+    minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
 ) -> (i64, i64, i64, i64, i64, i64, i64, i64, i64) {
     assert(expected_signs.len() == 8, 'expected len mismatch');
     let expected_span = expected_signs.span();
-    let signs = compute_engine_signs_pg(engine_id, minute_pg, lat_bin, lon_bin);
+    let signs = compute_signs(minute_pg, lat_bin, lon_bin);
     let sign_span = signs.span();
 
     let mut mask: i64 = 0;
@@ -229,14 +222,14 @@ pub fn eval_point_mismatch_mask_and_actual(
 /// Returns:
 /// (mask, 8 signs..., 7 longitudes_1e9...)
 pub fn eval_point_mismatch_detail(
-    engine_id: u8, minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
+    minute_pg: i64, lat_bin: i16, lon_bin: i16, expected_signs: Array<i64>
 ) -> (
     i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64, i64
 ) {
     let (mask, s0, s1, s2, s3, s4, s5, s6, s7) = eval_point_mismatch_mask_and_actual(
-        engine_id, minute_pg, lat_bin, lon_bin, expected_signs,
+        minute_pg, lat_bin, lon_bin, expected_signs,
     );
-    let lons = compute_engine_planet_longitudes_pg_1e9(engine_id, minute_pg);
+    let lons = all_planet_longitudes_pg_1e9(minute_pg);
     let lon_span = lons.span();
     (
         mask,
@@ -261,10 +254,13 @@ pub fn eval_point_mismatch_detail(
 /// Returns debug internals for one non-luminary planet (Mercury..Saturn = 2..6).
 /// (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9, frame_lon_1e9, frame_lat_1e9)
 pub fn eval_point_planet_debug_frame(
-    engine_id: u8, planet: u8, minute_pg: i64
+    planet: u8, minute_pg: i64
 ) -> (i64, i64, i64, i64, i64, i64) {
-    let (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9, frame_lon_1e9, frame_lat_1e9) =
-        compute_engine_planet_debug_frame_pg_1e9(engine_id, planet, minute_pg);
+    let (dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9) =
+        debug_planet_geocentric_eqj_pg_1e9(planet, minute_pg);
+    let (frame_lon_1e9, frame_lat_1e9) = eqj_to_ecliptic_of_date_lon_lat_1e9(
+        dx_eqj, dy_eqj, dz_eqj, obs_tt_1e9,
+    );
     (
         dx_eqj + DEBUG_EQJ_BIAS_1E9,
         dy_eqj + DEBUG_EQJ_BIAS_1E9,
@@ -278,10 +274,10 @@ pub fn eval_point_planet_debug_frame(
 /// Projects an arbitrary EQJ vector into Cairo ecliptic-of-date frame.
 /// Returns (lon_1e9, lat_1e9), bias-encoded to avoid felt negative wrap.
 pub fn eval_frame_from_eqj(
-    engine_id: u8, x_eqj_1e9: i64, y_eqj_1e9: i64, z_eqj_1e9: i64, days_since_j2000_1e9: i64
+    x_eqj_1e9: i64, y_eqj_1e9: i64, z_eqj_1e9: i64, days_since_j2000_1e9: i64
 ) -> (i64, i64) {
-    let (lon_1e9, lat_1e9) = compute_engine_frame_from_eqj_1e9(
-        engine_id, x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
+    let (lon_1e9, lat_1e9) = eqj_to_ecliptic_of_date_lon_lat_1e9(
+        x_eqj_1e9, y_eqj_1e9, z_eqj_1e9, days_since_j2000_1e9,
     );
     (lon_1e9 + DEBUG_FRAME_BIAS_1E9, lat_1e9 + DEBUG_FRAME_BIAS_1E9)
 }

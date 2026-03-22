@@ -78,17 +78,17 @@ At sub-arcsecond precision, sign disagreements this close to a 30° boundary are
 ## Building
 
 ```bash
-cd cairo && scarb build         # build the Starknet contract
-cd cairo/research && scarb test # run engine unit tests
+cd cairo && scarb build                # build the Starknet contract
+cd cairo/crates/research && scarb test # run engine unit tests
 cd astro && npm test            # run JS oracle tests
 ```
 
 ## Repository Layout
 
 ```
-cairo/
-  crates/astronomy_engine/     Starknet contract (thin wrapper)
-  research/crates/
+cairo/crates/
+  astronomy_engine/            Starknet contract (thin wrapper)
+  research/
     astronomy_engine_v6/       Active engine (source of truth)
     astronomy_engine_v1..v5/   Research iterations
 
@@ -104,7 +104,7 @@ spec/                          Design specs and domain reference
 - [spec/CHART.md](./spec/CHART.md) — chart construction spec
 - [spec/EVALS.md](./spec/EVALS.md) — evaluation framework
 - [astro/README.md](./astro/README.md) — eval CLI usage
-- [cairo/research/RESEARCH.md](./cairo/research/RESEARCH.md) — v1 through v6 development arc
+- [cairo/crates/research/RESEARCH.md](./cairo/crates/research/RESEARCH.md) — v1 through v6 development arc
 
 ## Upstream Reference
 

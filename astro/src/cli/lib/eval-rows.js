@@ -1,5 +1,4 @@
 export function makeStructuredMismatchRow({
-  engine,
   locationSet,
   monthsPerYear,
   year,
@@ -16,7 +15,6 @@ export function makeStructuredMismatchRow({
 }) {
   return {
     type: "mismatch_point",
-    engine,
     locationSet,
     monthsPerYear,
     year,
@@ -36,7 +34,6 @@ export function makeStructuredMismatchRow({
 }
 
 export function makeWindowSummaryRow({
-  engine,
   locationSet,
   year,
   pointCount,
@@ -54,7 +51,6 @@ export function makeWindowSummaryRow({
 }) {
   return {
     type: "structured_eval",
-    engine,
     locationSet,
     year,
     pointCount,
@@ -73,7 +69,6 @@ export function makeWindowSummaryRow({
 }
 
 export function makeRandomPointResultRow({
-  engine,
   seed,
   sampleIndex,
   yearBucket,
@@ -93,7 +88,6 @@ export function makeRandomPointResultRow({
 }) {
   return {
     type: "point_result",
-    engine,
     seed,
     sampleIndex,
     yearBucket,

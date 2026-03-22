@@ -1,0 +1,12 @@
+[workspace]
+members = [
+  "astronomy_engine_v5",
+  "astronomy_engine_v6",
+  "astronomy_engine_eval_runner",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024_07"
+
+[workspace.dependencies]

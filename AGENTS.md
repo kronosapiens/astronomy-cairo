@@ -11,11 +11,11 @@
 ## Engine Versions
 
 - `v1`–`v4`: research iterations (table ingress → Chebyshev → VSOP → full 7-body pipeline).
-Archived in `cairo/research/crates/`.
+Archived in `cairo/crates/research/`.
 See per-crate READMEs for details.
 - `v5`: production engine.
 >99.999% sign-level parity (100% on structured eval, 1 irreducible cusp case per ~96k random points).
 - `v6`: deployment-optimized v5 with reduced trig tables (76% fewer entries).
 Fits within Starknet's 4 MB contract class size limit.
 
-See [cairo/research/RESEARCH.md](cairo/research/RESEARCH.md) for the full development arc.
+See [cairo/crates/research/RESEARCH.md](cairo/crates/research/RESEARCH.md) for the full development arc.

@@ -1,7 +1,0 @@
-[package]
-name = "astronomy_engine_eval_runner"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-astronomy_engine_api = { path = "../astronomy_engine_api" }

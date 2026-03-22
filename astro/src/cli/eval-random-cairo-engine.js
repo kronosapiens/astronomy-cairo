@@ -17,14 +17,13 @@ import {
   makeRandomPointResultRow,
 } from "./lib/eval-rows.js";
 
-const ENGINE_CONFIG = {
-  v5: { id: 5, startYear: 1, endYear: 4000 },
-};
+const SUPPORTED_START_YEAR = 1;
+const SUPPORTED_END_YEAR = 4000;
 
 const CLI_PATH = fileURLToPath(import.meta.url);
 const CLI_DIR = path.dirname(CLI_PATH);
 const REPO_ROOT = path.resolve(CLI_DIR, "..", "..", "..");
-const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "research");
+const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "crates", "research");
 
 const LAT_STRATA = [
   [-9000, -6010],
@@ -140,9 +139,8 @@ export function samplePointForIndex({
   };
 }
 
-function pointRowFromDetail(engine, seed, p, detail) {
+function pointRowFromDetail(seed, p, detail) {
   return makeRandomPointResultRow({
-    engine,
     seed,
     sampleIndex: p.sampleIndex,
     yearBucket: p.yearBucket,
@@ -163,8 +161,6 @@ function pointRowFromDetail(engine, seed, p, detail) {
 }
 
 export function collectMismatchRowsForChunk({
-  engineId,
-  engine,
   seed,
   chunkPoints,
   packedPoints,
@@ -184,7 +180,6 @@ export function collectMismatchRowsForChunk({
     if (cached) return cached;
     const sliced = sliceEncodedPayload(packedPoints, expectedPacked, startIdx, endIdxExclusive);
     const breakdown = runCairoBatchFn({
-      engineId,
       packedPoints: sliced.packedPoints,
       expectedPacked: sliced.expectedPacked,
       noBuild,
@@ -202,8 +197,7 @@ export function collectMismatchRowsForChunk({
     if (count === 1) {
       const p = chunkPoints[startIdx];
       const detail = runCairoPointMismatchDetailFn({
-        engineId,
-        minutePg: p.minutePg,
+          minutePg: p.minutePg,
         latBin: p.latBin,
         lonBin: p.lonBin,
         expectedSigns: p.expectedSigns,
@@ -212,7 +206,7 @@ export function collectMismatchRowsForChunk({
         tempPrefix: "eval_random_point_detail",
       });
       if (detail.mask !== 0) {
-        rows.push(pointRowFromDetail(engine, seed, p, detail));
+        rows.push(pointRowFromDetail(seed, p, detail));
       }
       return;
     }
@@ -237,7 +231,6 @@ export function buildChunkPoints({ seed, startYear, endYear, chunkStart, chunkEn
 // point_result rows for any failures. To resume an interrupted run, inspect the
 // existing output for completed chunks and re-run with --start-index / --end-index.
 export function runRandomEval({
-  engine,
   seed,
   points,
   startYear,
@@ -246,7 +239,6 @@ export function runRandomEval({
   endIndex = null,
   batchPoints = BATCH_POINTS,
 }) {
-  const capability = ENGINE_CONFIG[engine];
   const effectiveEnd = endIndex !== null ? Math.min(endIndex, points) : points;
   const noBuild = true;
 
@@ -257,7 +249,6 @@ export function runRandomEval({
     const chunkPoints = buildChunkPoints({ seed, startYear, endYear, chunkStart, chunkEnd });
     const { packedPoints, expectedPacked } = encodePointArrays(chunkPoints);
     const chunkBreakdown = runCairoBatch({
-      engineId: capability.id,
       packedPoints,
       expectedPacked,
       noBuild,
@@ -266,8 +257,6 @@ export function runRandomEval({
 
     if (chunkBreakdown.failCount > 0) {
       const rows = collectMismatchRowsForChunk({
-        engineId: capability.id,
-        engine,
         seed,
         chunkPoints,
         packedPoints,
@@ -282,7 +271,6 @@ export function runRandomEval({
 
     emitJsonLine(process.stdout, {
       type: "random_eval",
-      engine,
       seed,
       cursor: chunkStart,
       pointCount: chunkEnd - chunkStart,
@@ -314,7 +302,6 @@ function computeOracleLongitudes(unixMs, latBin, lonBin) {
 }
 
 export function runRandomPrecisionEval({
-  engine,
   seed,
   points,
   startYear,
@@ -323,7 +310,6 @@ export function runRandomPrecisionEval({
   endIndex = null,
   batchPoints = BATCH_POINTS,
 }) {
-  const capability = ENGINE_CONFIG[engine];
   const effectiveEnd = endIndex !== null ? Math.min(endIndex, points) : points;
   const noBuild = true;
 
@@ -338,8 +324,7 @@ export function runRandomPrecisionEval({
     let maxErrorMinutePg = null;
     for (const pt of chunkPoints) {
       const cairoLons = runCairoPointLongitudes({
-        engineId: capability.id,
-        minutePg: pt.minutePg,
+          minutePg: pt.minutePg,
         latBin: pt.latBin,
         lonBin: pt.lonBin,
         noBuild,
@@ -358,7 +343,6 @@ export function runRandomPrecisionEval({
 
     emitJsonLine(process.stdout, {
       type: "random_precision_eval",
-      engine,
       seed,
       cursor: chunkStart,
       pointCount: chunkEnd - chunkStart,
@@ -371,7 +355,6 @@ export function runRandomPrecisionEval({
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const engine = getStringArg(args, "engine", "v5").toLowerCase();
   const mode = getStringArg(args, "mode", "signs");
   if (mode !== "signs" && mode !== "precision") {
     throw new Error(`--mode must be "signs" or "precision"`);
@@ -381,9 +364,6 @@ function main() {
   const startIndex = getNumberArg(args, "start-index", 0);
   const endIndexArg = getNumberArg(args, "end-index", -1);
 
-  if (!ENGINE_CONFIG[engine]) {
-    throw new Error(`Unsupported --engine=${engine}; expected one of ${Object.keys(ENGINE_CONFIG).join(", ")}`);
-  }
   if (!Number.isInteger(points) || points <= 0) {
     throw new Error(`Invalid --points=${points}; expected positive integer`);
   }
@@ -394,22 +374,20 @@ function main() {
     throw new Error(`Invalid --start-index=${startIndex}; expected non-negative integer`);
   }
 
-  const capability = ENGINE_CONFIG[engine];
-  const startYear = getNumberArg(args, "start-year", capability.startYear);
-  const endYear = getNumberArg(args, "end-year", capability.endYear);
+  const startYear = getNumberArg(args, "start-year", SUPPORTED_START_YEAR);
+  const endYear = getNumberArg(args, "end-year", SUPPORTED_END_YEAR);
 
   if (!Number.isInteger(startYear) || !Number.isInteger(endYear) || startYear > endYear) {
     throw new Error(`Invalid year range start=${startYear} end=${endYear}`);
   }
-  if (startYear < capability.startYear || endYear > capability.endYear) {
+  if (startYear < SUPPORTED_START_YEAR || endYear > SUPPORTED_END_YEAR) {
     throw new Error(
-      `Engine ${engine} supports years [${capability.startYear}, ${capability.endYear}] (inclusive); requested [${startYear}, ${endYear}]`,
+      `Supported years [${SUPPORTED_START_YEAR}, ${SUPPORTED_END_YEAR}] (inclusive); requested [${startYear}, ${endYear}]`,
     );
   }
 
   const runFn = mode === "precision" ? runRandomPrecisionEval : runRandomEval;
   runFn({
-    engine,
     seed,
     points,
     startYear,

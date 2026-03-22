@@ -1,5 +1,5 @@
 [package]
-name = "astronomy_engine_api"
+name = "astronomy_engine_eval_runner"
 version.workspace = true
 edition.workspace = true
 

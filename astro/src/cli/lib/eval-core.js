@@ -104,13 +104,12 @@ function writeTempArgsFile(prefix, payload) {
 }
 
 export function runCairoBatch({
-  engineId,
   packedPoints,
   expectedPacked,
   noBuild,
   cairoDir,
 }) {
-  const argsPayload = [engineId, packedPoints, expectedPacked];
+  const argsPayload = [packedPoints, expectedPacked];
   const tmpPath = writeTempArgsFile("eval_batch", argsPayload);
 
   try {
@@ -147,14 +146,13 @@ export function runCairoBatch({
 }
 
 export function runCairoPointLongitudes({
-  engineId,
   minutePg,
   latBin,
   lonBin,
   noBuild,
   cairoDir,
 }) {
-  const argsPayload = [engineId, minutePg, latBin, lonBin];
+  const argsPayload = [minutePg, latBin, lonBin];
   const tmpPath = writeTempArgsFile("eval_point_lons", argsPayload);
 
   try {
@@ -180,7 +178,6 @@ export function runCairoPointLongitudes({
 }
 
 export function runCairoPointMismatchDetail({
-  engineId,
   minutePg,
   latBin,
   lonBin,
@@ -189,7 +186,7 @@ export function runCairoPointMismatchDetail({
   cairoDir,
   tempPrefix = "eval_point_detail",
 }) {
-  const argsPayload = [engineId, minutePg, latBin, lonBin, expectedSigns];
+  const argsPayload = [minutePg, latBin, lonBin, expectedSigns];
   const tmpPath = writeTempArgsFile(tempPrefix, argsPayload);
 
   try {

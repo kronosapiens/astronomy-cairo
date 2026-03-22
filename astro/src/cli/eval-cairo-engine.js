@@ -18,15 +18,14 @@ import {
   makeWindowSummaryRow,
 } from "./lib/eval-rows.js";
 
-const ENGINE_CONFIG = {
-  v5: { id: 5, startYear: 1, endYear: 4000 },
-};
+const SUPPORTED_START_YEAR = 1;
+const SUPPORTED_END_YEAR = 4000;
 
 const NYC = { name: "NYC", latBin: 4070, lonBin: -7400 };
 const ALEXANDRIA = { name: "Alexandria", latBin: 3120, lonBin: 2990 };
 const CLI_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(CLI_DIR, "..", "..", "..");
-const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "research");
+const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "crates", "research");
 
 function buildBatchPayload({
   batchStartYear,
@@ -168,7 +167,6 @@ function validateBreakdown(breakdown, pointCount) {
 }
 
 function runWindowBreakdown({
-  engineId,
   batchPointData,
   batchExpected,
   batchPointCount,
@@ -178,7 +176,6 @@ function runWindowBreakdown({
 }) {
   if (pointsPerBatch >= batchPointCount) {
     return runCairoBatchFn({
-      engineId,
       packedPoints: batchPointData,
       expectedPacked: batchExpected,
       noBuild,
@@ -196,7 +193,6 @@ function runWindowBreakdown({
       endPointIdxExclusive,
     );
     const chunk = runCairoBatchFn({
-      engineId,
       packedPoints: pointSlice,
       expectedPacked: expectedSlice,
       noBuild,
@@ -210,8 +206,6 @@ function runWindowBreakdown({
 }
 
 function collectMismatchRowsForBatch({
-  engineId,
-  engine,
   locationSet,
   monthsPerYear,
   batchMeta,
@@ -240,7 +234,6 @@ function collectMismatchRowsForBatch({
       endPointIdxExclusive,
     );
     const result = runCairoBatchFn({
-      engineId,
       packedPoints: pointSlice,
       expectedPacked: expectedSlice,
       noBuild,
@@ -263,8 +256,7 @@ function collectMismatchRowsForBatch({
       const meta = batchMeta[idx];
       const expectedSigns = batchExpected.slice(idx * 8, idx * 8 + 8);
       const detail = runCairoPointMismatchDetailFn({
-        engineId,
-        minutePg: meta.minutePg,
+          minutePg: meta.minutePg,
         latBin: meta.latBin,
         lonBin: meta.lonBin,
         expectedSigns,
@@ -297,7 +289,6 @@ function collectMismatchRowsForBatch({
           oraclePlanetLongitudeFn("Saturn", pointUnixMs),
         ];
         mismatchRows.push(makeStructuredMismatchRow({
-          engine,
           locationSet,
           monthsPerYear,
           year: meta.year,
@@ -363,7 +354,6 @@ function locationSetId(locations) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const engine = getStringArg(args, "engine", "v5").toLowerCase();
   const logEveryChunks = getNumberArg(args, "log-every-chunks", 5);
   const quiet = Boolean(args.quiet);
   const mode = getStringArg(args, "mode", "signs");
@@ -375,11 +365,6 @@ function main() {
     if (!quiet) process.stderr.write(`[eval-cairo-engine] ${line}\n`);
   };
 
-  if (!ENGINE_CONFIG[engine]) {
-    throw new Error(`Unsupported --engine=${engine}; expected one of ${Object.keys(ENGINE_CONFIG).join(", ")}`);
-  }
-
-  const capability = ENGINE_CONFIG[engine];
   const startYear = getNumberArg(args, "start-year", NaN);
   const endYear = getNumberArg(args, "end-year", NaN);
   if (!Number.isInteger(startYear) || !Number.isInteger(endYear)) {
@@ -400,9 +385,9 @@ function main() {
   ) {
     throw new Error(`Invalid year range start=${startYear} end=${endYear}`);
   }
-  if (startYear < capability.startYear || endYear > capability.endYear) {
+  if (startYear < SUPPORTED_START_YEAR || endYear > SUPPORTED_END_YEAR) {
     throw new Error(
-      `Engine ${engine} supports years [${capability.startYear}, ${capability.endYear}] (inclusive); requested [${startYear}, ${endYear}]`,
+      `Supported years [${SUPPORTED_START_YEAR}, ${SUPPORTED_END_YEAR}] (inclusive); requested [${startYear}, ${endYear}]`,
     );
   }
 
@@ -416,7 +401,7 @@ function main() {
   let processedBatches = 0;
   const runStart = Date.now();
   log(
-    `Starting eval: mode=${mode}, engine=${engine}, years=[${startYear}, ${endYear}] inclusive, totalPoints=${totalPoints}, pointsPerBatch=${pointsPerBatch}.`,
+    `Starting eval: mode=${mode}, years=[${startYear}, ${endYear}] inclusive, totalPoints=${totalPoints}, pointsPerBatch=${pointsPerBatch}.`,
   );
   const emit = (record) => {
     console.log(JSON.stringify(record));
@@ -450,8 +435,7 @@ function main() {
       for (let i = 0; i < batchPointCount; i += 1) {
         const meta = batchMeta[i];
         const cairoLons = runCairoPointLongitudes({
-          engineId: capability.id,
-          minutePg: meta.minutePg,
+            minutePg: meta.minutePg,
           latBin: meta.latBin,
           lonBin: meta.lonBin,
           noBuild: true,
@@ -471,7 +455,6 @@ function main() {
 
       emit({
         type: "precision_eval",
-        engine,
         locationSet,
         year: batchStartYear,
         pointCount: batchPointCount,
@@ -481,7 +464,6 @@ function main() {
       });
     } else {
       const batchResult = runWindowBreakdown({
-        engineId: capability.id,
         batchPointData,
         batchExpected,
         batchPointCount,
@@ -496,9 +478,7 @@ function main() {
           `Generating mismatch details for years ${batchStartYear}-${batchEndYear} with recursive isolation...`,
         );
         const { mismatchRows, pointMaskCalls, subsetBatchCalls } = collectMismatchRowsForBatch({
-          engineId: capability.id,
-          engine,
-          locationSet,
+            locationSet,
           monthsPerYear: months,
           batchMeta,
           batchPointData,
@@ -526,7 +506,6 @@ function main() {
       saturnFailCount += batchResult.saturnFailCount;
 
       emit(makeWindowSummaryRow({
-        engine,
         locationSet,
         year: batchStartYear,
         pointCount: batchPointCount,

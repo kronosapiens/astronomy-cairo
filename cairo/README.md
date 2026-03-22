@@ -2,12 +2,10 @@
 
 ## Structure
 
-- `research/` — active research workspace
-  - `astronomy_engine_v1` through `v6` — engine iterations (see per-crate READMEs)
-  - `astronomy_engine_api` — library API wrapping the active engine
-  - `astronomy_engine_eval_runner` — eval harness for `scarb cairo-run`
-
 - `crates/astronomy_engine/` — Starknet contract wrapper (imports v6, adds `#[starknet::contract]`)
+- `crates/research/` — research workspace
+  - `astronomy_engine_v1` through `v6` — engine iterations (see per-crate READMEs)
+  - `astronomy_engine_eval_runner` — eval harness for `scarb cairo-run`
 
 ## Numeric Policy
 
@@ -23,6 +21,6 @@
 ## Testing
 
 ```bash
-cd research && scarb test   # run engine unit tests
-scarb build                  # build deployable contract
+cd crates/research && scarb test   # run engine unit tests
+scarb build                         # build deployable contract
 ```
