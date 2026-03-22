@@ -6,23 +6,9 @@
   "description": "Oracle and parity tooling for the Cairo astronomy engine",
   "scripts": {
     "test": "node --test test/*.test.js",
-    "test:legacy": "node --test test/legacy/*.test.js",
-    "test:all": "node --test",
     "build:sign-corpus": "node src/cli/generate-corpus.js",
     "eval": "node src/cli/eval-cairo-engine.js",
-    "eval:random": "node src/cli/eval-random-cairo-engine.js",
-    "eval:analyze-mismatch-log": "node src/cli/analyze-mismatch-log.js",
-    "eval:build-mismatch-corpus": "node src/cli/build-mismatch-corpus.js",
-    "eval:mismatch-corpus": "node src/cli/eval-mismatch-corpus.js",
-    "legacy:build:archive": "node src/legacy/cli/build-archive.js",
-    "legacy:validate:archive": "node src/legacy/cli/validate-archive.js",
-    "legacy:build:cheby-v2-cairo": "node src/legacy/cli/generate-cheby-v2-cairo.js",
-    "legacy:compare:cairo-chart": "node src/legacy/cli/compare-cairo-chart.js",
-    "legacy:compare:cairo-model": "node src/legacy/cli/compare-cairo-model.js",
-    "legacy:compare:cairo-runtime": "node src/legacy/cli/compare-cairo-runtime.js",
-    "legacy:compare:cheby-v2": "node src/legacy/cli/compare-cheby-v2-cairo-data.js",
-    "legacy:compare:v3-moon": "node src/legacy/cli/compare-v3-moon-parity.js",
-    "legacy:export:ingress-cairo": "node src/legacy/cli/export-ingress-cairo.js"
+    "eval:random": "node src/cli/eval-random-cairo-engine.js"
   },
   "engines": {
     "node": ">=20"

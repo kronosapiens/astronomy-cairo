@@ -26,7 +26,7 @@ const NYC = { name: "NYC", latBin: 4070, lonBin: -7400 };
 const ALEXANDRIA = { name: "Alexandria", latBin: 3120, lonBin: 2990 };
 const CLI_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(CLI_DIR, "..", "..", "..");
-const CAIRO_DIR = path.join(REPO_ROOT, "cairo");
+const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "research");
 
 function buildBatchPayload({
   batchStartYear,

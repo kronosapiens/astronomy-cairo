@@ -1,9 +1,6 @@
-# Cairo Crates Layout
+# Deployable Contract Crates
 
-Active crates:
+Reserved for Starknet contract crates to be generated from the finalized research engine.
 
-- `astronomy_engine_v5`
-- `astronomy_engine_api` (v5-only adapter)
-- `astronomy_engine_eval_runner`
-
-Legacy R&D crates (`v1`..`v4`) are retained in this directory for reference but are not members of the active workspace.
+The deployment architecture splits the engine across four contract classes to fit within Starknet's 4 MB declaration limit.
+See `cairo/research/crates/astronomy_engine_v6/README.md` for the size optimization analysis and split design.

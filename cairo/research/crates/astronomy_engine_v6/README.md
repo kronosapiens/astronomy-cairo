@@ -1,114 +1,83 @@
-# astronomy_engine_v5 (Cairo)
+# astronomy_engine_v6 (Cairo)
 
-Deterministic onchain ephemeris for the seven classical planets.
-Computes ecliptic longitudes for Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, and the ascendant — accurate to ~1.4 arcseconds against the upstream oracle across 4,000 years.
-Sufficient for fully onchain natal chart computation, with precision supporting degree-level work (aspects, transits, progressions).
+Identical to v5 except for reduced trig lookup tables, optimized to fit within Starknet's contract class size limit.
 
-- **Input:** timestamp (minutes since proleptic Gregorian epoch) + observer location (0.01° lat/lon bins)
-- **Output:** ecliptic longitudes (`i64` scaled by `1e9`) or zodiac sign indices (0–11)
-- **Range:** years 0001 AD – 4000 AD
-- **Precision:** < 0.0004° (within professional ephemeris thresholds of 0.01°)
-- **Gas cost:** ~184M (7-body + ascendant)
-- **Source size:** ~396 KB
+## Motivation
 
-Ported from Don Cross's [astronomy-engine](https://github.com/cosinekitty/astronomy) (JS/TypeScript, MIT), adapted for Cairo's deterministic fixed-point execution model.
+Starknet limits contract classes to 4,089,446 bytes (JSON serialized) and 81,920 felt bytecode.
+The v5 engine compiled to a monolithic contract of 4,200,938 bytes — 111 KB over the limit.
 
-## Usage
+Investigation revealed the cause: Sierra IR encodes every literal integer as a distinct `Const<i64, N>` type declaration.
+v5 had 14,779 unique i64 constants (mostly from trig tables: 10,001 atan entries + 7,201 sin entries), consuming 4.4 MB of type declarations alone.
+This motivated exploring how far the trig tables could be reduced while maintaining sign-level parity with the JS oracle.
 
-All timestamps are minutes since the proleptic Gregorian epoch (0001 AD)
-All longitudes are returned as `i64` scaled by `1e9` (i.e. degrees × 10⁹).
+## Sweep Methodology
 
-```cairo
-use astronomy_engine_v5::planets::{
-    all_planet_longitudes_pg_1e9,
-    approximate_planet_longitude_pg_1e9,
-    SUN, MOON, MERCURY,
-};
-use astronomy_engine_v5::ascendant::approximate_ascendant_longitude_pg_1e9;
+A systematic sweep varied each table independently, testing against the JS oracle at increasing scale.
+"Quick check" = 200-point random sample.
+"At scale" = 8,000-point random samples across multiple seeds.
+Failures are sign-level disagreements (zodiac sign index differs from oracle).
 
-// All 7 planet longitudes at once (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn)
-let longitudes: [i64; 7] = all_planet_longitudes_pg_1e9(minute_since_pg);
+### Sin table sweep (atan fixed at 5,001 entries)
 
-// Single planet longitude (planet indices: SUN=0, MOON=1, MERCURY=2, ..., SATURN=6)
-let sun_lon: i64 = approximate_planet_longitude_pg_1e9(SUN, minute_since_pg);
+| Entries | Step | Quick check | At scale |
+| --- | --- | --- | --- |
+| 91 | 4° | 198/200 fail | — |
+| 181 | 2° | pass | not tested |
+| 361 | 1° | pass | 5 failures / 8,000 |
+| 721 | 0.5° | pass | 3 failures / 8,000 |
+| 1,801 | 0.2° | pass | 1 failure / 8,000 |
+| 3,601 | 0.1° | pass | 0 failures |
 
-// Ascendant (requires observer location as 0.01° bins, e.g. 4070 = 40.70°N)
-let asc_lon: i64 = approximate_ascendant_longitude_pg_1e9(minute_since_pg, lat_bin, lon_bin);
-```
+### Atan table sweep (sin fixed at 361 entries)
 
-## How It Works
+| Entries | dz | Quick check | At scale |
+| --- | --- | --- | --- |
+| 11 | 0.1 | pass | not tested |
+| 51 | 0.02 | pass | 1 failure / 4,000 |
+| 501 | 0.002 | pass | 0 failures |
 
-Think of v5 like a very precise sky calculator that runs fully onchain.
+All intermediate failures were sign-boundary edge cases: bodies within thousandths of a degree of a 30° boundary where accumulated trig interpolation error tips the sign.
 
-1. **Time conversion.**
-It takes a timestamp (and for ascendant, a location).
-Time is converted into astronomy-friendly day counts relative to J2000.
+## Final Configuration
 
-2. **Planet positions.**
-For Mercury through Saturn, v5 evaluates VSOP formulas to get heliocentric positions, then subtracts Earth's position to get geocentric vectors.
+| | v5 | v6 | Reduction |
+| --- | --- | --- | --- |
+| Sin entries | 7,201 | 3,601 (0.1° step) | 50% |
+| Atan entries | 10,001 | 501 (dz=0.002) | 95% |
+| Total entries | 17,202 | 4,102 | 76% |
+| Contract class size | 4.20 MB | 2.89 MB | 1 MB under limit |
 
-3. **Light-time correction.**
-A fixed-iteration solve adjusts for the fact that light from planets takes time to reach Earth.
+Max angular error: ~0.0004° (unchanged from v5).
 
-4. **Frame rotation.**
-Precession + nutation transforms are applied, then vectors are projected into ecliptic longitude/latitude of the date.
+## Why Precision Barely Changed
 
-5. **Ascendant.**
-Using local sidereal time + observer latitude/longitude, v5 solves where the eastern horizon intersects the ecliptic.
+Linear interpolation error scales as h^2 * |f''| / 8.
+For sin at 0.1° step, the max interpolation error is ~3.8e-7 at 1e9 scale — about 0.4 parts per billion.
 
-6. **Fixed-point math throughout.**
-No floating-point randomness; same inputs always produce the same onchain outputs.
+The dominant error source is fixed-point arithmetic rounding (`i64` at 1e9 scale vs IEEE 754 `float64`).
 
-The engine outputs ecliptic longitudes directly.
-Sign indices (0–11) are also available as a convenience mapping.
+Investigation confirmed that v6 has **full algorithmic parity** with the upstream JS oracle:
+- VSOP terms: 360/360 (identical truncation from full VSOP87)
+- IAU2000B nutation: 5/5 terms (identical to upstream)
+- Light-time semantics: both backdate Earth and target planet (upstream comment: "first-order approximation by backdating the Earth's position also")
 
-## Evaluation Results
+There are no model-level improvements available without changing the upstream oracle itself.
+The ~0.0004° error ceiling is the inherent precision limit of the fixed-point representation.
+The v5 trig tables were ~10,000x more precise than needed.
+Only sign-boundary edge cases (body within 0.001° of a 30° line) can detect the difference between v5 and v6 table sizes.
 
-### Sign accuracy (whole-house)
+## Validation
 
 | Dataset | Points | Failures |
 | --- | --- | --- |
-| Random (seed 42, 0.1° locations) | 96,000 | 0 |
-| Random (seed 99, 0.01° locations) | 96,000 | 1 |
-| Structured (years 1–4000, 12 months × 2 locations) | 96,000 | 0 |
+| Random (seed 42) | 96,000 | 0 |
+| Random (seed 99) | 48,000+ | 1 (irreducible Sun cusp at year 3253) |
 
-**99.997% accuracy** at 95% confidence (1 failure in 192,000 random points).
-The structured dataset provides additional coverage across the full 4,000-year range.
+The single failure is the same irreducible cusp case as v5: Sun at 90.000023° (0.00002° past the Cancer boundary).
+Full 96k seed 99 evaluation in progress.
 
-The single failure is a cusp-boundary case: Sun at 90.000029° (year 3253), where the true longitude falls within 0.00003° of the Gemini/Cancer boundary.
-At sub-arcsecond precision, sign disagreements near exact 30° boundaries are irreducible — any two ephemerides that differ by even 0.0001° will disagree on sign when the true position is that close to a boundary.
+## Source
 
-### Degree precision
-
-| Dataset | Points | Max error | Worst body |
-| --- | --- | --- | --- |
-| Structured (every 100y, years 1–3901) | 960 | 0.000365° | Mercury |
-| Random (seed 42) | 960 | 0.000382° | Mercury |
-
-All errors under 0.001°.
-For reference: 0.0004° ≈ 1.4 arcseconds.
-Professional ephemeris threshold is ~36 arcseconds (0.01°).
-
-Eval tooling and dataset details: see [`astro/README.md`](../../../astro/README.md).
-
-## Architecture
-
-| Module | Description |
-| --- | --- |
-| `planets.cairo` | Planet routing and longitude computation (VSOP87, Moon harmonics, light-time iteration) |
-| `frames.cairo` | Coordinate transforms (VSOP ecliptic → J2000 EQJ → ecliptic of date, precession, nutation) |
-| `ascendant.cairo` | Horizon intersection solve for ascendant longitude |
-| `trig.cairo` | Lookup-table sin/cos/atan2 with linear interpolation |
-| `fixed.cairo` | Fixed-point arithmetic, time conversion, rounding |
-| `gen_vsop.cairo`, `gen_moon.cairo`, `gen_sin.cairo`, `gen_atan.cairo` | Generated data (do not edit) |
-
-## Known Limits
-
-- **Scope:** ecliptic longitude only — no latitude, declination, distance, or outer/minor bodies.
-- **Precision target:** sub-arcsecond longitude, not full floating-point vector equivalence at every intermediate stage.
-- Eval grids are finite — untested coordinates/timestamps can still surface edge behavior.
-
-## Upstream Reference
-
-Primary reference: Donald Cross, [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).
-Cairo adaptation lives in this crate; all astronomy math derives from the upstream model.
+All modules except `gen_sin.cairo`, `gen_atan.cairo`, and `trig.cairo` are identical to v5.
+See the [v5 README](../astronomy_engine_v5/README.md) for architecture, usage, and upstream reference.

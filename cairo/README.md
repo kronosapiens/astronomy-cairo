@@ -1,14 +1,13 @@
-# Cairo Astronomy Engine Workspace
+# Cairo Astronomy Engine
 
-This workspace contains the active Cairo astronomy-engine crates plus retained historical reference crates.
+## Structure
 
-## Active Workspace Members
+- `research/` — active research workspace
+  - `astronomy_engine_v1` through `v6` — engine iterations (see per-crate READMEs)
+  - `astronomy_engine_api` — library API wrapping the active engine
+  - `astronomy_engine_eval_runner` — eval harness for `scarb cairo-run`
 
-- `astronomy_engine_v5`
-- `astronomy_engine_api`
-- `astronomy_engine_eval_runner`
-
-Historical R&D crates (`v1`..`v4`) remain in `crates/` for reference but are not active workspace members.
+- `crates/` — reserved for deployable Starknet contracts (to be generated from the finalized engine)
 
 ## Numeric Policy
 
@@ -18,22 +17,11 @@ Historical R&D crates (`v1`..`v4`) remain in `crates/` for reference but are not
 
 ## Input Policy
 
-- Minute-resolution time inputs
-- Latitude/longitude bins in `0.1°`
-- Deterministic 15-minute quantization where chart-level derivation requires it
+- Minute-resolution time inputs (proleptic Gregorian epoch)
+- Latitude/longitude as 0.01° bins (`i16`)
 
 ## Testing
 
-Run all active Cairo tests:
-
 ```bash
-scarb test
+cd research && scarb test
 ```
-
-Core coverage includes:
-
-- fixed-point arithmetic and angle normalization
-- time conversion and calendar transforms
-- planetary longitude computation
-- ascendant computation
-- eval-runner parity checks against oracle-generated expectations

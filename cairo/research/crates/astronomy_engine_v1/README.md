@@ -1,206 +1,80 @@
-# astronomy_engine (Cairo)
+# astronomy_engine_v1 (Cairo) — Research Archive
 
-`astronomy_engine_v1` is a Cairo-native astronomy engine, offering fully-onchain conversions of lat/lon/time inputs to sign-level outputs.
+v1 was the first Cairo astronomy engine.
+It used pre-computed sign ingress tables to achieve deterministic sign-level parity for seven classical bodies, plus a runtime ascendant computation.
 
-This crate is a partial adaptation of the JavaScript [`astronomy-engine`](https://github.com/cosinekitty/astronomy) model into Cairo, not a one-to-one port.
+## Approach
 
-## Purpose
+Planet signs are determined by table lookup, not runtime computation.
+Offchain, the JS oracle (`astronomy-engine`) was used to generate sign ingress timestamps for each body over 1900-2100.
+These ingress events were embedded as Cairo constant arrays in `oracle_signs.cairo`.
+At runtime, a linear scan finds the last ingress before the query timestamp and returns its sign.
 
-- Provide deterministic, reproducible astronomy primitives in Cairo.
-- Support the seven classical chart bodies:
-  - Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn
-- Support ascendant computation for sign-level chart derivation.
-- Keep runtime arithmetic efficient for Cairo VM / Starknet constraints.
+The ascendant is computed at runtime via a sidereal time + horizon/ecliptic intersection path using fixed-point trig.
 
-## Upstream Reference and Attribution
+## How It Works
 
-Primary reference implementation:
+1. `planet_sign_from_minute(planet, minute)` dispatches to the appropriate ingress table.
+2. `lookup_sign` performs an O(n) linear scan over `(minute, sign)` pairs, returning the sign of the last entry at or before the query time.
+3. Moon ingress data is segmented into 5 chunks (`MOON_INGRESS_0` through `MOON_INGRESS_4`, ~8000 entries each) to stay within Cairo practical limits.
+4. The ascendant path in `ascendant.cairo` computes GMST, applies nutation/equation-of-equinoxes, derives LST, then solves the ecliptic-horizon intersection with eastern branch selection.
 
-- `astronomy-engine` JavaScript package (`^2.1.19`)
-- Author: Donald Cross
-- Repo: <https://github.com/cosinekitty/astronomy>
-- License: MIT
+Numeric model: `i64` fixed-point at `1e9` scale, `i128` intermediates.
+Time input: `minute_since_1900` (minutes from `1900-01-01T00:00:00Z`).
+Location input: `0.1°` bins (`lat_bin`, `lon_bin`).
 
-This crate should be cited as:
+## What It Proved
 
-1. Cairo adaptation in this repository (`cairo/crates/astronomy_engine_v1`).
-2. Upstream reference implementation: Donald Cross, `astronomy-engine`.
+- 100% sign parity for all seven bodies over the 1900-2100 range (by construction — the tables *are* the oracle output).
+- Ascendant accuracy of 99.999872% (2-5 cusp-edge mismatches per location over 1,753,177 hourly samples).
+- Feasible gas cost (~44M gas for a full 7-body sign lookup).
 
-If publishing benchmarks, parity numbers, or derived tables, include both references.
+## Why We Moved On
 
-## Adaptation Process
+- **Artifact size**: `oracle_signs.cairo` is 808,011 bytes; the compiled Sierra artifact is ~60MB.
+- **Table generation dependency**: sign tables must be regenerated from the JS oracle whenever the upstream model or time range changes.
+- **No longitude output**: the table path only returns signs, not longitudes.
+- Later versions (v2+) pursued parametric runtime computation to eliminate both the artifact size and the offchain generation dependency.
 
-This port was done as a constrained adaptation enabling deterministic onchain astrology-specific outputs, not as a full astronomical simulator.
+## Key Source Files
 
-### Engineering Decisions
+| File | Purpose |
+| --- | --- |
+| `oracle_signs.cairo` | Generated ingress tables + `lookup_sign` / `planet_sign_from_minute` (808KB) |
+| `ascendant.cairo` | Runtime ascendant via GMST/LST + ecliptic-horizon intersection |
+| `planets.cairo` | Approximate longitude code, retained for reference — **dead code in v1 runtime** |
+| `trig.cairo` | Deterministic `sin`/`cos`/`atan2` via lookup table + linear interpolation |
+| `trig_table.cairo` | Sine lookup table (0.05° step, 7201 entries) |
+| `atan_table.cairo` | Arctangent ratio lookup table (10001 entries) |
+| `fixed.cairo` | `norm360`, `div_round_half_away_from_zero`, scale constant |
+| `time.cairo` | `minute_since_1900` to `days_since_j2000` conversion |
+| `types.cairo` | Planet index constants |
 
-#### Numeric model
+## Performance
 
-- Runtime scalar: `i64`, fixed-point `1e9` scale.
-- Intermediates: `i128` for multiply/accumulate safety.
-- Rounding rule: half-away-from-zero in shared helpers.
+| Metric | Value |
+| --- | --- |
+| Gas (7-body benchmark) | `44,183,350` |
+| Sierra artifact | `59,589,267` bytes (~60MB) |
+| `oracle_signs.cairo` | `808,011` bytes |
 
-Why:
+## Audit Findings (from ASTRONOMY_AUDIT.md)
 
-- Cairo does not have native `i256`; wide integer emulation is expensive.
-- `i64` state + `i128` intermediates is the best cost/precision tradeoff for this use case.
+- **`lookup_sign` is O(n) linear scan**: binary search would be faster, but acceptable given table sizes and the 44M gas budget.
+- **`planets.cairo` is dead code**: the Saturn path is missing a -1° correction present in the JS model. Not a runtime issue since oracle tables are the actual path.
+- **Ascendant div-by-zero at poles**: `tan(lat)` computation panics if `lat_bin = ±900` (exactly ±90°). The ascendant is geometrically undefined there, but the panic is undocumented.
+- **Shared module duplication**: `fixed.cairo`, `time.cairo`, `trig.cairo`, `types.cairo`, `ascendant.cairo`, and table files are copy-pasted across v1/v2/v3 crates.
 
-#### Time/location contract
+## Ingress Table Structure
 
-- Time input: `minute_since_1900` (`1900-01-01T00:00:00Z` epoch).
-- Range target for current data assets: 1900-2100.
-- Location input bins: `0.1°` (`lat_bin`, `lon_bin`).
+Each table is an array of `(u32, u8)` pairs: `(minute_since_1900, sign_index)`.
 
-#### Planet strategy
-
-- Runtime planet signs are table-backed from oracle ingress data.
-- `oracle_signs.cairo` is generated from the JS oracle path and used for deterministic sign parity.
-- Large tables (notably Moon) are segmented to stay within Cairo practical limits.
-
-#### Ascendant strategy
-
-- Computed at runtime via fixed-point trig/sidereal approximation path.
-- Includes higher-order sidereal terms and compact nutation/equation-of-equinoxes correction.
-- Designed for sign-level accuracy under agreed quantization constraints.
-
-### Ported / Preserved
-
-1. Core coordinate intent for chart use:
-- Ecliptic longitudes for the seven classical bodies.
-- Ascendant derivation using sidereal-time-based horizon/ecliptic relationship.
-
-2. Deterministic oracle parity workflow:
-- A JS oracle harness (using upstream `astronomy-engine`) was used to generate/sign-check corpora.
-- Cairo behavior was continuously tested against this oracle during implementation.
-
-3. Time and angle normalization semantics:
-- Stable epoch mapping and wrap rules were retained in deterministic fixed-point form.
-
-### Adapted (Equivalent Outcome, Different Mechanics)
-
-1. Planet signs:
-- Instead of recomputing full high-fidelity planetary pipelines onchain, sign ingress tables were generated offchain from oracle outputs and embedded as Cairo constants.
-- Runtime uses table lookup for sign parity.
-
-2. Trigonometry:
-- Replaced floating-point trig with fixed-point lookup/interpolation (`sin`, `atan`) compatible with Cairo integer arithmetic.
-
-3. Sidereal/obliquity path:
-- Implemented compact polynomial/correction forms that preserve sign-level behavior with very low mismatch, rather than full upstream transform stack.
-
-### Major Departure from Upstream: Parametric vs Table-Driven Runtime
-
-Upstream `astronomy-engine` is primarily a compact parametric model:
-
-- Store coefficient/model data.
-- Evaluate equations at runtime to compute positions.
-
-This Cairo port intentionally makes a different tradeoff for planet signs:
-
-- Generate sign-ingress events from the upstream oracle offchain.
-- Embed those events as Cairo constants.
-- Perform deterministic runtime lookup onchain.
-
-Why this departure was chosen:
-
-1. Deterministic sign parity:
-- For a sign-level astrology engine, table lookup is the most direct way to preserve oracle sign behavior.
-
-2. Cairo execution economics:
-- Full parametric evaluation requires more heavy arithmetic and precision management in Cairo.
-
-3. Implementation risk reduction:
-- Large astronomical transform/series ports are harder to validate and maintain.
-- Table-backed sign lookup sharply reduces cusp-drift debugging surface for planets.
-
-Tradeoff acknowledged:
-
-- This increases source/data size versus a compact parametric runtime.
-- It is a deliberate trade of size for deterministic behavior and lower onchain compute complexity.
-
-### Dropped / Deferred
-
-1. Full strict transform-chain parity:
-- No full precession/nutation matrix chain parity for all coordinate transforms.
-- No full general-purpose `ECT -> EQD -> HOR` vector pipeline equivalent onchain.
-
-2. Full physical model surface:
-- Not targeting all bodies/features from upstream.
-- Not porting complete periodic-term models for general astronomical querying.
-
-3. Unlimited epoch support:
-- v1 data/runtime assumptions are tuned for 1900-2100 chart use.
-
-### Why These Choices Were Made
-
-1. Cairo arithmetic economics:
-- Large-width arithmetic and high-precision floating-style pipelines are expensive in Cairo.
-- `i64` fixed-point with `i128` intermediates gives strong determinism and manageable cost.
-
-2. Product requirements:
-- The chart engine consumes 15-minute time buckets and `0.1°` location bins.
-- Sign-level deterministic correctness was the target, not sub-arcminute astronomy outputs.
-
-3. Risk and maintainability:
-- Table-backed planet signs reduce runtime complexity and eliminate major parity drift risk.
-- A compact ascendant model keeps execution feasible while preserving practical chart correctness.
-
-4. Explicit tradeoff:
-- Remaining tiny ascendant cusp-edge mismatches were accepted versus doubling complexity with a full upstream-equivalent transform stack.
-
-## Implementation Structure
-
-- `fixed.cairo`: fixed-point helpers (`norm360`, deterministic rounding).
-- `time.cairo`: minute-since-1900 to days-since-J2000 transforms.
-- `trig.cairo`: deterministic `sin/cos/atan2` over fixed-point degrees.
-- `trig_table.cairo`: sine lookup table used by `trig.cairo`.
-- `atan_table.cairo`: arctangent ratio lookup table.
-- `ascendant.cairo`: runtime ascendant longitude approximation.
-- `planets.cairo`: approximation code retained for experimentation/reference.
-- `oracle_signs.cairo`: generated ingress sign tables + runtime lookup.
-- `types.cairo`: planet index constants.
-
-## Known Limits and Practical Notes
-
-- Planet sign path is strict-parity by construction against generated ingress data.
-  - Measured in benchmark sweeps: 0 mismatches (100% accuracy for sampled range/window).
-- Estimated STRK fee for the v1 7-body benchmark (`benchmark_lookup_all_planet_signs`, gas `44,183,350`), L2 gas component only:
-  - At `3 gFri`: `0.13255005 STRK`
-  - At `10 gFri`: `0.44183350 STRK`
-- Ascendant is very high accuracy (99.999872%) but still approximation-based.
-  - Measured benchmark A (`37.7`, `-122.4`, San Francisco Bay Area): 2 mismatches
-  - Measured benchmark B (`40.7`, `-74.0`, New York City area): 5 mismatches
-  - Measured benchmark C (`-33.9`, `151.2`, Sydney area): 2 mismatches
-  - Measured benchmark D (`89.0`, `0.0`, North Pole along the Greenwich meridian): 0 mismatches
-  - Those residual errors are cusp-adjacent boundary flips; eliminating them likely requires a full upstream-equivalent transform-chain port.
-- Benchmark context for the figures above:
-  - Time range: `1900-01-01` to `2100-01-01`
-  - Step: hourly, quantized to 15-minute slots (`1,753,177` steps)
-  - Locations tested: `37.7,-122.4`, `40.7,-74.0`, `-33.9,151.2`, `89.0,0.0`
-- `oracle_signs.cairo` is generated data; avoid manual edits.
-- `oracle_signs.cairo.partial` is an intermediate artifact and not runtime-critical.
-
-## Regeneration and Validation Workflow
-
-From repo root:
-
-```bash
-# Regenerate ingress tables
-node astro/src/cli/export-ingress-cairo.js cairo/crates/astronomy_engine_v1/src/oracle_signs.cairo
-
-# Cairo tests
-scarb test -p astronomy_engine_v1 -p star_chart --manifest-path cairo/Scarb.toml
-
-# Runtime parity sweep (JS oracle vs Cairo runtime model)
-npm -C astro run compare:cairo-runtime -- \
-  --start 1900-01-01T00:00:00Z \
-  --end 2100-01-01T00:00:00Z \
-  --step-minutes 60 \
-  --quantize-minutes 15 \
-  --lat-bin 377 \
-  --lon-bin -1224
-```
-
-## Scope Boundary
-
-This crate currently targets sign-level chart correctness and deterministic onchain execution, not full astronomical-feature parity for all coordinate systems and physical effects.
+| Table | Entries |
+| --- | --- |
+| `SUN_INGRESS` | 2,413 |
+| `MOON_INGRESS_0..4` | 32,245 total (5 segments) |
+| `MERCURY_INGRESS` | 2,982 |
+| `VENUS_INGRESS` | 2,549 |
+| `MARS_INGRESS` | 1,386 |
+| `JUPITER_INGRESS` | 304 |
+| `SATURN_INGRESS` | 170 |

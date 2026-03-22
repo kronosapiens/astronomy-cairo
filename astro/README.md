@@ -27,10 +27,10 @@ node src/cli/eval-random-cairo-engine.js --points 1000 --seed 42 \
   --start-index 48 --end-index 96 >> evals/run.ndjson
 ```
 
-Corpus gate (deterministic regression check):
+Precision mode (per-point angular error vs oracle):
 
 ```bash
-node src/cli/eval-mismatch-corpus.js --corpus evals/old/v5-heavy-planet-regression-corpus.ndjson
+node src/cli/eval-cairo-engine.js --start-year 2000 --end-year 2010 --mode precision > evals/precision.ndjson
 ```
 
 ## Other CLI tools
@@ -45,5 +45,3 @@ node src/cli/generate-corpus.js \
   --lat-bins 3770 \
   --lon-bins -12240
 ```
-
-Legacy scripts remain available via `npm run legacy:*`.

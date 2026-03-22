@@ -15,7 +15,7 @@ Ported from Don Cross's [astronomy-engine](https://github.com/cosinekitty/astron
 
 ## Usage
 
-All timestamps are minutes since the proleptic Gregorian epoch (0001 AD)
+All timestamps are minutes since the proleptic Gregorian epoch (0001 AD).
 All longitudes are returned as `i64` scaled by `1e9` (i.e. degrees × 10⁹).
 
 ```cairo
@@ -37,8 +37,6 @@ let asc_lon: i64 = approximate_ascendant_longitude_pg_1e9(minute_since_pg, lat_b
 ```
 
 ## How It Works
-
-Think of v5 like a very precise sky calculator that runs fully onchain.
 
 1. **Time conversion.**
 It takes a timestamp (and for ascendant, a location).
@@ -89,8 +87,6 @@ All errors under 0.001°.
 For reference: 0.0004° ≈ 1.4 arcseconds.
 Professional ephemeris threshold is ~36 arcseconds (0.01°).
 
-Eval tooling and dataset details: see [`astro/README.md`](../../../astro/README.md).
-
 ## Architecture
 
 | Module | Description |
@@ -102,11 +98,63 @@ Eval tooling and dataset details: see [`astro/README.md`](../../../astro/README.
 | `fixed.cairo` | Fixed-point arithmetic, time conversion, rounding |
 | `gen_vsop.cairo`, `gen_moon.cairo`, `gen_sin.cairo`, `gen_atan.cairo` | Generated data (do not edit) |
 
+## What v5 Changed from v4
+
+v5 starts from v4's complete 7-body pipeline and focuses on correctness refinements:
+
+- **Ascendant solve** upgraded to robust horizon-intersection form (avoids explicit `tan(lat)` division instability near poles).
+- **Frame-time semantics** corrected in the EQJ → ecliptic-of-date projection stage.
+This was the primary breakthrough — an A/B test on `ECLIPTIC_FRAME_TIME_SIGN` identified that the frame-time convention was the dominant source of remaining parity gaps.
+- **Explicit ecliptic aberration term** tested and rejected — no measurable benefit.
+- **Stage-level debug probes** added for EQJ vectors and frame projections, enabling isolation of error sources to the frame-projection stage rather than the EQJ solve.
+
+## Research History
+
+### The Frame-Time Discovery (2026-03-07)
+
+v4 had achieved ~99.95% sign parity but persistent mismatches remained, concentrated in outer planets (Saturn, Jupiter) in the year 3000+ range.
+The mismatches showed a consistent pattern: all were one-sign lags (`delta=-1`) with a uniform longitude drift of ~0.139°.
+
+Stage-level probes isolated the error to the frame-projection stage:
+- EQJ vectors matched upstream to ~0.000055° (negligible).
+- Frame projection contributed ~0.139° of the total ~0.139° error.
+- Projecting Cairo EQJ vectors through the upstream frame function confirmed the bias originated in Cairo's `eqj_to_ecliptic_of_date` path.
+
+An A/B test on the frame-time sign convention (`+tt` vs `-tt`) identified the correct branch.
+With the corrected convention, the 68-point regression corpus went from 68/68 failures to 68/68 pass.
+The full heavy baseline (96,000 structured points, years 0001-4000) then achieved 100% parity.
+Random evals surface 1 irreducible cusp-boundary case per ~96,000 points (Sun within 0.00003° of a sign boundary).
+
+### Methodology
+
+The diagnostic approach that drove the final win:
+1. Rich mismatch logging with per-point expected/actual signs, longitudes, and cusp distances.
+2. Stage-level debug probes (EQJ vector + frame projection) to localize drift.
+3. Source-isolation split: projecting Cairo EQJ through upstream frame (and vice versa) to attribute error to the correct stage.
+4. Deterministic A/B testing on parity toggles against a fixed regression corpus.
+
+The key insight was that **pipeline-semantics parity** (especially frame-time usage) mattered far more than arithmetic precision or constant tuning.
+Multiple spot-correction attempts (symmetric rounding, VSOP clamps, higher-precision lanes, trig interpolation changes) produced zero measurable improvement — the frame convention was the only thing that mattered.
+
+### Removed Tools
+
+The following diagnostic tools were built during v5 research and later removed:
+- `probe-v5-planet-frame.js` — CLI tool for inspecting per-planet EQJ vectors and frame projections at specific timestamps.
+Used to produce the stage-level diagnostic data that localized the frame-time bug.
+- `analyze-mismatch-log.js` — parsed mismatch logs to compute cusp-side offsets, sign-delta histograms, and per-planet longitude drift statistics.
+Produced the `delta=-1` uniform lag finding.
+- `build-mismatch-corpus.js` / `eval-mismatch-corpus.js` — built and ran regression gate corpora from mismatch points.
+Superseded by the random eval with fixed seeds.
+- `compare-v5-chart-parity.js` — early parity comparison script, superseded by the eval harness.
+
 ## Known Limits
 
 - **Scope:** ecliptic longitude only — no latitude, declination, distance, or outer/minor bodies.
 - **Precision target:** sub-arcsecond longitude, not full floating-point vector equivalence at every intermediate stage.
 - Eval grids are finite — untested coordinates/timestamps can still surface edge behavior.
+- **Trig tables:** v5 uses 7,201 sin entries (0.05° step) and 10,001 atan entries (Δz=0.0001).
+These are substantially over-provisioned for sign-level accuracy.
+v6 demonstrates that ~4,100 total entries suffice — see the v6 README for the optimization analysis.
 
 ## Upstream Reference
 

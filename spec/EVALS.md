@@ -373,14 +373,9 @@ Current tooling in this repository maps to this spec as follows:
   - structured light/heavy window sweeps
 - `astro/src/cli/eval-random-cairo-engine.js`
   - random evaluation with stdout ndjson output, resumable via `--start-index` / `--end-index`
-- `astro/src/cli/eval-mismatch-corpus.js`
-  - deterministic regression corpus gate
-- `astro/src/cli/build-mismatch-corpus.js`
-  - corpus construction from discovered failures
-- `astro/src/cli/analyze-mismatch-log.js`
-  - mismatch aggregation and diagnostic reporting
-- `cairo/scripts/compare-v5-chart-parity.js`
-  - targeted parity checks against oracle-generated expectations
+
+Removed tools (used during v5 research, documented in v5 README):
+`eval-mismatch-corpus.js`, `build-mismatch-corpus.js`, `analyze-mismatch-log.js`, `probe-v5-planet-frame.js`, `compare-v5-chart-parity.js`.
 
 ---
 
@@ -388,11 +383,10 @@ Current tooling in this repository maps to this spec as follows:
 
 For most engine changes:
 
-1. Run local unit tests.
-2. Run corpus gate.
-3. Run light eval.
-4. Run targeted hotspot or mismatch-window checks if needed.
-5. Run heavy or random eval only when the earlier gates are clean or when doing milestone measurement.
+1. Run local unit tests (`scarb test`).
+2. Run structured eval on a bounded year range.
+3. Run random eval with a fixed seed (serves as regression gate).
+4. Run heavy or full-range eval only for milestone measurement.
 
 For long unattended validation:
 

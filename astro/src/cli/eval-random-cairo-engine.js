@@ -24,7 +24,7 @@ const ENGINE_CONFIG = {
 const CLI_PATH = fileURLToPath(import.meta.url);
 const CLI_DIR = path.dirname(CLI_PATH);
 const REPO_ROOT = path.resolve(CLI_DIR, "..", "..", "..");
-const CAIRO_DIR = path.join(REPO_ROOT, "cairo");
+const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "research");
 
 const LAT_STRATA = [
   [-9000, -6010],
