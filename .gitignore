@@ -24,6 +24,7 @@ cairo/target/
 cairo/**/target/
 cairo/**/tests/generated_*.cairo
 cairo/**/tests/tmp_*.cairo
+.snfoundry_cache/
 
 # Generated astro artifacts
 astro/results/

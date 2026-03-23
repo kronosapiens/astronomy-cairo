@@ -130,3 +130,31 @@ mod AstronomyEngine {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use snforge_std::{declare, ContractClassTrait, DeclareResultTrait};
+    use super::{IAstronomyEngineDispatcher, IAstronomyEngineDispatcherTrait};
+
+    fn deploy() -> IAstronomyEngineDispatcher {
+        let contract = declare("AstronomyEngine").unwrap().contract_class();
+        let (addr, _) = contract.deploy(@array![]).unwrap();
+        IAstronomyEngineDispatcher { contract_address: addr }
+    }
+
+    #[test]
+    fn chart_1989_los_angeles() {
+        // 1989-02-12T00:30:00 PST (08:30 UTC), Cedars-Sinai, Los Angeles
+        // lat 34.08, lon -118.38
+        let engine = deploy();
+        let signs = engine.compute_signs(1_045_647_870, 3408, -11838).span();
+        assert(*signs.at(0) == 10, 'sun aquarius');
+        assert(*signs.at(1) == 1, 'moon taurus');
+        assert(*signs.at(2) == 9, 'mercury capricorn');
+        assert(*signs.at(3) == 10, 'venus aquarius');
+        assert(*signs.at(4) == 1, 'mars taurus');
+        assert(*signs.at(5) == 1, 'jupiter taurus');
+        assert(*signs.at(6) == 9, 'saturn capricorn');
+        assert(*signs.at(7) == 7, 'asc scorpio');
+    }
+}

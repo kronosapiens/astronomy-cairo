@@ -1,9 +1,0 @@
-[package]
-name = "astronomy_engine_v3"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-
-[dev-dependencies]
-cairo_test = "2.16.1"

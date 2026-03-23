@@ -6,4 +6,7 @@ edition.workspace = true
 [dependencies]
 
 [dev-dependencies]
-cairo_test = "2.16.1"
+snforge_std.workspace = true
+
+[scripts]
+test.workspace = true

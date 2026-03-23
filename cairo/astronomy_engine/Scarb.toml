@@ -1,0 +1,16 @@
+[package]
+name = "astronomy_engine"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+astronomy_engine_v6 = { path = "../astronomy_engine_v6" }
+starknet.workspace = true
+
+[dev-dependencies]
+snforge_std.workspace = true
+
+[scripts]
+test.workspace = true
+
+[[target.starknet-contract]]

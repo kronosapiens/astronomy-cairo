@@ -1,6 +1,8 @@
 [workspace]
 members = [
-  "crates/astronomy_engine",
+  "astronomy_engine",
+  "astronomy_engine_v6",
+  "astronomy_engine_eval_runner",
 ]
 
 [workspace.package]
@@ -9,3 +11,7 @@ edition = "2024_07"
 
 [workspace.dependencies]
 starknet = "2.16.1"
+snforge_std = "0.58.0"
+
+[workspace.scripts]
+test = "snforge test"

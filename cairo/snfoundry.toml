@@ -1,5 +1,3 @@
-
-[sncast.deployer]
-account = "deployer"
-accounts-file = "/Users/kronosapiens/.starknet_accounts/starknet_open_zeppelin_accounts.json"
-network = "sepolia"
+[sncast.default]
+url = "https://api.cartridge.gg/x/starknet/mainnet/rpc/v0_10"
+account = "deployer-mainnet"

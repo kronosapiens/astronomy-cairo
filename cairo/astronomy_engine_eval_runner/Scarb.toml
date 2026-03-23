@@ -7,6 +7,9 @@ edition.workspace = true
 astronomy_engine_v6 = { path = "../astronomy_engine_v6" }
 cairo_execute = "2.16.1"
 
+[scripts]
+test.workspace = true
+
 [[target.executable]]
 name = "eval_batch_fail_breakdown"
 function = "astronomy_engine_eval_runner::eval_batch_fail_breakdown"
