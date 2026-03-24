@@ -1,4 +1,4 @@
-// astronomy_engine_v6: a Cairo-native astronomy runtime for deterministic onchain chart
+// engine_v6: a Cairo-native astronomy runtime for deterministic onchain chart
 // computation. Computes ecliptic longitudes for seven celestial bodies (Sun, Moon, Mercury,
 // Venus, Mars, Jupiter, Saturn) plus the ascendant, using fixed-point arithmetic (i64/i128
 // at 1e9 scale) with no floating-point or external data dependencies. The computational

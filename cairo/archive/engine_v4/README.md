@@ -1,4 +1,4 @@
-# astronomy_engine_v4 (Cairo)
+# engine_v4 (Cairo)
 
 Research crate.
 `v4` extended `v3` with upgraded Sun and Moon models and a proleptic Gregorian time domain.

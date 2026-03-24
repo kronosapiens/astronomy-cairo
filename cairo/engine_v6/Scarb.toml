@@ -1,5 +1,5 @@
 [package]
-name = "astronomy_engine_v6"
+name = "engine_v6"
 version.workspace = true
 edition.workspace = true
 

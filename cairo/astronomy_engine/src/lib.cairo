@@ -1,6 +1,6 @@
-use astronomy_engine_v6::planets as engine_planets;
-use astronomy_engine_v6::ascendant as engine_asc;
-use astronomy_engine_v6::fixed::SCALE_1E9;
+use engine_v6::planets as engine_planets;
+use engine_v6::ascendant as engine_asc;
+use engine_v6::fixed::SCALE_1E9;
 
 const MINUTE_0001_SINCE_PG: i64 = 0;
 const MINUTE_4001_SINCE_PG: i64 = 2_103_796_800;

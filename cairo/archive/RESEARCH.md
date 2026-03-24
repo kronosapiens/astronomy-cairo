@@ -16,7 +16,7 @@ Gas: ~44M per query.
 
 **Why we moved on:** Large artifact size, and the approach can't extend beyond the pre-computed time range without regenerating tables.
 
-→ [v1 README](cairo/research/crates/astronomy_engine_v1/README.md)
+→ [v1 README](cairo/archive/engine_v1/README.md)
 
 ### v2 — Chebyshev Polynomials
 
@@ -29,7 +29,7 @@ Model semantics were narrower — block boundaries and coefficient quantization 
 
 **Why we moved on:** Wanted higher-fidelity astronomical models that compute from first principles rather than fitting to observed data.
 
-→ [v2 README](cairo/research/crates/astronomy_engine_v2/README.md)
+→ [v2 README](cairo/archive/engine_v2/README.md)
 
 ### v3 — VSOP + Frame Transforms
 
@@ -43,7 +43,7 @@ Gas rose to ~152M due to the computational complexity.
 
 **Why we moved on:** Needed to upgrade Sun and Moon to the same VSOP/frame pipeline.
 
-→ [v3 README](cairo/research/crates/astronomy_engine_v3/README.md)
+→ [v3 README](cairo/archive/engine_v3/README.md)
 
 ### v4 — Complete 7-Body Pipeline
 
@@ -58,7 +58,7 @@ Achieved ~99.95% sign parity, with persistent mismatches concentrated in outer p
 
 **Why we moved on:** The remaining ~0.05% mismatches needed diagnostic investigation, not more model changes.
 
-→ [v4 README](cairo/research/crates/astronomy_engine_v4/README.md)
+→ [v4 README](cairo/archive/engine_v4/README.md)
 
 ### v5 — The Frame-Time Fix (production)
 
@@ -74,7 +74,7 @@ Gas: ~184M.
 The primary lesson: **pipeline-semantics parity matters far more than arithmetic precision**.
 Multiple spot-correction attempts (symmetric rounding, VSOP clamps, higher-precision lanes) produced zero improvement — the frame convention was the only thing that mattered.
 
-→ [v5 README](cairo/research/crates/astronomy_engine_v5/README.md)
+→ [v5 README](cairo/archive/engine_v5/README.md)
 
 ### v6 — Deployment Optimization
 
@@ -92,7 +92,7 @@ Max angular error unchanged at ~0.0004°.
 Further investigation confirmed that v6 has **full algorithmic parity** with the upstream JS oracle: identical VSOP terms (360/360), identical nutation terms (5/5), and identical light-time semantics.
 The ~0.0004° error ceiling is the inherent precision difference between `i64` fixed-point arithmetic and IEEE 754 `float64` — there are no model-level improvements available without changing the upstream oracle itself.
 
-→ [v6 README](cairo/research/crates/astronomy_engine_v6/README.md)
+→ [v6 README](cairo/engine_v6/README.md)
 
 ## Performance and Size Across Versions
 
@@ -125,8 +125,10 @@ Results live in `astro/evals/`.
 
 ```
 cairo/
-  crates/              # Deployable contract crates (v6-based)
-  research/            # Research workspace (v1-v6, eval runner)
+  astronomy_engine/    # Starknet contract wrapper
+  engine_v6/           # Active computation engine
+  eval_runner/         # Eval harness entry points
+  archive/             # Previous engine iterations (v1-v5)
 
 astro/
   src/engine.js        # JS oracle (astronomy-engine wrapper)

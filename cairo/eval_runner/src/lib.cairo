@@ -1,7 +1,7 @@
-use astronomy_engine_v6::ascendant::approximate_ascendant_longitude_pg_1e9;
-use astronomy_engine_v6::fixed::SCALE_1E9;
-use astronomy_engine_v6::frames::eqj_to_ecliptic_of_date_lon_lat_1e9;
-use astronomy_engine_v6::planets::{
+use engine_v6::ascendant::approximate_ascendant_longitude_pg_1e9;
+use engine_v6::fixed::SCALE_1E9;
+use engine_v6::frames::eqj_to_ecliptic_of_date_lon_lat_1e9;
+use engine_v6::planets::{
     all_planet_longitudes_pg_1e9,
     debug_planet_geocentric_eqj_pg_1e9,
 };

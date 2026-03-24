@@ -1,4 +1,4 @@
-# astronomy_engine_v5 (Cairo)
+# engine_v5 (Cairo)
 
 Deterministic onchain ephemeris for the seven classical planets.
 Computes ecliptic longitudes for Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, and the ascendant — accurate to ~1.4 arcseconds against the upstream oracle across 4,000 years.
@@ -19,12 +19,12 @@ All timestamps are minutes since the proleptic Gregorian epoch (0001 AD).
 All longitudes are returned as `i64` scaled by `1e9` (i.e. degrees × 10⁹).
 
 ```cairo
-use astronomy_engine_v5::planets::{
+use engine_v5::planets::{
     all_planet_longitudes_pg_1e9,
     approximate_planet_longitude_pg_1e9,
     SUN, MOON, MERCURY,
 };
-use astronomy_engine_v5::ascendant::approximate_ascendant_longitude_pg_1e9;
+use engine_v5::ascendant::approximate_ascendant_longitude_pg_1e9;
 
 // All 7 planet longitudes at once (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn)
 let longitudes: [i64; 7] = all_planet_longitudes_pg_1e9(minute_since_pg);

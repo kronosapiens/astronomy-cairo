@@ -1,6 +1,6 @@
-# astronomy_engine_v3 (Cairo) — Research Archive
+# engine_v3 (Cairo) — Research Archive
 
-`astronomy_engine_v3` introduced VSOP87 series evaluation and a full frame-conversion chain for Mercury through Saturn.
+`engine_v3` introduced VSOP87 series evaluation and a full frame-conversion chain for Mercury through Saturn.
 It was the first version to compute planetary longitudes from upstream-style astronomy math rather than pre-computed tables or fitted polynomials.
 
 ## Approach

@@ -1,4 +1,4 @@
-// Generated chunked Chebyshev longitude coefficients for astronomy_engine_v2
+// Generated chunked Chebyshev longitude coefficients for engine_v2
 pub const CHEBY_DEG_SCALE: i64 = 1000000;
 pub const CHEBY_COEFF_QUANTUM: i64 = 4;
 

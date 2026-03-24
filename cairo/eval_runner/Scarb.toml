@@ -1,0 +1,39 @@
+[package]
+name = "eval_runner"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+engine_v6 = { path = "../engine_v6" }
+cairo_execute = "2.16.1"
+
+[scripts]
+test.workspace = true
+
+[[target.executable]]
+name = "eval_batch_fail_breakdown"
+function = "eval_runner::eval_batch_fail_breakdown"
+
+[[target.executable]]
+name = "eval_point_longitudes"
+function = "eval_runner::eval_point_longitudes"
+
+[[target.executable]]
+name = "eval_point_mismatch_mask"
+function = "eval_runner::eval_point_mismatch_mask"
+
+[[target.executable]]
+name = "eval_point_mismatch_mask_and_actual"
+function = "eval_runner::eval_point_mismatch_mask_and_actual"
+
+[[target.executable]]
+name = "eval_point_mismatch_detail"
+function = "eval_runner::eval_point_mismatch_detail"
+
+[[target.executable]]
+name = "eval_point_planet_debug_frame"
+function = "eval_runner::eval_point_planet_debug_frame"
+
+[[target.executable]]
+name = "eval_frame_from_eqj"
+function = "eval_runner::eval_frame_from_eqj"

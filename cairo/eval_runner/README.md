@@ -1,8 +1,8 @@
-# astronomy_engine_eval_runner
+# eval_runner
 
 Cairo entry points for the JS evaluation harness.
 Each public function is called via `scarb cairo-run --function <name>` with arguments passed as a JSON file.
-Imports directly from `astronomy_engine_v6`.
+Imports directly from `engine_v6`.
 
 The JS harness (`astro/src/cli/lib/eval-core.js`) constructs argument payloads, invokes `scarb cairo-run`, and parses the `returning [...]` output.
 

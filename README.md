@@ -7,7 +7,7 @@ Computes ecliptic longitudes for Sun, Moon, Mercury, Venus, Mars, Jupiter, Satur
 - **Precision:** < 0.0004° (~1.4 arcseconds)
 - **Sign accuracy:** >99.999% against [astronomy-engine](https://github.com/cosinekitty/astronomy)
 - **Contract size:** 2.07 MB (limit: 4.09 MB)
-- **Gas cost:** ~190M per full chart (7 planets + ascendant)
+- **Gas cost:** ~153M per chart (7 planets + ascendant), 0.5 - 1.5 STRK
 
 Ported from Don Cross's [astronomy-engine](https://github.com/cosinekitty/astronomy) (MIT) with full algorithmic parity: identical VSOP terms (360/360), identical IAU2000B nutation (5/5 terms), identical light-time semantics.
 The ~0.0004° residual is the inherent precision difference between `i64` fixed-point and IEEE 754 `float64`.

@@ -1,4 +1,4 @@
-# astronomy_engine_v2 (Cairo) — Research Archive
+# engine_v2 (Cairo) — Research Archive
 
 v2 was the second-generation Cairo astronomy engine.
 It replaced v1's table-ingress sign lookup with runtime Chebyshev polynomial evaluation.

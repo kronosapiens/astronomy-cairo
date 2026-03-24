@@ -1,4 +1,4 @@
-# astronomy_engine_v1 (Cairo) — Research Archive
+# engine_v1 (Cairo) — Research Archive
 
 v1 was the first Cairo astronomy engine.
 It used pre-computed sign ingress tables to achieve deterministic sign-level parity for seven classical bodies, plus a runtime ascendant computation.

@@ -5,22 +5,22 @@ version = 1
 name = "astronomy_engine"
 version = "0.1.0"
 dependencies = [
- "astronomy_engine_v6",
+ "engine_v6",
  "snforge_std",
 ]
 
 [[package]]
-name = "astronomy_engine_eval_runner"
-version = "0.1.0"
-dependencies = [
- "astronomy_engine_v6",
-]
-
-[[package]]
-name = "astronomy_engine_v6"
+name = "engine_v6"
 version = "0.1.0"
 dependencies = [
  "snforge_std",
+]
+
+[[package]]
+name = "eval_runner"
+version = "0.1.0"
+dependencies = [
+ "engine_v6",
 ]
 
 [[package]]

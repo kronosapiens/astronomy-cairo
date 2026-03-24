@@ -1,6 +1,6 @@
-# astronomy_engine_v6 (Cairo)
+# engine_v6 (Cairo)
 
-Active engine, deployed via `cairo/crates/astronomy_engine/`.
+Active engine, deployed via `astronomy_engine/`.
 Identical to v5 except for optimized trig lookup tables and contract reorganization.
 
 ## Modules
