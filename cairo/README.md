@@ -53,7 +53,7 @@ let engine = IAstronomyEngineDispatcher { contract_address };
 let signs = engine.compute_signs(minute_pg, lat_bin, lon_bin);
 ```
 
-- Mainnet contract address: ``
+- Mainnet contract address: [`0x06b7e435e06f8c0c84c27c59a3b0be11072bd0d05f12d4aec3c8eb4f51b4d4a6`](https://voyager.online/contract/0x06b7e435e06f8c0c84c27c59a3b0be11072bd0d05f12d4aec3c8eb4f51b4d4a6)
 - Sepolia contract address: [`0x02bb544b17641b85e77971ae7cf710486131bec536146f2043ca94c97880125a`](https://sepolia.voyager.online/contract/0x02bb544b17641b85e77971ae7cf710486131bec536146f2043ca94c97880125a)
 
 Since the contract is stateless, you can also use a `library_call` with the declared class hash:
@@ -65,5 +65,5 @@ let engine = IAstronomyEngineLibraryDispatcher { class_hash };
 let signs = engine.compute_signs(minute_pg, lat_bin, lon_bin);
 ```
 
-- Mainnet class hash: ``
+- Mainnet class hash: [`0x63d9732a1e77cf5f37dcba003e56b14216bc5b82a541553fb877aabdbe36ee4`](https://voyager.online/class/0x063d9732a1e77cf5f37dcba003e56b14216bc5b82a541553fb877aabdbe36ee4)
 - Sepolia class hash: [`0x63d9732a1e77cf5f37dcba003e56b14216bc5b82a541553fb877aabdbe36ee4`](https://sepolia.voyager.online/class/0x063d9732a1e77cf5f37dcba003e56b14216bc5b82a541553fb877aabdbe36ee4)

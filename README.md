@@ -1,13 +1,15 @@
 # Cairo Astronomy Engine
 
+![Hero Image](./spec/hero.png)
+
 Deterministic onchain ephemeris for Starknet.
 Computes ecliptic longitudes for Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, and the ascendant using `i64` (1e9) fixed-point math.
 
 - **Range:** years 0001 AD – 4000 AD
 - **Precision:** < 0.001° (~3.3 arcseconds)
-- **Sign accuracy:** >99.999% against [astronomy](https://github.com/cosinekitty/astronomy)
+- **Sign accuracy:** >99.999% against upstream [astronomy](https://github.com/cosinekitty/astronomy)
 - **Contract size:** 2.07 MB (limit: 4.09 MB)
-- **Gas cost:** ~150M per chart (7 planets + ascendant), roughly 0.5 - 1.5 STRK
+- **Gas cost:** ~150M per chart (7 planets + ascendant), approx. 0.5 - 1.5 STRK
 
 Ported from Don Cross's [astronomy](https://github.com/cosinekitty/astronomy) (MIT) with full algorithmic parity: identical VSOP terms (360/360), identical IAU2000B nutation (5/5 terms), identical light-time semantics.
 The < 0.001° residual is the inherent precision difference between `i64` fixed-point and IEEE 754 `float64`.
@@ -56,7 +58,6 @@ trait IAstronomyEngine {
 
 All arithmetic is deterministic `i64` fixed-point (1e9 scale) with `i128` intermediates.
 Same inputs always produce the same outputs.
-
 See the [v6 Engine README](./cairo/engine_v6/README.md) for implementation details.
 
 ## Validation
