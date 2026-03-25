@@ -7,7 +7,7 @@ The goal is not to defend astrology as true or dismiss it as superstition, but t
 
 ### A note on perspective
 
-This document is retained as domain background for the Cairo astronomy-engine project, and its through-line reflects that purpose:
+This document is retained as domain background for the Cairo astronomy project, and its through-line reflects that purpose:
 
 > **For this project, astrology is treated as a symbolic system for reasoning about celestial structure, chart semantics, and historical interpretive frameworks.**
 

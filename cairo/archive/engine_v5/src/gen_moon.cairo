@@ -1,5 +1,5 @@
 // 104 harmonic terms for the Moon's longitude perturbation series, extracted from the
-// upstream astronomy-engine CalcMoon routine (AddSol calls). Each term is a tuple
+// upstream astronomy CalcMoon routine (AddSol calls). Each term is a tuple
 // (coeff_l_1e4, coeff_r_1e4, coeff_lat_1e4, p, q, r, s) where p/q/r/s are integer
 // multipliers for the four fundamental arguments (l = Moon mean anomaly, l' = Sun mean
 // anomaly, F = Moon argument of latitude, D = Moon mean elongation). During evaluation,

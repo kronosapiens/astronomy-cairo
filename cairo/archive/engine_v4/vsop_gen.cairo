@@ -1,4 +1,4 @@
-// Generated from astronomy-engine VSOP data
+// Generated from astronomy VSOP data
 use crate::trig::cos_deg_1e9;
 
 const VSOP_SCALE_1E9: i64 = 1000000000;

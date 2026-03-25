@@ -1,14 +1,14 @@
 [package]
 name = "eval_runner"
-version.workspace = true
-edition.workspace = true
+version = "0.1.0"
+edition = "2024_07"
+
+[cairo]
+enable-gas = false
 
 [dependencies]
 engine_v6 = { path = "../engine_v6" }
 cairo_execute = "2.16.1"
-
-[scripts]
-test.workspace = true
 
 [[target.executable]]
 name = "eval_batch_fail_breakdown"

@@ -17,7 +17,7 @@ function compareVersionLike(a, b) {
   return 0;
 }
 
-function resolveScarbBin() {
+function resolveScarbBin(cwd) {
   if (resolvedScarbBin) return resolvedScarbBin;
   if (process.env.SCARB_BIN) {
     resolvedScarbBin = process.env.SCARB_BIN;
@@ -26,6 +26,7 @@ function resolveScarbBin() {
 
   try {
     const asdfScarb = execFileSync("/opt/homebrew/bin/asdf", ["which", "scarb"], {
+      cwd,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
@@ -60,7 +61,7 @@ function resolveScarbBin() {
 }
 
 export function runScarb(args, cwd) {
-  const scarbBin = resolveScarbBin();
+  const scarbBin = resolveScarbBin(cwd);
   return execFileSync(scarbBin, args.map(String), {
     cwd,
     encoding: "utf8",
@@ -154,7 +155,7 @@ function runExecutable(executableName, payload, { noBuild, cairoDir }) {
     const cmdArgs = [
       "execute",
       "-p",
-      "astronomy_engine_eval_runner",
+      "eval_runner",
       "--executable-name",
       executableName,
       "--arguments-file",

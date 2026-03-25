@@ -4,7 +4,7 @@
 // at 1e9 scale) with no floating-point or external data dependencies. The computational
 // pipeline evaluates VSOP87 heliocentric series, applies light-time correction, transforms
 // through precession and IAU2000B nutation into ecliptic-of-date coordinates, and resolves
-// horizon geometry for the ascendant. Adapted from Donald Cross's astronomy-engine (MIT),
+// horizon geometry for the ascendant. Adapted from Don Cross's astronomy library (MIT),
 // with optimized trig lookup tables for Starknet deployment.
 
 pub mod ascendant;

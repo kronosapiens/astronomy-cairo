@@ -17,13 +17,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "eval_runner"
-version = "0.1.0"
-dependencies = [
- "engine_v6",
-]
-
-[[package]]
 name = "snforge_scarb_plugin"
 version = "0.58.0"
 source = "registry+https://scarbs.xyz/"

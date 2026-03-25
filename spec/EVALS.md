@@ -1,6 +1,6 @@
 # Astronomy Engine Evaluation Spec
 
-This document defines how astronomy-engine correctness is measured in this repository.
+This document defines how astronomy correctness is measured in this repository.
 
 Its purpose is to make evaluation work:
 
@@ -17,7 +17,7 @@ This spec is a reference for `astro/` tooling, Cairo eval runners, and any futur
 
 ### 1.1 Upstream Fidelity First
 
-The primary goal of evaluation is to measure fidelity to the upstream `astronomy-engine` computational pipeline.
+The primary goal of evaluation is to measure fidelity to the upstream `astronomy` computational pipeline.
 
 Evaluation should prefer:
 
@@ -151,7 +151,7 @@ This layer is for root-cause analysis after failures are discovered elsewhere.
 
 ### 3.1 Primary Oracle
 
-The primary correctness oracle is the TypeScript `astronomy-engine` package used in `astro/`.
+The primary correctness oracle is the TypeScript `astronomy` package used in `astro/`.
 
 ### 3.2 Secondary Cross-Checks
 

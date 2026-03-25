@@ -80,4 +80,4 @@ Moon sign parity (JS mirror of the Cairo runtime path):
 
 ## Upstream Reference
 
-- Donald Cross, [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (MIT), package `^2.1.19`.
+- Don Cross, [`astronomy`](https://github.com/cosinekitty/astronomy) (MIT), package `^2.1.19`.

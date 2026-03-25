@@ -31,7 +31,7 @@ cd cairo
 asdf install
 
 # declare the contract class
-sncast --profile <mainnet|sepolia> declare --contract-name AstronomyEngine
+sncast --profile <mainnet|sepolia> declare --package astronomy_engine --contract-name AstronomyEngine
 
 # deploy an instance (use the class hash from declare output)
 sncast --profile <mainnet|sepolia> deploy --class-hash <class_hash>
@@ -39,6 +39,8 @@ sncast --profile <mainnet|sepolia> deploy --class-hash <class_hash>
 
 Profiles are configured in `snfoundry.toml`.
 Each profile references a named account in your local accounts file.
+
+Deploying the contract will cost about 3,700,000,000 L2 gas
 
 ## Integration
 
@@ -51,7 +53,10 @@ let engine = IAstronomyEngineDispatcher { contract_address };
 let signs = engine.compute_signs(minute_pg, lat_bin, lon_bin);
 ```
 
-Since the contract is stateless, you can also skip deployment and use `library_call` with just the declared class hash:
+- Mainnet contract address: ``
+- Sepolia contract address: [`0x02bb544b17641b85e77971ae7cf710486131bec536146f2043ca94c97880125a`](https://sepolia.voyager.online/contract/0x02bb544b17641b85e77971ae7cf710486131bec536146f2043ca94c97880125a)
+
+Since the contract is stateless, you can also use a `library_call` with the declared class hash:
 
 ```cairo
 use astronomy_engine::{IAstronomyEngineLibraryDispatcher, IAstronomyEngineDispatcherTrait};
@@ -59,3 +64,6 @@ use astronomy_engine::{IAstronomyEngineLibraryDispatcher, IAstronomyEngineDispat
 let engine = IAstronomyEngineLibraryDispatcher { class_hash };
 let signs = engine.compute_signs(minute_pg, lat_bin, lon_bin);
 ```
+
+- Mainnet class hash: ``
+- Sepolia class hash: [`0x63d9732a1e77cf5f37dcba003e56b14216bc5b82a541553fb877aabdbe36ee4`](https://sepolia.voyager.online/class/0x063d9732a1e77cf5f37dcba003e56b14216bc5b82a541553fb877aabdbe36ee4)

@@ -59,8 +59,33 @@ v6 has full algorithmic parity with the upstream JS oracle:
 - IAU2000B nutation: 5/5 terms (identical to upstream)
 - Light-time semantics: both backdate Earth and target planet
 
-The ~0.0004° error ceiling is the inherent precision limit of `i64` fixed-point vs `float64`.
+Max error vs the JS oracle (10K random points, seed 42): < 0.001° (3.3 arcseconds).
+This is the inherent precision limit of `i64` fixed-point vs `float64`.
 There are no model-level improvements available without changing the upstream oracle.
+
+## Fixed-Point Adaptation
+
+The upstream algorithms assume IEEE 754 `float64` — hardware trig, automatic exponent scaling, and 53 bits of mantissa.
+Porting to `i64` fixed-point (×1e9) required solving several problems:
+
+- **Overflow in multiplication chains.**
+Multiplying two 1e9-scaled values produces a 1e18-scaled intermediate, which overflows `i64`.
+All multiplications widen to `i128`, rescale, then narrow back.
+Polynomial evaluations (VSOP87 has 20+ terms) chain many such steps.
+
+- **Truncation accumulation.**
+Every fixed-point division or rescale truncates.
+A consistent half-away-from-zero rounding policy (`div_round_half_away_from_zero`) keeps error symmetric and bounded across long computation chains.
+
+- **Trig without hardware.**
+`float64` has native sin/cos/atan.
+Here, trig is a lookup table with linear interpolation — 3,601 sin entries (0.1° step) and 501 atan entries (Δz=0.002).
+Table size directly trades off against contract class size on Starknet.
+
+- **Small-over-large division.**
+When a small intermediate is divided by a large one, fixed-point loses most significant digits.
+`float64` handles this automatically because the mantissa shifts to preserve significance.
+The computation order in several places was rearranged to keep numerators large relative to denominators.
 
 ## Known Limits
 
@@ -70,4 +95,4 @@ There are no model-level improvements available without changing the upstream or
 
 ## Upstream Reference
 
-Donald Cross, [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).
+Don Cross, [`astronomy`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).

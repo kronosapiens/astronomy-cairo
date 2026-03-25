@@ -25,7 +25,7 @@ const NYC = { name: "NYC", latBin: 4070, lonBin: -7400 };
 const ALEXANDRIA = { name: "Alexandria", latBin: 3120, lonBin: 2990 };
 const CLI_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(CLI_DIR, "..", "..", "..");
-const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "crates", "research");
+const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "eval_runner");
 
 function buildBatchPayload({
   batchStartYear,
@@ -393,8 +393,8 @@ function main() {
 
   // Compile once; subsequent runs use --no-build to reduce process overhead.
   const buildStart = Date.now();
-  log(`Building astronomy_engine_eval_runner before evaluation...`);
-  runScarb(["build", "-p", "astronomy_engine_eval_runner"], CAIRO_DIR);
+  log(`Building eval_runner before evaluation...`);
+  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR);
   log(`Build complete in ${formatDuration(Date.now() - buildStart)}.`);
 
   let processedYears = 0;

@@ -1,6 +1,6 @@
 # `astro` package
 
-Oracle and evaluation tooling for the Cairo astronomy-engine workspace.
+Oracle and evaluation tooling for the astronomy-cairo workspace.
 
 **All eval results go to stdout (ndjson). Progress and diagnostics go to stderr.**
 Redirect stdout to capture results: `> evals/output.ndjson`.

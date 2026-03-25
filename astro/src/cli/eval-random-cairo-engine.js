@@ -23,7 +23,7 @@ const SUPPORTED_END_YEAR = 4000;
 const CLI_PATH = fileURLToPath(import.meta.url);
 const CLI_DIR = path.dirname(CLI_PATH);
 const REPO_ROOT = path.resolve(CLI_DIR, "..", "..", "..");
-const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "crates", "research");
+const CAIRO_DIR = path.join(REPO_ROOT, "cairo", "eval_runner");
 
 const LAT_STRATA = [
   [-9000, -6010],
@@ -242,7 +242,7 @@ export function runRandomEval({
   const effectiveEnd = endIndex !== null ? Math.min(endIndex, points) : points;
   const noBuild = true;
 
-  runScarb(["build", "-p", "astronomy_engine_eval_runner"], CAIRO_DIR);
+  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR);
 
   for (let chunkStart = startIndex; chunkStart < effectiveEnd; chunkStart += batchPoints) {
     const chunkEnd = Math.min(chunkStart + batchPoints, effectiveEnd);
@@ -313,7 +313,7 @@ export function runRandomPrecisionEval({
   const effectiveEnd = endIndex !== null ? Math.min(endIndex, points) : points;
   const noBuild = true;
 
-  runScarb(["build", "-p", "astronomy_engine_eval_runner"], CAIRO_DIR);
+  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR);
 
   for (let chunkStart = startIndex; chunkStart < effectiveEnd; chunkStart += batchPoints) {
     const chunkEnd = Math.min(chunkStart + batchPoints, effectiveEnd);

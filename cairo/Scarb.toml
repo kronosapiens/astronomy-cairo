@@ -2,7 +2,6 @@
 members = [
   "astronomy_engine",
   "engine_v6",
-  "eval_runner",
 ]
 
 [workspace.package]

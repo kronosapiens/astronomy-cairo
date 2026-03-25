@@ -1,4 +1,4 @@
-// Moon harmonic terms from astronomy-engine CalcMoon AddSol(...) and ADDN(...).
+// Moon harmonic terms from astronomy CalcMoon AddSol(...) and ADDN(...).
 pub const MOON_SOLAR_TERMS: [(i64, i64, i64, i8, i8, i8, i8); 104] = [
     (139020, 140600, -10, 0, 0, 0, 4),
     (4030, -40100, 3940, 0, 0, 0, 3),

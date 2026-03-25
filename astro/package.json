@@ -8,7 +8,8 @@
     "test": "node --test test/*.test.js",
     "build:sign-corpus": "node src/cli/generate-corpus.js",
     "eval": "node src/cli/eval-cairo-engine.js",
-    "eval:random": "node src/cli/eval-random-cairo-engine.js"
+    "eval:random": "node src/cli/eval-random-cairo-engine.js",
+    "clean:eval": "rm -rf ../cairo/eval_runner/target/execute"
   },
   "engines": {
     "node": ">=20"

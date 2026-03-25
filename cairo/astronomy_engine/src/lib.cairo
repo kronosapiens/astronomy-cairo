@@ -50,22 +50,6 @@ mod AstronomyEngine {
     #[storage]
     struct Storage {}
 
-    fn sign_from_lon_1e9(lon_1e9: i64) -> i64 {
-        let period: i64 = 360 * SCALE_1E9;
-        let mut normalized = lon_1e9 % period;
-        if normalized < 0 {
-            normalized += period;
-        }
-        normalized / (30 * SCALE_1E9)
-    }
-
-    fn assert_in_range(minute_pg: i64) {
-        assert(
-            minute_pg >= MINUTE_0001_SINCE_PG && minute_pg < MINUTE_4001_SINCE_PG,
-            'minute out of range',
-        );
-    }
-
     #[abi(embed_v0)]
     impl AstronomyEngineImpl of super::IAstronomyEngine<ContractState> {
         fn compute_signs(
@@ -128,6 +112,22 @@ mod AstronomyEngine {
         fn supported_minute_range(self: @ContractState) -> (i64, i64) {
             (MINUTE_0001_SINCE_PG, MINUTE_4001_SINCE_PG)
         }
+    }
+
+    fn sign_from_lon_1e9(lon_1e9: i64) -> i64 {
+        let period: i64 = 360 * SCALE_1E9;
+        let mut normalized = lon_1e9 % period;
+        if normalized < 0 {
+            normalized += period;
+        }
+        normalized / (30 * SCALE_1E9)
+    }
+
+    fn assert_in_range(minute_pg: i64) {
+        assert(
+            minute_pg >= MINUTE_0001_SINCE_PG && minute_pg < MINUTE_4001_SINCE_PG,
+            'minute out of range',
+        );
     }
 }
 

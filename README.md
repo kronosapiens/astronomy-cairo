@@ -1,16 +1,16 @@
 # Cairo Astronomy Engine
 
 Deterministic onchain ephemeris for Starknet.
-Computes ecliptic longitudes for Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, and the ascendant.
+Computes ecliptic longitudes for Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, and the ascendant using `i64` (1e9) fixed-point math.
 
 - **Range:** years 0001 AD – 4000 AD
-- **Precision:** < 0.0004° (~1.4 arcseconds)
-- **Sign accuracy:** >99.999% against [astronomy-engine](https://github.com/cosinekitty/astronomy)
+- **Precision:** < 0.001° (~3.3 arcseconds)
+- **Sign accuracy:** >99.999% against [astronomy](https://github.com/cosinekitty/astronomy)
 - **Contract size:** 2.07 MB (limit: 4.09 MB)
-- **Gas cost:** ~153M per chart (7 planets + ascendant), 0.5 - 1.5 STRK
+- **Gas cost:** ~150M per chart (7 planets + ascendant), roughly 0.5 - 1.5 STRK
 
-Ported from Don Cross's [astronomy-engine](https://github.com/cosinekitty/astronomy) (MIT) with full algorithmic parity: identical VSOP terms (360/360), identical IAU2000B nutation (5/5 terms), identical light-time semantics.
-The ~0.0004° residual is the inherent precision difference between `i64` fixed-point and IEEE 754 `float64`.
+Ported from Don Cross's [astronomy](https://github.com/cosinekitty/astronomy) (MIT) with full algorithmic parity: identical VSOP terms (360/360), identical IAU2000B nutation (5/5 terms), identical light-time semantics.
+The < 0.001° residual is the inherent precision difference between `i64` fixed-point and IEEE 754 `float64`.
 
 ## Starknet Interface
 
@@ -57,6 +57,8 @@ trait IAstronomyEngine {
 All arithmetic is deterministic `i64` fixed-point (1e9 scale) with `i128` intermediates.
 Same inputs always produce the same outputs.
 
+See the [v6 Engine README](./cairo/engine_v6/README.md) for implementation details.
+
 ## Validation
 
 | Dataset | Points | Failures |
@@ -73,7 +75,7 @@ At sub-arcsecond precision, sign disagreements this close to a 30° boundary are
 | Precision dataset | Points | Max error | Worst body |
 | --- | --- | --- | --- |
 | Structured (every 100y) | 960 | 0.000365° | Mercury |
-| Random (seed 42) | 960 | 0.000382° | Mercury |
+| Random (seed 42) | 10,000 | 0.000913° | Ascendant |
 
 ## Building
 
@@ -86,14 +88,14 @@ cd astro && npm test            # run JS oracle tests
 ## Repository Layout
 
 ```
-cairo/crates/
+cairo/
   astronomy_engine/            Starknet contract (thin wrapper)
-  research/
-    astronomy_engine_v6/       Active engine (source of truth)
-    astronomy_engine_v1..v5/   Research iterations
+  engine_v6/                   Active engine (source of truth)
+  eval_runner/                 Eval harness for scarb cairo-run
+  archive/                     Research engines (v1–v5)
 
 astro/
-  src/                         JS oracle (astronomy-engine wrapper) and eval tools
+  src/                         JS oracle (astronomy wrapper) and eval tools
   evals/                       Evaluation results (ndjson)
 
 spec/                          Design specs and domain reference
@@ -104,8 +106,8 @@ spec/                          Design specs and domain reference
 - [spec/CHART.md](./spec/CHART.md) — chart construction spec
 - [spec/EVALS.md](./spec/EVALS.md) — evaluation framework
 - [astro/README.md](./astro/README.md) — eval CLI usage
-- [cairo/crates/research/RESEARCH.md](./cairo/crates/research/RESEARCH.md) — v1 through v6 development arc
+- [cairo/archive/RESEARCH.md](./cairo/archive/RESEARCH.md) — v1 through v6 development arc
 
 ## Upstream Reference
 
-All astronomy math derives from Donald Cross's [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).
+All astronomy math derives from Don Cross's [`astronomy`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).

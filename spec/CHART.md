@@ -1,6 +1,6 @@
 # Chart Construction Spec (Cairo-First)
 
-Port the required subset of `astronomy-engine` into Cairo/Starknet, then layer astrology derivations above it.
+Port the required subset of `astronomy` into Cairo/Starknet, then layer astrology derivations above it.
 
 ## 1. Scope
 
@@ -21,7 +21,7 @@ Port the required subset of `astronomy-engine` into Cairo/Starknet, then layer a
 
 ### `AstronomyEngine` (Cairo)
 
-Port of [astronomy-engine](https://github.com/cosinekitty/astronomy), no astrology semantics.
+Port of [astronomy](https://github.com/cosinekitty/astronomy), no astrology semantics.
 
 - Time transforms needed by astronomy model.
 - Ecliptic longitudes for 7 planets.
@@ -65,7 +65,7 @@ Separation keeps astronomy stable while allowing chart-derivation updates in hig
 
 ### Validation
 
-- Primary oracle: TypeScript `astronomy-engine` (`^2.1.19`).
+- Primary oracle: TypeScript `astronomy` (`^2.1.19`).
 - Gate: 0 sign mismatches in validation corpus.
 - Dense sampling around sign ingress windows.
 

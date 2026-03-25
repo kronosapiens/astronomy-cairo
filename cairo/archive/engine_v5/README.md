@@ -11,7 +11,7 @@ Sufficient for fully onchain natal chart computation, with precision supporting 
 - **Gas cost:** ~184M (7-body + ascendant)
 - **Source size:** ~396 KB
 
-Ported from Don Cross's [astronomy-engine](https://github.com/cosinekitty/astronomy) (JS/TypeScript, MIT), adapted for Cairo's deterministic fixed-point execution model.
+Ported from Don Cross's [astronomy](https://github.com/cosinekitty/astronomy) (JS/TypeScript, MIT), adapted for Cairo's deterministic fixed-point execution model.
 
 ## Usage
 
@@ -158,5 +158,5 @@ v6 demonstrates that ~4,100 total entries suffice — see the v6 README for the 
 
 ## Upstream Reference
 
-Primary reference: Donald Cross, [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).
+Primary reference: Don Cross, [`astronomy`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).
 Cairo adaptation lives in this crate; all astronomy math derives from the upstream model.

@@ -6,7 +6,7 @@ It used pre-computed sign ingress tables to achieve deterministic sign-level par
 ## Approach
 
 Planet signs are determined by table lookup, not runtime computation.
-Offchain, the JS oracle (`astronomy-engine`) was used to generate sign ingress timestamps for each body over 1900-2100.
+Offchain, the JS oracle (`astronomy`) was used to generate sign ingress timestamps for each body over 1900-2100.
 These ingress events were embedded as Cairo constant arrays in `oracle_signs.cairo`.
 At runtime, a linear scan finds the last ingress before the query timestamp and returns its sign.
 

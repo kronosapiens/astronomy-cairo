@@ -51,7 +51,7 @@ From `ASTRONOMY_AUDIT.md`:
 
 - **Light-time backdates both bodies.**
 The 2-iteration light-time loop shifts both the target planet and Earth backward.
-Upstream `astronomy-engine` only backdates the target.
+Upstream `astronomy` only backdates the target.
 For sign-level accuracy this is negligible: Earth moves ~1 deg/day and maximum light-time (Saturn) is ~1.1 hours, so the Earth position error is < 0.05 deg.
 This was a documented tradeoff.
 
@@ -90,4 +90,4 @@ v4 upgraded the Sun path (negated Earth VSOP vector through the frame chain) and
 
 ## Upstream Reference
 
-Primary reference: Donald Cross, [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (MIT), package `^2.1.19`.
+Primary reference: Don Cross, [`astronomy`](https://github.com/cosinekitty/astronomy) (MIT), package `^2.1.19`.

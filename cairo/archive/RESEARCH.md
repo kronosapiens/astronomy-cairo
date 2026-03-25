@@ -116,7 +116,7 @@ Produces 96,000 points with full reproducibility.
 Batches 24 points per Cairo execution for efficiency.
 Fixed seeds serve as regression tests.
 
-Both compare Cairo sign indices against a JS oracle backed by Don Cross's [astronomy-engine](https://github.com/cosinekitty/astronomy) library.
+Both compare Cairo sign indices against a JS oracle backed by Don Cross's [astronomy](https://github.com/cosinekitty/astronomy) library.
 
 Eval tooling lives in `astro/src/cli/`.
 Results live in `astro/evals/`.
@@ -131,7 +131,7 @@ cairo/
   archive/             # Previous engine iterations (v1-v5)
 
 astro/
-  src/engine.js        # JS oracle (astronomy-engine wrapper)
+  src/engine.js        # JS oracle (astronomy wrapper)
   src/cli/             # Eval harness CLI tools
   evals/               # Evaluation results (ndjson)
 
@@ -140,5 +140,5 @@ spec/                  # Specifications and domain reference
 
 ## Upstream Reference
 
-All astronomy math derives from Donald Cross's [`astronomy-engine`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).
+All astronomy math derives from Don Cross's [`astronomy`](https://github.com/cosinekitty/astronomy) (MIT, `^2.1.19`).
 The Cairo implementation is a deterministic fixed-point adaptation of the upstream model.
