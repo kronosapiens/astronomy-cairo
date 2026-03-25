@@ -242,7 +242,7 @@ export function runRandomEval({
   const effectiveEnd = endIndex !== null ? Math.min(endIndex, points) : points;
   const noBuild = true;
 
-  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR);
+  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR, { offline: true });
 
   for (let chunkStart = startIndex; chunkStart < effectiveEnd; chunkStart += batchPoints) {
     const chunkEnd = Math.min(chunkStart + batchPoints, effectiveEnd);
@@ -313,7 +313,7 @@ export function runRandomPrecisionEval({
   const effectiveEnd = endIndex !== null ? Math.min(endIndex, points) : points;
   const noBuild = true;
 
-  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR);
+  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR, { offline: true });
 
   for (let chunkStart = startIndex; chunkStart < effectiveEnd; chunkStart += batchPoints) {
     const chunkEnd = Math.min(chunkStart + batchPoints, effectiveEnd);

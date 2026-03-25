@@ -56,6 +56,8 @@ let signs = engine.compute_signs(minute_pg, lat_bin, lon_bin);
 - Mainnet contract address: [`0x06b7e435e06f8c0c84c27c59a3b0be11072bd0d05f12d4aec3c8eb4f51b4d4a6`](https://voyager.online/contract/0x06b7e435e06f8c0c84c27c59a3b0be11072bd0d05f12d4aec3c8eb4f51b4d4a6)
 - Sepolia contract address: [`0x02bb544b17641b85e77971ae7cf710486131bec536146f2043ca94c97880125a`](https://sepolia.voyager.online/contract/0x02bb544b17641b85e77971ae7cf710486131bec536146f2043ca94c97880125a)
 
+Mainnet execution costs about 390,000,000 L2 gas ([see example](https://voyager.online/tx/0x00fb1438af550895d3bcde04216b466668dd3d2fa856a19a0126b496236cc5d1)).
+
 Since the contract is stateless, you can also use a `library_call` with the declared class hash:
 
 ```cairo

@@ -87,6 +87,21 @@ When a small intermediate is divided by a large one, fixed-point loses most sign
 `float64` handles this automatically because the mantissa shifts to preserve significance.
 The computation order in several places was rearranged to keep numerators large relative to denominators.
 
+## Computational Cost
+
+A single `compute_signs` call (7 planets + ascendant) executes ~220,000–250,000 arithmetic operations (add, multiply, divide, sqrt, trig table lookup + interpolation).
+
+| Component | ~Ops | Notes |
+| --- | --- | --- |
+| 5 outer planets | 218,000 | Light-time iteration dominates (~5 iterations each, dual VSOP eval + distance + sqrt per iteration) |
+| Moon | 2,900 | 104-term harmonic series + 11 periodic corrections |
+| Sun | 900 | Single VSOP eval, no light-time loop |
+| Coordinate transforms | 2,000 | Precession + nutation + rotation, 7 planets |
+| Ascendant | 300 | Sidereal time + horizon solve |
+
+snforge reports ~153M L2 gas for pure `compute_signs` execution.
+A real mainnet transaction (cross-contract call + storage writes) measured [~388M L2 gas](https://voyager.online/tx/0x00fb1438af550895d3bcde04216b466668dd3d2fa856a19a0126b496236cc5d1) — the ~2.5x overhead covers account validation, dispatch, and 8 storage slot writes.
+
 ## Known Limits
 
 - Ecliptic longitude only — no latitude, declination, distance, or outer/minor bodies.

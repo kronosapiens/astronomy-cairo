@@ -60,12 +60,16 @@ function resolveScarbBin(cwd) {
   return resolvedScarbBin;
 }
 
-export function runScarb(args, cwd) {
+// offline: skip registry lookups (uses cached packages only).
+// Run `scarb fetch` manually after changing dependency versions in Scarb.toml.
+export function runScarb(args, cwd, { offline = false } = {}) {
   const scarbBin = resolveScarbBin(cwd);
+  const env = offline ? { ...process.env, SCARB_OFFLINE: "true" } : process.env;
   return execFileSync(scarbBin, args.map(String), {
     cwd,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
+    env,
   });
 }
 
@@ -163,10 +167,15 @@ function runExecutable(executableName, payload, { noBuild, cairoDir }) {
       "--print-program-output",
     ];
     if (noBuild) cmdArgs.push("--no-build");
-    const out = runScarb(cmdArgs, cairoDir);
+    const out = runScarb(cmdArgs, cairoDir, { offline: true });
     return parseProgramOutput(out).map((v) => feltToSignedInt(v));
   } finally {
     fs.rmSync(tmpPath, { force: true });
+    // Clean up scarb execute output dirs to prevent "failed to create output directory"
+    const execDir = path.join(cairoDir, "eval_runner", "target", "execute");
+    if (fs.existsSync(execDir)) {
+      fs.rmSync(execDir, { recursive: true, force: true });
+    }
   }
 }
 

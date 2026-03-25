@@ -394,7 +394,7 @@ function main() {
   // Compile once; subsequent runs use --no-build to reduce process overhead.
   const buildStart = Date.now();
   log(`Building eval_runner before evaluation...`);
-  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR);
+  runScarb(["build", "-p", "eval_runner"], CAIRO_DIR, { offline: true });
   log(`Build complete in ${formatDuration(Date.now() - buildStart)}.`);
 
   let processedYears = 0;

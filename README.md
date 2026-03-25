@@ -47,6 +47,10 @@ trait IAstronomyEngine {
 - Longitudes are `i64` scaled by 1e9 (e.g. `90_000_000_000` = 90.0°).
 - Sign indices are 0–11 (Aries=0, Taurus=1, ..., Pisces=11).
 
+**Deployed contracts:**
+- Mainnet: [`0x06b7e435e06f8c0c84c27c59a3b0be11072bd0d05f12d4aec3c8eb4f51b4d4a6`](https://voyager.online/contract/0x06b7e435e06f8c0c84c27c59a3b0be11072bd0d05f12d4aec3c8eb4f51b4d4a6)
+- Sepolia: [`0x02bb544b17641b85e77971ae7cf710486131bec536146f2043ca94c97880125a`](https://sepolia.voyager.online/contract/0x02bb544b17641b85e77971ae7cf710486131bec536146f2043ca94c97880125a)
+
 ## How It Works
 
 1. **Time conversion.** Timestamp → J2000 day count, UT→TT via Espenak delta-T polynomial.
