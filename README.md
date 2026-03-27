@@ -6,13 +6,13 @@ Deterministic onchain ephemeris for Starknet.
 Computes ecliptic longitudes for Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, and the ascendant using `i64` (1e9) fixed-point math.
 
 - **Range:** years 0001 AD – 4000 AD
-- **Precision:** < 0.001° (~3.3 arcseconds)
+- **Precision:** < 0.002° (~6 arcseconds)
 - **Sign accuracy:** >99.999% against upstream [astronomy](https://github.com/cosinekitty/astronomy)
 - **Contract size:** 2.07 MB (limit: 4.09 MB)
 - **Gas cost:** ~150M per chart (7 planets + ascendant), approx. 0.5 - 1.5 STRK
 
 Ported from Don Cross's [astronomy](https://github.com/cosinekitty/astronomy) (MIT) with full algorithmic parity: identical VSOP terms (360/360), identical IAU2000B nutation (5/5 terms), identical light-time semantics.
-The < 0.001° residual is the inherent precision difference between `i64` fixed-point and IEEE 754 `float64`.
+The < 0.002° residual is the inherent precision difference between `i64` fixed-point and IEEE 754 `float64`.
 
 ## Starknet Interface
 
@@ -80,7 +80,8 @@ At sub-arcsecond precision, sign disagreements this close to a 30° boundary are
 | Precision dataset | Points | Max error | Worst body |
 | --- | --- | --- | --- |
 | Structured (every 100y) | 960 | 0.000365° | Mercury |
-| Random (seed 42) | 10,000 | 0.000913° | Ascendant |
+| Random (seed 42) | 12,000 | 0.000913° | Ascendant |
+| Random (seed 99) | 48,000 | 0.001651° | Ascendant |
 
 ## Building
 

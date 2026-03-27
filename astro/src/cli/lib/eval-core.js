@@ -172,7 +172,7 @@ function runExecutable(executableName, payload, { noBuild, cairoDir }) {
   } finally {
     fs.rmSync(tmpPath, { force: true });
     // Clean up scarb execute output dirs to prevent "failed to create output directory"
-    const execDir = path.join(cairoDir, "eval_runner", "target", "execute");
+    const execDir = path.join(cairoDir, "target", "execute");
     if (fs.existsSync(execDir)) {
       fs.rmSync(execDir, { recursive: true, force: true });
     }

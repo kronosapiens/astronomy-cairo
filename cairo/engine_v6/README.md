@@ -59,7 +59,7 @@ v6 has full algorithmic parity with the upstream JS oracle:
 - IAU2000B nutation: 5/5 terms (identical to upstream)
 - Light-time semantics: both backdate Earth and target planet
 
-Max error vs the JS oracle (10K random points, seed 42): < 0.001° (3.3 arcseconds).
+Max error vs the JS oracle (48K random points, seed 99): < 0.002° (6 arcseconds).
 This is the inherent precision limit of `i64` fixed-point vs `float64`.
 There are no model-level improvements available without changing the upstream oracle.
 
